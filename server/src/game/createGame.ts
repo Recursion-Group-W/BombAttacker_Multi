@@ -1,6 +1,6 @@
 import '@geckos.io/phaser-on-nodejs'
 import RoomManager from '../manager/roomManager';
-import { config } from './config';
+import { config } from './serverConfig';
 import MultiScene from './scene/MultiScene';
 
 type CreateGame = (roomManager: RoomManager, roomId: string, options: { scene: string }) => Phaser.Game
