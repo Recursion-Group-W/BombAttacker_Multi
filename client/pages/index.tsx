@@ -3,12 +3,12 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Link from '../src/Link';
-import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
+import Button from '@mui/material/Button'
 
 export default function Home() {
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth='lg'>
       <Box
         sx={{
           my: 4,
@@ -18,13 +18,19 @@ export default function Home() {
           alignItems: 'center',
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom>
-          MUI v5 + Next.js with TypeScript example
+        <Typography
+          variant='h4'
+          component='h1'
+          gutterBottom
+        >
+          BombAttacker_Multi
         </Typography>
-        <Link href="/about" color="secondary">
-          Go to the about page
-        </Link>
-        <ProTip />
+       
+        <Box maxWidth="sm">
+          <Button variant="contained" component={Link} noLinkStyle href={`/lobby/${1}`}>
+            Go to the Lobby
+          </Button>
+        </Box>
         <Copyright />
       </Box>
     </Container>
