@@ -10,7 +10,7 @@ app.use(express.json())
 
 const httpServer = createServer(app);
 
-const PORT = 5000;
+const PORT = 5002;
 
 const io = new Server(httpServer, {
   cors: {
