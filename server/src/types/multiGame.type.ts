@@ -1,4 +1,4 @@
-import { Game } from "../game/game"
+import { GameManager } from "../manager/gameManager"
 
 export type User = {
     id: string
@@ -11,8 +11,8 @@ export type Users = {
   }
   export type Room  = {
     roomId: string
-    game: Game
     users: Users
+    gameManager: GameManager
   }
   export type RoomMap = {
     [roomId: string]: Room

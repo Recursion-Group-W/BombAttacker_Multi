@@ -1,14 +1,15 @@
-import { Game } from "../game/game";
+import { Game } from '../game/game';
 
+//ステージ移動に必要？
 export class GameManager {
-    game: Game;
+  game: Game;
 
-    constructor(game: Game){
-        this.game = game
-    }
-    
-    // switchStage(stage: Stage, playerSet: any){
-    //     this.game.stage = stage
-    //     this.game.stage.playerSet = playerSet
-    // }
+  constructor(game: Game) {
+    this.game = game;
+  }
+
+  // switchStage(stage: Stage, playerSet: any){
+  //     this.game.stage = stage
+  //     this.game.stage.playerSet = playerSet
+  // }
 }
