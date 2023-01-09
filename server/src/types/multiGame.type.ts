@@ -1,5 +1,4 @@
-import Phaser from "phaser"
-import MultiScene from "../game/scene/MultiScene"
+import { Game } from "../game/game"
 
 export type User = {
     id: string
@@ -12,9 +11,7 @@ export type Users = {
   }
   export type Room  = {
     roomId: string
-    game: Phaser.Game
-    sceneKey: string
-    scene: MultiScene
+    game: Game
     users: Users
   }
   export type RoomMap = {

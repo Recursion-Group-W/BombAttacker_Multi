@@ -2,13 +2,14 @@ import * as React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Link from '../src/Link';
+import ProTip from '../src/ProTip';
 import Copyright from '../src/Copyright';
-import Button from '@mui/material/Button'
 
-export default function Home() {
+export default function About() {
   return (
-    <Container maxWidth='lg'>
+    <Container maxWidth="lg">
       <Box
         sx={{
           my: 4,
@@ -18,19 +19,15 @@ export default function Home() {
           alignItems: 'center',
         }}
       >
-        <Typography
-          variant='h4'
-          component='h1'
-          gutterBottom
-        >
-          BombAttacker_Multi
+        <Typography variant="h4" component="h1" gutterBottom>
+          MUI v5 + Next.js with TypeScript example
         </Typography>
-       
         <Box maxWidth="sm">
-          <Button variant="contained" component={Link} noLinkStyle href={`/lobby/${1}`}>
-            Go to the Lobby
+          <Button variant="contained" component={Link} noLinkStyle href="/">
+            Go to the home page
           </Button>
         </Box>
+        <ProTip />
         <Copyright />
       </Box>
     </Container>

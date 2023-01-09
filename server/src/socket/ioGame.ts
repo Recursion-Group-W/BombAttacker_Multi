@@ -15,12 +15,10 @@ export default class IoGame {
       // //入室
       socket.on(
         'joinRoom',
-        async (data: { scene: string }) => {
-          const { scene } = data;
+        async () => {
           //入室する処理
-          await roomManager.joinRoom(socket, scene)
+          await roomManager.joinRoom(socket)
           console.log(`New user connected! to room`);
-          console.log(`scene is ${scene}`)
           //ゲームを新規作成する処理
         }
       );
