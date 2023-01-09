@@ -6,12 +6,12 @@ import Link from '../src/Link';
 import Copyright from '../src/Copyright';
 import Button from '@mui/material/Button';
 import GoogleIcon from '@mui/icons-material/Google';
-import { signInWithPopup } from 'firebase/auth';
+import { signInWithPopup, signOut } from 'firebase/auth';
 import { auth, provider } from '../firebase';
 
 export default function Home() {
   const [isAuth, setIsAuth] = React.useState(false);
-  const login = () => {
+  const logIn = () => {
     signInWithPopup(auth, provider)
       .then((res) => {
         console.log(res.user);
@@ -22,6 +22,12 @@ export default function Home() {
       .catch((error) => {
         console.log(error.message);
       });
+  };
+  const logOut = () => {
+    signOut(auth).then(() => {
+      localStorage.clear();
+      setIsAuth(false);
+    });
   };
   return (
     <Container maxWidth='lg'>
@@ -43,11 +49,19 @@ export default function Home() {
         </Typography>
 
         <Box maxWidth='sm' sx={{ py: 2 }}>
-          <Button onClick={login} variant='outlined'>
-            <GoogleIcon />
-            Login/Signin
-          </Button>
+          {!isAuth ? (
+            <Button onClick={logIn} variant='outlined'>
+              <GoogleIcon />
+              Login/Signin
+            </Button>
+          ) : (
+            <Button onClick={logOut} variant='outlined'>
+              <GoogleIcon />
+              Logout
+            </Button>
+          )}
         </Box>
+
         <Box maxWidth='sm'>
           <Button
             variant='contained'
