@@ -4,7 +4,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Link from '../src/Link';
 import Copyright from '../src/Copyright';
-import Button from '@mui/material/Button'
+import Button from '@mui/material/Button';
+import GoogleIcon from '@mui/icons-material/Google';
 
 export default function Home() {
   return (
@@ -25,9 +26,24 @@ export default function Home() {
         >
           BombAttacker_Multi
         </Typography>
-       
-        <Box maxWidth="sm">
-          <Button variant="contained" component={Link} noLinkStyle href={`/lobby/${1}`}>
+
+        <Box maxWidth='sm'>
+          <Button
+            variant='contained'
+            component={Link}
+            noLinkStyle
+            href={`/lobby/${1}`}
+          >
+            <GoogleIcon />Login/Signin
+          </Button>
+        </Box>
+        <Box maxWidth='sm'>
+          <Button
+            variant='contained'
+            component={Link}
+            noLinkStyle
+            href={`/lobby/${1}`}
+          >
             Go to the Lobby
           </Button>
         </Box>
