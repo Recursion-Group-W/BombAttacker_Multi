@@ -10,6 +10,6 @@ export class Assets {
   };
   // コンストラクタ
   constructor() {
-    this.imageField.src = '../../public/assets/grass01.png';
+    this.imageField.src = '/assets/grass01.png';
   }
 }
