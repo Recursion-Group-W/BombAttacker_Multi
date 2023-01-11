@@ -1,4 +1,4 @@
-import { RectField } from '../../types/rectField.type';
+import { RectField } from '../../types/rectBound.type';
 import { GameObject } from './gameObject';
 import { Obstacle } from './obstacle';
 
