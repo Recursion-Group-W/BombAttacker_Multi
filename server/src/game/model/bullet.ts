@@ -1,3 +1,4 @@
+import { RectBound } from '../../types/rectBound.type';
 import { CommonConfig } from '../commonConfig';
 import { ServerConfig } from '../serverConfig';
 import { OverlapTester } from '../util/overlapTester';
@@ -29,7 +30,7 @@ export class Bullet extends GameObject {
   // ※rectField : フィールド矩形は、オブジェクト中心と判定する。（OverlapTester.pointInRect()）
   //               オブジェクトの大きさ分狭めた(上下左右で、大きさの半分づつ狭めた）矩形が必要。
   //               呼び出され側で領域を狭めのは、処理コストが無駄なので、呼び出す側で領域を狭めて渡す。
-  update(deltaTime: number, rectField: any, wallSet: any) {
+  update(deltaTime: number, rectField: RectBound, wallSet: any) {
     this.fLifeTime -= deltaTime;
     if (0 > this.fLifeTime) {
       // 寿命が尽きた
@@ -38,17 +39,17 @@ export class Bullet extends GameObject {
 
     // 前進
     const fDistance = this.fSpeed * deltaTime;
-    this.setPosition(
-      this.getPosition.x + fDistance * Math.cos(this.angle),
-      this.getPosition.y + fDistance * Math.sin(this.angle)
+    this.setPos(
+      this.x + fDistance * Math.cos(this.angle),
+      this.y + fDistance * Math.sin(this.angle)
     );
 
     // 不可侵領域との衝突のチェック
     let bCollision = false;
     if (
       !OverlapTester.pointInRect(rectField, {
-        x: this.getPosition.x,
-        y: this.getPosition.y,
+        x: this.x,
+        y: this.y,
       })
     ) {
       // フィールドの外に出た。
