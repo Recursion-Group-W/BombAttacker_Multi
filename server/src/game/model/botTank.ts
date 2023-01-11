@@ -1,5 +1,5 @@
 import { RectBound } from '../../types/rectBound.type';
-import { ServerConfig } from '../serverConfig';
+import { ServerConfig } from '../config/serverConfig';
 import { Bullet } from './bullet';
 import { Tank } from './tank';
 import { Wall } from './wall';

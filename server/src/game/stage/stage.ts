@@ -1,10 +1,10 @@
 import RoomManager from '../../manager/roomManager';
-import { CommonConfig } from '../commonConfig';
+import { CommonConfig } from '../config/commonConfig';
 import { BotTank } from '../model/botTank';
 import { Bullet } from '../model/bullet';
 import { Tank } from '../model/tank';
 import { Wall } from '../model/wall';
-import { ServerConfig } from '../serverConfig';
+import { ServerConfig } from '../config/serverConfig';
 import { OverlapTester } from '../util/overlapTester';
 
 export class Stage {

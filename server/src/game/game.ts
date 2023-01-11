@@ -1,5 +1,5 @@
 import RoomManager from '../manager/roomManager';
-import { ServerConfig } from './serverConfig';
+import { ServerConfig } from './config/serverConfig';
 import { Stage } from './stage/stage';
 
 export class Game {

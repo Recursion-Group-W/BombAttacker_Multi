@@ -1,4 +1,4 @@
-import { CommonConfig } from '../commonConfig';
+import { CommonConfig } from '../config/commonConfig';
 import { GameObject } from './gameObject';
 
 export class Wall extends GameObject {

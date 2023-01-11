@@ -3,8 +3,9 @@ import { Namespace } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { createGame } from '../game/createGame';
 import { Game } from '../game/game';
-import { ServerConfig } from '../game/serverConfig';
-import { RoomMap, Users } from '../types/multiGame.type';
+import { ServerConfig } from '../game/config/serverConfig';
+import { RoomMap } from '../types/room.type';
+import { Users } from '../types/user.type';
 import { GameManager } from './gameManager';
 
 export default class RoomManager {

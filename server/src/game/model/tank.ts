@@ -1,6 +1,6 @@
 import { RectBound } from '../../types/rectBound.type';
-import { CommonConfig } from '../commonConfig';
-import { ServerConfig } from '../serverConfig';
+import { CommonConfig } from '../config/commonConfig';
+import { ServerConfig } from '../config/serverConfig';
 import { OverlapTester } from '../util/overlapTester';
 import { Bullet } from './bullet';
 import { GameObject } from './gameObject';
