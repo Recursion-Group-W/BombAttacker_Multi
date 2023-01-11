@@ -145,10 +145,7 @@ export class Stage {
   }
 
   // タンクの生成
-  createTank(
-    clientId: string,
-    userName: string
-  ) {
+  createTank(clientId: string, userName: string) {
     // ゲーム開始。プレイしていない通信のソケットIDリストから削除
     // this.setNotPlayingSocketID.delete(clientId);
 
