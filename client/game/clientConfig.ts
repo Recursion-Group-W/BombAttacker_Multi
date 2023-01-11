@@ -14,4 +14,28 @@ export class ClientConfig {
   // 処理時間
   static PROCESSINGTIME_FONT = '30px Bold Arial';
   static PROCESSINGTIME_COLOR = 'black';
+
+  // ライフ
+  static get LIFE_REMAINING_COLOR() {
+    return 'green';
+  }
+  static get LIFE_MISSING_COLOR() {
+    return 'red';
+  }
+
+  // スコア
+  static get SCORE_FONT() {
+    return '30px Bold Arial';
+  }
+  static get SCORE_COLOR() {
+    return 'black';
+  }
+
+  // ニックネーム
+  static get NICKNAME_FONT() {
+    return '30px Bold Arial';
+  }
+  static get NICKNAME_COLOR() {
+    return 'blue';
+  }
 }

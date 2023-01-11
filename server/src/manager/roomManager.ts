@@ -19,7 +19,7 @@ export default class RoomManager {
     socket.emit('clientId', clientId);
   }
 
-  async joinRoom(socket: any) {
+  async joinRoom(socket: any, userName: string) {
     socket.roomId = this.chooseRoom();
 
     // 部屋が存在しなければ、新規作成する
@@ -31,7 +31,17 @@ export default class RoomManager {
     // socket.clientIdを使ってユーザを入室させる
     this.addUser(socket);
 
+    let stage =
+      this.roomMap[socket.roomId].gameManager.game.stage;
+    // まだゲーム開始前。プレイしていない通信のソケットIDリストに追加
+    // stage.setNotPlayingSocketID.add(socket.id);
+
     // createPlayer()
+    //タンクを作成
+    stage.createTank(socket.clientId, socket.id, userName);
+
+    console.log('socketID: ', socket.id);
+    console.log('clientId: ', socket.clientId);
   }
   addUser(socket: any) {
     let newUsers: Users = {
@@ -77,6 +87,7 @@ export default class RoomManager {
     for (let roomId in this.roomMap) {
       let room = this.roomMap[roomId];
       const userCount = Object.keys(room.users).length;
+      console.log('usercount: ', userCount);
       //対戦ルームが満員でない、かつステージレベルが１の場合に入室できる
       if (
         userCount < ServerConfig.MAX_PLAYERS_PER_ROOM &&
@@ -88,5 +99,45 @@ export default class RoomManager {
     }
     if (chosenRoom) return chosenRoom;
     return uuidv4();
+  }
+
+  leaveRoom(socket: any) {
+    this.removeUser(socket.room, socket.id);
+
+    let stage =
+      this.roomMap[socket.roomId].gameManager.game.stage;
+
+    // プレイしていない通信のソケットIDリストから削除
+    // stage.setNotPlayingSocketID.delete(socket.id);
+
+    stage.destroyTank(socket.clientId);
+  }
+
+  removeUser(roomId: string, socketId: string) {
+    if (this.ioNspGame.sockets.get(socketId)) {
+      this.ioNspGame.sockets.get(socketId)?.leave(roomId);
+    }
+
+    if (this.userExists(roomId, socketId)) {
+      delete this.roomMap[roomId].users[socketId];
+
+      return true;
+    }
+    return false;
+  }
+
+  userExists(roomId: string, socketId: string) {
+    if (
+      this.roomExists(roomId) &&
+      this.roomMap[roomId].users &&
+      this.roomMap[roomId].users[socketId]
+    )
+      return true;
+    return false;
+  }
+
+  roomExists(roomId: string) {
+    if (this.roomMap && this.roomMap[roomId]) return true;
+    return false;
   }
 }

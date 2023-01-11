@@ -31,7 +31,7 @@ const Lobby = () => {
   });
 
   const joinRoom = async () => {
-    socket.emit('joinRoom');
+    socket.emit('joinRoom', { userName: 'user1' });
   };
   socket.on('roomId', (roomId: string) => {
     router.push(`/room/${roomId}`);
