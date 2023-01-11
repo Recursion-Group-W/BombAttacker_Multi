@@ -1,47 +1,34 @@
-import { Position } from '../../types/position.type';
+import { RectBound } from '../../types/rectBound.type';
 import { OverlapTester } from '../util/overlapTester';
 import { Wall } from './wall';
 
 export class GameObject {
-  rectBound: { [key: string]: number } = {
+  rectBound: RectBound = {
     top: 0,
-    right: 0,
-    bottom: 0,
     left: 0,
-  };
-  position: Position = {
-    x: 0,
-    y: 0,
+    bottom: 0,
+    right: 0,
   };
   constructor(
     public width: number,
     public height: number,
-    x: number,
-    y: number,
+    public x: number,
+    public y: number,
     public angle: number
   ) {
-    this.setPosition(x, y);
-    this.setRectBound(x, y);
+    this.setPos(x, y);
   }
 
   toJSON() {
     return {
-      x: this.getPosition.x,
-      y: this.getPosition.y,
+      x: this.x,
+      y: this.y,
       angle: this.angle,
     };
   }
-  get getPosition() {
-    return this.position;
-  }
-
-  setPosition(x: number, y: number) {
-    this.position = {
-      x,
-      y,
-    };
-  }
-  setRectBound(x: number, y: number) {
+  setPos(x: number, y: number) {
+    this.x = x;
+    this.y = y;
     this.rectBound = {
       left: x - this.width * 0.5,
       bottom: y - this.height * 0.5,
@@ -52,12 +39,15 @@ export class GameObject {
 
   // 壁との干渉チェック
   overlapWalls(wallSet: Set<Wall>) {
-    //全ての障害物をチェックし、１つでも重なっているものがあればtrueを返す
-    return Array.from(wallSet).some((wall) =>
-      OverlapTester.overlapRects(
-        this.rectBound,
-        wall.rectBound
-      )
-    );
+    return Array.from(wallSet).some((wall) => {
+      if (
+        OverlapTester.overlapRects(
+          this.rectBound,
+          wall.rectBound
+        )
+      ) {
+        return true;
+      }
+    });
   }
 }
