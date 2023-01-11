@@ -38,7 +38,7 @@ export class Bullet extends GameObject {
 
     // 前進
     const fDistance = this.fSpeed * deltaTime;
-    this.setPos(
+    this.setPosition(
       this.x + fDistance * Math.cos(this.angle),
       this.y + fDistance * Math.sin(this.angle)
     );

@@ -42,13 +42,13 @@ export class Tank extends GameObject {
 
     // 障害物にぶつからない初期位置の算出
     do {
-      this.setPos(
-        rectField.fLeft +
+      this.setPosition(
+        rectField.left +
           Math.random() *
-            (rectField.fRight - rectField.fLeft),
-        rectField.fBottom +
+            (rectField.right - rectField.left),
+        rectField.bottom +
           Math.random() *
-            (rectField.fTop - rectField.fBottom)
+            (rectField.top - rectField.bottom)
       );
     } while (this.overlapWalls(wallSet));
   }
@@ -67,7 +67,7 @@ export class Tank extends GameObject {
       // 前進
       const fDistance = this.fSpeed * deltaTime;
       //console.log( 'forward' );
-      this.setPos(
+      this.setPosition(
         this.x + fDistance * Math.cos(this.angle),
         this.y + fDistance * Math.sin(this.angle)
       );
@@ -77,7 +77,7 @@ export class Tank extends GameObject {
       // 後進
       const fDistance = this.fSpeed * deltaTime;
       //console.log( 'back' );
-      this.setPos(
+      this.setPosition(
         this.x - fDistance * Math.cos(this.angle),
         this.y - fDistance * Math.sin(this.angle)
       );
@@ -100,7 +100,7 @@ export class Tank extends GameObject {
       }
       if (bCollision) {
         // 衝突する場合は、移動できない。
-        this.setPos(fX_old, fY_old);
+        this.setPosition(fX_old, fY_old);
         bDrived = false; // 前後方向の動きはなし
       }
     }

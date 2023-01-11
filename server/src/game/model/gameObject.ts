@@ -2,7 +2,12 @@ import { OverlapTester } from '../util/overlapTester';
 import { Wall } from './wall';
 
 export class GameObject {
-  rectBound = {};
+  rectBound: { [key: string]: number } = {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  };
   constructor(
     public width: number,
     public height: number,
@@ -10,7 +15,7 @@ export class GameObject {
     public y: number,
     public angle: number
   ) {
-    this.setPos(x, y);
+    this.setPosition(x, y);
   }
 
   toJSON() {
@@ -20,28 +25,26 @@ export class GameObject {
       angle: this.angle,
     };
   }
-  setPos(x: number, y: number) {
+
+  setPosition(x: number, y: number) {
     this.x = x;
     this.y = y;
     this.rectBound = {
-      fLeft: x - this.width * 0.5,
-      fBottom: y - this.height * 0.5,
-      fRight: x + this.width * 0.5,
-      fTop: y + this.height * 0.5,
+      left: x - this.width * 0.5,
+      bottom: y - this.height * 0.5,
+      right: x + this.width * 0.5,
+      top: y + this.height * 0.5,
     };
   }
 
   // 壁との干渉チェック
   overlapWalls(wallSet: Set<Wall>) {
-    return Array.from(wallSet).some((wall) => {
-      if (
-        OverlapTester.overlapRects(
-          this.rectBound,
-          wall.rectBound
-        )
-      ) {
-        return true;
-      }
-    });
+    //全ての障害物をチェックし、１つでも重なっているものがあればtrueを返す
+    return Array.from(wallSet).some((wall) =>
+      OverlapTester.overlapRects(
+        this.rectBound,
+        wall.rectBound
+      )
+    );
   }
 }

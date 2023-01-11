@@ -78,12 +78,12 @@ export class Stage {
   updateObjects(deltaTime: number) {
     // タンクの可動域
     const rectTankField = {
-      fLeft: 0 + CommonConfig.TANK_WIDTH * 0.5,
-      fBottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
-      fRight:
+      left: 0 + CommonConfig.TANK_WIDTH * 0.5,
+      bottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
+      right:
         CommonConfig.FIELD_WIDTH -
         CommonConfig.TANK_WIDTH * 0.5,
-      fTop:
+      top:
         CommonConfig.FIELD_HEIGHT -
         CommonConfig.TANK_HEIGHT * 0.5,
     };
@@ -100,12 +100,12 @@ export class Stage {
 
     // 弾丸の可動域
     const rectBulletField = {
-      fLeft: 0 + CommonConfig.BULLET_WIDTH * 0.5,
-      fBottom: 0 + CommonConfig.BULLET_HEIGHT * 0.5,
-      fRight:
+      left: 0 + CommonConfig.BULLET_WIDTH * 0.5,
+      bottom: 0 + CommonConfig.BULLET_HEIGHT * 0.5,
+      right:
         CommonConfig.FIELD_WIDTH -
         CommonConfig.BULLET_WIDTH * 0.5,
-      fTop:
+      top:
         CommonConfig.FIELD_HEIGHT -
         CommonConfig.BULLET_HEIGHT * 0.5,
     };
@@ -154,12 +154,12 @@ export class Stage {
 
     // タンクの可動域
     const rectTankField = {
-      fLeft: 0 + CommonConfig.TANK_WIDTH * 0.5,
-      fBottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
-      fRight:
+      left: 0 + CommonConfig.TANK_WIDTH * 0.5,
+      bottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
+      right:
         CommonConfig.FIELD_WIDTH -
         CommonConfig.TANK_WIDTH * 0.5,
-      fTop:
+      top:
         CommonConfig.FIELD_HEIGHT -
         CommonConfig.TANK_HEIGHT * 0.5,
     };
@@ -184,12 +184,12 @@ export class Stage {
   createBotTank(userName: string) {
     // タンクの可動域
     const rectTankField = {
-      fLeft: 0 + CommonConfig.TANK_WIDTH * 0.5,
-      fBottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
-      fRight:
+      left: 0 + CommonConfig.TANK_WIDTH * 0.5,
+      bottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
+      right:
         CommonConfig.FIELD_WIDTH -
         CommonConfig.TANK_WIDTH * 0.5,
-      fTop:
+      top:
         CommonConfig.FIELD_HEIGHT -
         CommonConfig.TANK_HEIGHT * 0.5,
     };
