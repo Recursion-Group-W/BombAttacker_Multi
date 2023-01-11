@@ -25,7 +25,6 @@ export class Stage {
   bulletSet = new Set<Bullet>();
   botSet = new Set<BotTank>();
   botId: number = 0;
-  setNotPlayingSocketID = new Set<string>(); // プレイしていない通信のソケットIDリスト
 
   constructor(
     level: number,
@@ -146,9 +145,6 @@ export class Stage {
 
   // タンクの生成
   createTank(clientId: string, userName: string) {
-    // ゲーム開始。プレイしていない通信のソケットIDリストから削除
-    // this.setNotPlayingSocketID.delete(clientId);
-
     // タンクの可動域
     const rectTankField = {
       left: 0 + CommonConfig.TANK_WIDTH * 0.5,
@@ -209,9 +205,6 @@ export class Stage {
       if (tank.clientId === clientId) {
         // タンクリストリストからの削除
         this.tankSet.delete(tank);
-
-        // ゲーム開始前に戻るので、プレイしていない通信のソケットIDリストに追加
-        // this.setNotPlayingSocketID.add(tank.clientId);
 
         // 削除タンクのクライアントにイベント'dead'を送信
         this.roomManager.ioNspGame
