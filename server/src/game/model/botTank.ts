@@ -1,3 +1,4 @@
+import { RectBound } from '../../types/rectBound.type';
 import { ServerConfig } from '../serverConfig';
 import { Bullet } from './bullet';
 import { Tank } from './tank';
@@ -9,7 +10,7 @@ export class BotTank extends Tank {
   constructor(
     public id: number,
     userName: string,
-    rectField: any,
+    rectField: RectBound,
     wallSet: Set<Wall>
   ) {
     // 親クラスのコンストラクタ呼び出し
@@ -54,9 +55,9 @@ export class BotTank extends Tank {
 
     // 新しい弾丸の生成（先端から出ているようにするために、幅の半分オフセットした位置に生成する）
     const x =
-      this.getPosition.x + this.width * 0.5 * Math.cos(this.angle);
+      this.x + this.width * 0.5 * Math.cos(this.angle);
     const y =
-      this.getPosition.y + this.width * 0.5 * Math.sin(this.angle);
+      this.y + this.width * 0.5 * Math.sin(this.angle);
     return new Bullet(x, y, this.angle, this);
   }
 }
