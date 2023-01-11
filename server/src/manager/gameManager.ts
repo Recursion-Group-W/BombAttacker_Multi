@@ -1,4 +1,4 @@
-import { Game } from '../tankGame/game';
+import { Game } from '../game/game';
 
 //ステージ移動に必要？
 export class GameManager {

@@ -1,9 +1,9 @@
 import { Namespace } from 'socket.io';
 
 import { v4 as uuidv4 } from 'uuid';
-import { createGame } from '../tankGame/createGame';
-import { Game } from '../tankGame/game';
-import { ServerConfig } from '../tankGame/serverConfig';
+import { createGame } from '../game/createGame';
+import { Game } from '../game/game';
+import { ServerConfig } from '../game/serverConfig';
 import { RoomMap, Users } from '../types/multiGame.type';
 import { GameManager } from './gameManager';
 

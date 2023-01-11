@@ -1,5 +1,5 @@
 import { Namespace } from 'socket.io';
-import { Tank } from '../tankGame/model/tank';
+import { Tank } from '../game/model/tank';
 import RoomManager from '../manager/roomManager';
 
 export default class IoGame {
