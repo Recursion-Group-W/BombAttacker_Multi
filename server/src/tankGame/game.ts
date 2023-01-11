@@ -35,10 +35,16 @@ export class Game {
       const nanoSecDiff =
         hrtimeDiff[0] * 1e9 + hrtimeDiff[1];
 
-      //ルーム内のユーザーにデータを送信
+      // //ルーム内のユーザーにデータを送信
       this.roomManager.ioNspGame
         .in(this.roomId)
-        .emit('syncGame', { nanoSecDiff });
+        .emit('syncGame', {
+          nanoSecDiff,
+          tankArr: Array.from(this.stage.tankSet),
+          wallArr: Array.from(this.stage.wallSet),
+          bulletArr: Array.from(this.stage.bulletSet),
+          botArr: Array.from(this.stage.botSet),
+        });
     }, 1000 / ServerConfig.FRAMERATE); // 単位は[ms]。1000[ms] / FRAMERATE[回]
   }
 }

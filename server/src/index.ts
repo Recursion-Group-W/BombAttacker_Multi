@@ -14,7 +14,7 @@ const PORT = 5002;
 
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:3005'],
+    origin: ['http://localhost:3000'],
   },
 });
 
