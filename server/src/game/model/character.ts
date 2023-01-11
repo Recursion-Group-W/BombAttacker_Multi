@@ -1,5 +1,6 @@
 import { RectField } from '../../types/rectField.type';
 import { GameObject } from './gameObject';
+import { Obstacle } from './obstacle';
 
 export class Character extends GameObject {
   private id: number = 0;
