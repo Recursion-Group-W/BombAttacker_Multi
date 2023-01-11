@@ -39,16 +39,16 @@ export class Bullet extends GameObject {
     // 前進
     const fDistance = this.fSpeed * deltaTime;
     this.setPosition(
-      this.x + fDistance * Math.cos(this.angle),
-      this.y + fDistance * Math.sin(this.angle)
+      this.getPosition.x + fDistance * Math.cos(this.angle),
+      this.getPosition.y + fDistance * Math.sin(this.angle)
     );
 
     // 不可侵領域との衝突のチェック
     let bCollision = false;
     if (
       !OverlapTester.pointInRect(rectField, {
-        x: this.x,
-        y: this.y,
+        x: this.getPosition.x,
+        y: this.getPosition.y,
       })
     ) {
       // フィールドの外に出た。

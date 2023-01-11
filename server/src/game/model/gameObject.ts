@@ -1,3 +1,4 @@
+import { Position } from '../../types/position.type';
 import { OverlapTester } from '../util/overlapTester';
 import { Wall } from './wall';
 
@@ -8,27 +9,39 @@ export class GameObject {
     bottom: 0,
     left: 0,
   };
+  position: Position = {
+    x: 0,
+    y: 0,
+  };
   constructor(
     public width: number,
     public height: number,
-    public x: number,
-    public y: number,
+    x: number,
+    y: number,
     public angle: number
   ) {
     this.setPosition(x, y);
+    this.setRectBound(x, y);
   }
 
   toJSON() {
     return {
-      x: this.x,
-      y: this.y,
+      x: this.getPosition.x,
+      y: this.getPosition.y,
       angle: this.angle,
     };
   }
+  get getPosition() {
+    return this.position;
+  }
 
   setPosition(x: number, y: number) {
-    this.x = x;
-    this.y = y;
+    this.position = {
+      x,
+      y,
+    };
+  }
+  setRectBound(x: number, y: number) {
     this.rectBound = {
       left: x - this.width * 0.5,
       bottom: y - this.height * 0.5,

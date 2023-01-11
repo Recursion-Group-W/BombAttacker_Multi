@@ -54,9 +54,9 @@ export class BotTank extends Tank {
 
     // 新しい弾丸の生成（先端から出ているようにするために、幅の半分オフセットした位置に生成する）
     const x =
-      this.x + this.width * 0.5 * Math.cos(this.angle);
+      this.getPosition.x + this.width * 0.5 * Math.cos(this.angle);
     const y =
-      this.y + this.width * 0.5 * Math.sin(this.angle);
+      this.getPosition.y + this.width * 0.5 * Math.sin(this.angle);
     return new Bullet(x, y, this.angle, this);
   }
 }

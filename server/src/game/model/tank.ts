@@ -32,10 +32,10 @@ export class Tank extends GameObject {
     );
 
     // 初期位置
-    this.x =
+    this.getPosition.x =
       Math.random() *
       (CommonConfig.FIELD_WIDTH - CommonConfig.TANK_WIDTH);
-    this.y =
+    this.getPosition.y =
       Math.random() *
       (CommonConfig.FIELD_HEIGHT -
         CommonConfig.TANK_HEIGHT);
@@ -59,8 +59,8 @@ export class Tank extends GameObject {
 
   // 更新
   update(deltaTime: number, rectField: any, wallSet: Set<Wall>) {
-    const fX_old = this.x; // 移動前座標値のバックアップ
-    const fY_old = this.y; // 移動前座標値のバックアップ
+    const fX_old = this.getPosition.x; // 移動前座標値のバックアップ
+    const fY_old = this.getPosition.y; // 移動前座標値のバックアップ
     let bDrived = false; // 前後方向の動きがあったか
     // 動作に従って、タンクの状態を更新
     if (this.objMovement['forward']) {
@@ -68,8 +68,8 @@ export class Tank extends GameObject {
       const fDistance = this.fSpeed * deltaTime;
       //console.log( 'forward' );
       this.setPosition(
-        this.x + fDistance * Math.cos(this.angle),
-        this.y + fDistance * Math.sin(this.angle)
+        this.getPosition.x + fDistance * Math.cos(this.angle),
+        this.getPosition.y + fDistance * Math.sin(this.angle)
       );
       bDrived = true;
     }
@@ -78,8 +78,8 @@ export class Tank extends GameObject {
       const fDistance = this.fSpeed * deltaTime;
       //console.log( 'back' );
       this.setPosition(
-        this.x - fDistance * Math.cos(this.angle),
-        this.y - fDistance * Math.sin(this.angle)
+        this.getPosition.x - fDistance * Math.cos(this.angle),
+        this.getPosition.y - fDistance * Math.sin(this.angle)
       );
       bDrived = true;
     }
@@ -88,8 +88,8 @@ export class Tank extends GameObject {
       let bCollision = false;
       if (
         !OverlapTester.pointInRect(rectField, {
-          x: this.x,
-          y: this.y,
+          x: this.getPosition.x,
+          y: this.getPosition.y,
         })
       ) {
         // フィールドの外に出た。
@@ -167,9 +167,9 @@ export class Tank extends GameObject {
 
     // 新しい弾丸の生成（先端から出ているようにするために、幅の半分オフセットした位置に生成する）
     const x =
-      this.x + this.width * 0.5 * Math.cos(this.angle);
+      this.getPosition.x + this.width * 0.5 * Math.cos(this.angle);
     const y =
-      this.y + this.width * 0.5 * Math.sin(this.angle);
+      this.getPosition.y + this.width * 0.5 * Math.sin(this.angle);
     return new Bullet(x, y, this.angle, this);
   }
 
