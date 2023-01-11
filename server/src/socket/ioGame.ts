@@ -19,7 +19,7 @@ export default class IoGame {
       socket.on(
         'joinRoom',
         async (req: { userName: string }) => {
-          console.log(req)
+          console.log(req);
           //入室する処理
           await roomManager.joinRoom(socket, req.userName);
           console.log(`New user connected! to room`);
@@ -90,9 +90,9 @@ export default class IoGame {
 
       //接続が切れたとき
       socket.on('disconnect', () => {
-        //退室する処理
-
         console.log('クライアントと接続が切れました');
+
+        //退室する処理
         roomManager.leaveRoom(socket);
       });
     });

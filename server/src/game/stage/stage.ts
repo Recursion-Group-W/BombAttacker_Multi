@@ -147,7 +147,6 @@ export class Stage {
   // タンクの生成
   createTank(
     clientId: string,
-    socketId: string,
     userName: string
   ) {
     // ゲーム開始。プレイしていない通信のソケットIDリストから削除
@@ -169,7 +168,6 @@ export class Stage {
     const tank = new Tank(
       this.newTankId(),
       clientId,
-      socketId,
       userName,
       rectTankField,
       this.wallSet

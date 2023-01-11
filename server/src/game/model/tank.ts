@@ -18,7 +18,6 @@ export class Tank extends GameObject {
   constructor(
     public id: number,
     public clientId: string,
-    public socketId: string,
     public userName: string,
     rectField: any,
     wallSet: any
@@ -136,7 +135,6 @@ export class Tank extends GameObject {
   toJSON() {
     return Object.assign(super.toJSON(), {
       clientId: this.clientId,
-      socketId: this.socketId,
       userName: this.userName,
       iLife: this.iLife,
       iLifeMax: this.iLifeMax,

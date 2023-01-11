@@ -1,8 +1,6 @@
 import RoomManager from '../manager/roomManager';
-import { CommonConfig } from './commonConfig';
 import { ServerConfig } from './serverConfig';
 import { Stage } from './stage/stage';
-import { OverlapTester } from './util/overlapTester';
 
 export class Game {
   time: number = Date.now();
@@ -36,118 +34,6 @@ export class Game {
       const hrtimeDiff = process.hrtime(hrtime);
       const nanoSecDiff =
         hrtimeDiff[0] * 1e9 + hrtimeDiff[1];
-
-      // 最新状況をクライアントに個別に送信
-      // タンクごとの処理
-      // this.stage.tankSet.forEach((tank) => {
-      //   if ('' !== tank.clientId) {
-      //     // ボットは無処理
-      //     const rectVisibleArea = {
-      //       fLeft: tank.x - CommonConfig.CANVAS_WIDTH * 0.5,
-      //       fBottom:
-      //         tank.y - CommonConfig.CANVAS_HEIGHT * 0.5,
-      //       fRight:
-      //         tank.x + CommonConfig.CANVAS_WIDTH * 0.5,
-      //       fTop: tank.y + CommonConfig.CANVAS_HEIGHT * 0.5,
-      //     };
-      //     this.roomManager.ioNspGame
-      //       .to(tank.clientId)
-      //       .emit('syncGame', {
-      //         nanoSecDiff,
-      //         tankArr: Array.from(
-      //           this.stage.tankSet
-      //         ).filter((tank) => {
-      //           return OverlapTester.overlapRects(
-      //             rectVisibleArea,
-      //             tank.rectBound
-      //           );
-      //         }),
-      //         wallArr: Array.from(
-      //           this.stage.wallSet
-      //         ).filter((wall) => {
-      //           return OverlapTester.overlapRects(
-      //             rectVisibleArea,
-      //             wall.rectBound
-      //           );
-      //         }),
-      //         bulletArr: Array.from(
-      //           this.stage.bulletSet
-      //         ).filter((bullet) => {
-      //           return OverlapTester.overlapRects(
-      //             rectVisibleArea,
-      //             bullet.rectBound
-      //           );
-      //         }),
-      //         botArr: Array.from(this.stage.botSet).filter(
-      //           (bot) => {
-      //             return OverlapTester.overlapRects(
-      //               rectVisibleArea,
-      //               bot.rectBound
-      //             );
-      //           }
-      //         ),
-      //       });
-      //   }
-      // });
-
-      // // プレーしていないソケットごとの処理
-      // const rectVisibleArea = {
-      //   fLeft:
-      //     CommonConfig.FIELD_WIDTH * 0.5 -
-      //     CommonConfig.CANVAS_WIDTH * 0.5,
-      //   fBottom:
-      //     CommonConfig.FIELD_HEIGHT * 0.5 -
-      //     CommonConfig.CANVAS_HEIGHT * 0.5,
-      //   fRight:
-      //     CommonConfig.FIELD_WIDTH * 0.5 +
-      //     CommonConfig.CANVAS_WIDTH * 0.5,
-      //   fTop:
-      //     CommonConfig.FIELD_HEIGHT * 0.5 +
-      //     CommonConfig.CANVAS_HEIGHT * 0.5,
-      // };
-      // this.stage.setNotPlayingSocketID.forEach(
-      //   (clientId) => {
-      //     this.roomManager.ioNspGame
-      //       .to(clientId)
-      //       .emit('syncGame', {
-      //         nanoSecDiff,
-
-      //         tankArr: Array.from(
-      //           this.stage.tankSet
-      //         ).filter((tank) => {
-      //           return OverlapTester.overlapRects(
-      //             rectVisibleArea,
-      //             tank.rectBound
-      //           );
-      //         }),
-      //         wallArr: Array.from(
-      //           this.stage.wallSet
-      //         ).filter((wall) => {
-      //           return OverlapTester.overlapRects(
-      //             rectVisibleArea,
-      //             wall.rectBound
-      //           );
-      //         }),
-      //         bulletArr: Array.from(
-      //           this.stage.bulletSet
-      //         ).filter((bullet) => {
-      //           return OverlapTester.overlapRects(
-      //             rectVisibleArea,
-      //             bullet.rectBound
-      //           );
-      //         }),
-      //         botArr: Array.from(this.stage.botSet).filter(
-      //           (bot) => {
-      //             return OverlapTester.overlapRects(
-      //               rectVisibleArea,
-      //               bot.rectBound
-      //             );
-      //           }
-      //         ),
-      //       });
-      //     // 個別送信
-      //   }
-      // );
 
       // //ルーム内のユーザーにデータを送信
       this.roomManager.ioNspGame

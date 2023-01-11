@@ -13,7 +13,7 @@ export class BotTank extends Tank {
     wallSet: Set<Wall>
   ) {
     // 親クラスのコンストラクタ呼び出し
-    super(0, '', '', userName, rectField, wallSet);
+    super(0, '', userName, rectField, wallSet);
     this.fSpeed = ServerConfig.BOTTANK_SPEED;
     this.objMovement['forward'] = true; // ひたすら前進。ものに当たったら、方向をランダムで変える。
   }
