@@ -1,20 +1,31 @@
 import RoomManager from '../../manager/roomManager';
-import { Npc } from '../model/npc';
-import { Obstacle } from '../model/obstacle';
-import { Player } from '../model/player';
+import { CommonConfig } from '../commonConfig';
+import { BotTank } from '../model/botTank';
+import { Bullet } from '../model/bullet';
+import { Tank } from '../model/tank';
+import { Wall } from '../model/wall';
+import { ServerConfig } from '../serverConfig';
+import { OverlapTester } from '../util/overlapTester';
 
 export class Stage {
-  // type = "normal"
+  // name = "normal"
   level: number;
   // background = ""
+  // backgroundSet;
+  // wallSet;
+  // abstacleSet;
+  // playerSet;
+  // npcSet;
   // stageFactory;
   roomId: string;
   roomManager: RoomManager;
-  playerSet = new Set<Player>();
-  playerId: number = 0;
-  obstacleSet = new Set<Obstacle>();
-  npcSet = new Set<Npc>();
-  npcId: number = 0;
+  tankSet = new Set<Tank>();
+  tankId: number = 0;
+  wallSet = new Set<Wall>(); // 壁リスト
+  bulletSet = new Set<Bullet>();
+  botSet = new Set<BotTank>();
+  botId: number = 0;
+  setNotPlayingSocketID = new Set<string>(); // プレイしていない通信のソケットIDリスト
 
   constructor(
     level: number,

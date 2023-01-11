@@ -1,6 +1,6 @@
 import { Position } from '../../types/position.type';
 import { OverlapTester } from '../util/overlapTester';
-import { Obstacle } from './obstacle';
+import { Wall } from './wall';
 
 export class GameObject {
   rectBound: { [key: string]: number } = {
@@ -50,8 +50,8 @@ export class GameObject {
     };
   }
 
-  // 障害物との干渉チェック
-  overlapObstacles(wallSet: Set<Obstacle>) {
+  // 壁との干渉チェック
+  overlapWalls(wallSet: Set<Wall>) {
     //全ての障害物をチェックし、１つでも重なっているものがあればtrueを返す
     return Array.from(wallSet).some((wall) =>
       OverlapTester.overlapRects(
