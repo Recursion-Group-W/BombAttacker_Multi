@@ -1,3 +1,4 @@
+import { RectBound } from '../../types/rectBound.type';
 import { CommonConfig } from '../commonConfig';
 import { ServerConfig } from '../serverConfig';
 import { OverlapTester } from '../util/overlapTester';
@@ -19,7 +20,7 @@ export class Tank extends GameObject {
     public id: number,
     public clientId: string,
     public userName: string,
-    rectField: any,
+    rectField: RectBound,
     wallSet: any
   ) {
     // 親クラスのコンストラクタ呼び出し
@@ -32,17 +33,17 @@ export class Tank extends GameObject {
     );
 
     // 初期位置
-    this.getPosition.x =
+    this.x =
       Math.random() *
       (CommonConfig.FIELD_WIDTH - CommonConfig.TANK_WIDTH);
-    this.getPosition.y =
+    this.y =
       Math.random() *
       (CommonConfig.FIELD_HEIGHT -
         CommonConfig.TANK_HEIGHT);
 
     // 障害物にぶつからない初期位置の算出
     do {
-      this.setPosition(
+      this.setPos(
         rectField.left +
           Math.random() *
             (rectField.right - rectField.left),
@@ -58,18 +59,18 @@ export class Tank extends GameObject {
   //               呼び出され側で領域を狭めのは、処理コストが無駄なので、呼び出す側で領域を狭めて渡す。
 
   // 更新
-  update(deltaTime: number, rectField: any, wallSet: Set<Wall>) {
-    const fX_old = this.getPosition.x; // 移動前座標値のバックアップ
-    const fY_old = this.getPosition.y; // 移動前座標値のバックアップ
+  update(deltaTime: number, rectField: RectBound, wallSet: Set<Wall>) {
+    const fX_old = this.x; // 移動前座標値のバックアップ
+    const fY_old = this.y; // 移動前座標値のバックアップ
     let bDrived = false; // 前後方向の動きがあったか
     // 動作に従って、タンクの状態を更新
     if (this.objMovement['forward']) {
       // 前進
       const fDistance = this.fSpeed * deltaTime;
       //console.log( 'forward' );
-      this.setPosition(
-        this.getPosition.x + fDistance * Math.cos(this.angle),
-        this.getPosition.y + fDistance * Math.sin(this.angle)
+      this.setPos(
+        this.x + fDistance * Math.cos(this.angle),
+        this.y + fDistance * Math.sin(this.angle)
       );
       bDrived = true;
     }
@@ -77,9 +78,9 @@ export class Tank extends GameObject {
       // 後進
       const fDistance = this.fSpeed * deltaTime;
       //console.log( 'back' );
-      this.setPosition(
-        this.getPosition.x - fDistance * Math.cos(this.angle),
-        this.getPosition.y - fDistance * Math.sin(this.angle)
+      this.setPos(
+        this.x - fDistance * Math.cos(this.angle),
+        this.y - fDistance * Math.sin(this.angle)
       );
       bDrived = true;
     }
@@ -88,8 +89,8 @@ export class Tank extends GameObject {
       let bCollision = false;
       if (
         !OverlapTester.pointInRect(rectField, {
-          x: this.getPosition.x,
-          y: this.getPosition.y,
+          x: this.x,
+          y: this.y,
         })
       ) {
         // フィールドの外に出た。
@@ -100,7 +101,7 @@ export class Tank extends GameObject {
       }
       if (bCollision) {
         // 衝突する場合は、移動できない。
-        this.setPosition(fX_old, fY_old);
+        this.setPos(fX_old, fY_old);
         bDrived = false; // 前後方向の動きはなし
       }
     }
@@ -167,9 +168,9 @@ export class Tank extends GameObject {
 
     // 新しい弾丸の生成（先端から出ているようにするために、幅の半分オフセットした位置に生成する）
     const x =
-      this.getPosition.x + this.width * 0.5 * Math.cos(this.angle);
+      this.x + this.width * 0.5 * Math.cos(this.angle);
     const y =
-      this.getPosition.y + this.width * 0.5 * Math.sin(this.angle);
+      this.y + this.width * 0.5 * Math.sin(this.angle);
     return new Bullet(x, y, this.angle, this);
   }
 
