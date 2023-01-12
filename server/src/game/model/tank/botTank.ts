@@ -1,7 +1,8 @@
-import { ServerConfig } from '../serverConfig';
+import { RectBound } from '../../../types/rectBound.type';
+import { ServerConfig } from '../../config/serverConfig';
 import { Bullet } from './bullet';
 import { Tank } from './tank';
-import { Wall } from './wall';
+import { TankObstacle } from './tankObstacle';
 
 // ボットタンククラス
 export class BotTank extends Tank {
@@ -9,11 +10,10 @@ export class BotTank extends Tank {
   constructor(
     public id: number,
     userName: string,
-    rectField: any,
-    wallSet: Set<Wall>
+    obstacleSet: Set<TankObstacle>
   ) {
     // 親クラスのコンストラクタ呼び出し
-    super(0, '', userName, rectField, wallSet);
+    super(0, '', userName, obstacleSet);
     this.fSpeed = ServerConfig.BOTTANK_SPEED;
     this.objMovement['forward'] = true; // ひたすら前進。ものに当たったら、方向をランダムで変える。
   }
@@ -24,15 +24,10 @@ export class BotTank extends Tank {
   //               呼び出され側で領域を狭めのは、処理コストが無駄なので、呼び出す側で領域を狭めて渡す。
   update(
     deltaTime: number,
-    rectField: any,
-    wallSet: Set<Wall>
+    obstacleSet: Set<TankObstacle>
   ) {
     // 親クラスの関数呼び出し
-    const bDrived = super.update(
-      deltaTime,
-      rectField,
-      wallSet
-    );
+    const bDrived = super.update(deltaTime, obstacleSet);
 
     if (!bDrived) {
       // 前進できなかった
@@ -54,9 +49,11 @@ export class BotTank extends Tank {
 
     // 新しい弾丸の生成（先端から出ているようにするために、幅の半分オフセットした位置に生成する）
     const x =
-      this.getPosition.x + this.width * 0.5 * Math.cos(this.angle);
+      this.getPosition.x +
+      this.getWidth * 0.5 * Math.cos(this.angle);
     const y =
-      this.getPosition.y + this.width * 0.5 * Math.sin(this.angle);
+      this.getPosition.y +
+      this.getWidth * 0.5 * Math.sin(this.angle);
     return new Bullet(x, y, this.angle, this);
   }
 }

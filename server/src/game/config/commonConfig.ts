@@ -10,20 +10,6 @@ export class CommonConfig {
   static get FIELD_HEIGHT() {
     return 1024.0;
   }
-  // static get FIELD_WIDTH() {
-  //   return 2048.0;
-  // }
-  // static get FIELD_HEIGHT() {
-  //   return 2048.0;
-  // }
-
-  // // キャンバスサイズ
-  // static get CANVAS_WIDTH() {
-  //   return 1000.0;
-  // }
-  // static get CANVAS_HEIGHT() {
-  //   return 1000.0;
-  // }
 
   // タンク
   static get TANK_WIDTH() {

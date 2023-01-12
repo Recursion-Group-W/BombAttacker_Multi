@@ -1,20 +1,32 @@
 import RoomManager from '../../manager/roomManager';
-import { Npc } from '../model/npc';
-import { Obstacle } from '../model/obstacle';
+import { CommonConfig } from '../config/commonConfig';
+import { BotTank } from '../model/tank/botTank';
+import { Bullet } from '../model/tank/bullet';
+import { Tank } from '../model/tank/tank';
+import { TankObstacle } from '../model/tank/tankObstacle';
+import { ServerConfig } from '../config/serverConfig';
+import { OverlapTester } from '../util/overlapTester';
 import { Player } from '../model/player';
+import { Obstacle } from '../model/obstacle';
+import { Movement } from '../../types/movement.type';
 
 export class Stage {
-  // type = "normal"
+  // name = "normal"
   level: number;
   // background = ""
+  // backgroundSet;
+  // obstacleSet;
+  obstacleSet = new Set<Obstacle>();
+  playerSet = new Set<Player>(); //とりあえずSetを使う。あとでDequeを使って修正したい。
+  // npcSet;
   // stageFactory;
   roomId: string;
   roomManager: RoomManager;
-  playerSet = new Set<Player>();
-  playerId: number = 0;
-  obstacleSet = new Set<Obstacle>();
-  npcSet = new Set<Npc>();
-  npcId: number = 0;
+  tankSet = new Set<Tank>();
+  tankobstacleSet = new Set<TankObstacle>();
+  bulletSet = new Set<Bullet>();
+  botSet = new Set<BotTank>();
+  botId: number = 0;
 
   constructor(
     level: number,
@@ -25,25 +37,59 @@ export class Stage {
     this.roomId = roomId;
     this.roomManager = roomManager;
 
-    // 壁の生成
-    for (let i = 0; i < ServerConfig.WALL_COUNT; i++) {
-      // ランダム座標値の作成
-      const fX_left =
-        Math.random() *
-        (CommonConfig.FIELD_WIDTH -
-          CommonConfig.WALL_WIDTH);
-      const fY_bottom =
-        Math.random() *
-        (CommonConfig.FIELD_HEIGHT -
-          CommonConfig.WALL_HEIGHT);
-      // 壁生成l
-      const wall = new Wall(
-        fX_left + CommonConfig.WALL_WIDTH * 0.5,
-        fY_bottom + CommonConfig.WALL_HEIGHT * 0.5
-      );
-      // 壁リストへの登録
-      this.wallSet.add(wall);
+    //障害物の生成
+    const TILE_SIZE = 32;
+    const scale = 1.25;
+    const extra = Math.floor(
+      (CommonConfig.FIELD_WIDTH % (TILE_SIZE * scale)) / 2
+    );
+    for (
+      let i = 1;
+      i <
+      Math.floor(
+        CommonConfig.FIELD_WIDTH / TILE_SIZE / scale
+      ) -
+        1;
+      i = i + 2
+    ) {
+      for (
+        let j = 1;
+        j <
+        Math.floor(
+          CommonConfig.FIELD_HEIGHT / TILE_SIZE / scale
+        ) -
+          1;
+        j = j + 2
+      ) {
+        const x =
+          i * TILE_SIZE * scale + TILE_SIZE * 0.5 + extra;
+        const y =
+          j * TILE_SIZE * scale + TILE_SIZE * 0.5 + extra;
+        const obstacle = new Obstacle(x, y);
+        this.obstacleSet.add(obstacle);
+      }
     }
+    // console.log('obstacle: ', this.obstacleSet);
+
+    // 壁の生成
+    // for (let i = 0; i < ServerConfig.WALL_COUNT; i++) {
+    //   // ランダム座標値の作成
+    //   const fX_left =
+    //     Math.random() *
+    //     (CommonConfig.FIELD_WIDTH -
+    //       CommonConfig.WALL_WIDTH);
+    //   const fY_bottom =
+    //     Math.random() *
+    //     (CommonConfig.FIELD_HEIGHT -
+    //       CommonConfig.WALL_HEIGHT);
+    //   // 壁生成l
+    //   const wall = new TankObstacle(
+    //     fX_left + CommonConfig.WALL_WIDTH * 0.5,
+    //     fY_bottom + CommonConfig.WALL_HEIGHT * 0.5
+    //   );
+    //   // 壁リストへの登録
+    //   this.tankobstacleSet.add(wall);
+    // }
 
     // ボットの生成
     for (let i = 0; i < ServerConfig.BOTTANK_COUNT; i++) {
@@ -65,50 +111,43 @@ export class Stage {
 
   // オブジェクトの座標値の更新
   updateObjects(deltaTime: number) {
-    // タンクの可動域
-    const rectTankField = {
-      left: 0 + CommonConfig.TANK_WIDTH * 0.5,
-      bottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
-      right:
-        CommonConfig.FIELD_WIDTH -
-        CommonConfig.TANK_WIDTH * 0.5,
-      top:
-        CommonConfig.FIELD_HEIGHT -
-        CommonConfig.TANK_HEIGHT * 0.5,
-    };
-
+    //プレイヤーごとの処理
+    this.playerSet.forEach((player) => {
+      player.update(deltaTime, this.obstacleSet);
+    });
     // タンクごとの処理
     this.tankSet.forEach((tank) => {
-      tank.update(deltaTime, rectTankField, this.wallSet);
+      tank.update(deltaTime, this.tankobstacleSet);
     });
 
     //ボットごとの処理
     this.botSet.forEach((bot) => {
-      bot.update(deltaTime, rectTankField, this.wallSet);
+      bot.update(deltaTime, this.tankobstacleSet);
     });
-
-    // 弾丸の可動域
-    const rectBulletField = {
-      left: 0 + CommonConfig.BULLET_WIDTH * 0.5,
-      bottom: 0 + CommonConfig.BULLET_HEIGHT * 0.5,
-      right:
-        CommonConfig.FIELD_WIDTH -
-        CommonConfig.BULLET_WIDTH * 0.5,
-      top:
-        CommonConfig.FIELD_HEIGHT -
-        CommonConfig.BULLET_HEIGHT * 0.5,
-    };
 
     // 弾丸ごとの処理
     this.bulletSet.forEach((bullet) => {
       const bDisappear = bullet.update(
         deltaTime,
-        rectBulletField,
-        this.wallSet
+        this.tankobstacleSet
       );
       if (bDisappear) {
         // 消失
         this.destroyBullet(bullet);
+      }
+    });
+  }
+
+  //clientIdが一致するプレイヤーに動作(movement)をセットする
+  movePlayer(clientId: string, movement: Movement) {
+    this.playerSet.forEach((player) => {
+      console.log(
+        `player.clientId === clientId : ${
+          player.clientId === clientId
+        }`
+      );
+      if (player.clientId && player.clientId === clientId) {
+        player.setMovement(movement);
       }
     });
   }
@@ -125,38 +164,44 @@ export class Stage {
     });
   }
 
-  newTankId() {
-    return this.tankId++;
-  }
   newBotTankId() {
     this.botId++;
     return this.botId;
   }
 
-  // タンクの生成
-  createTank(clientId: string, userName: string) {
-    // ゲーム開始。プレイしていない通信のソケットIDリストから削除
-    // this.setNotPlayingSocketID.delete(clientId);
-
-    // タンクの可動域
-    const rectTankField = {
-      left: 0 + CommonConfig.TANK_WIDTH * 0.5,
-      bottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
-      right:
-        CommonConfig.FIELD_WIDTH -
-        CommonConfig.TANK_WIDTH * 0.5,
-      top:
-        CommonConfig.FIELD_HEIGHT -
-        CommonConfig.TANK_HEIGHT * 0.5,
-    };
-
-    // タンクの生成
-    const tank = new Tank(
-      this.newTankId(),
+  //プレイヤーの作成
+  createPlayer(clientId: string, userName: string) {
+    const playerArr = Array.from(this.playerSet);
+    const id =
+      playerArr.length === 0
+        ? 0
+        : playerArr[playerArr.length - 1].id + 1;
+    const player = new Player(
+      id,
       clientId,
       userName,
-      rectTankField,
-      this.wallSet
+      this.obstacleSet
+    );
+    console.log('プレイヤーが作成されました。');
+
+    this.playerSet.add(player);
+
+    return player;
+  }
+
+  // タンクの生成
+  createTank(clientId: string, userName: string) {
+    const tankArr = Array.from(this.tankSet);
+    const id =
+      tankArr.length === 0
+        ? 0
+        : tankArr[tankArr.length - 1].id + 1;
+    // タンクの生成
+    const tank = new Tank(
+      id,
+      clientId,
+      userName,
+      this.tankobstacleSet
     );
     console.log('tankが作成されました', tank);
 
@@ -168,28 +213,30 @@ export class Stage {
 
   // ボットタンクの生成
   createBotTank(userName: string) {
-    // タンクの可動域
-    const rectTankField = {
-      left: 0 + CommonConfig.TANK_WIDTH * 0.5,
-      bottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
-      right:
-        CommonConfig.FIELD_WIDTH -
-        CommonConfig.TANK_WIDTH * 0.5,
-      top:
-        CommonConfig.FIELD_HEIGHT -
-        CommonConfig.TANK_HEIGHT * 0.5,
-    };
-
     // ボットタンクの生成
     const bot = new BotTank(
       this.newBotTankId(),
       userName,
-      rectTankField,
-      this.wallSet
+      this.tankobstacleSet
     );
 
     // タンクリストへの登録
     this.botSet.add(bot);
+  }
+
+  //プレイヤーの破棄
+  destroyPlayer(clientId: string) {
+    this.playerSet.forEach((player) => {
+      if (player.clientId === clientId) {
+        //プレイヤーリストから削除
+        this.playerSet.delete(player);
+
+        //削除したプレイヤーのクライアントに"dead"イベントを送信
+        this.roomManager.ioNspGame
+          .to(player.clientId)
+          .emit('dead');
+      }
+    });
   }
 
   // タンクの破棄
@@ -198,9 +245,6 @@ export class Stage {
       if (tank.clientId === clientId) {
         // タンクリストリストからの削除
         this.tankSet.delete(tank);
-
-        // ゲーム開始前に戻るので、プレイしていない通信のソケットIDリストに追加
-        // this.setNotPlayingSocketID.add(tank.clientId);
 
         // 削除タンクのクライアントにイベント'dead'を送信
         this.roomManager.ioNspGame

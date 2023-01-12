@@ -30,6 +30,13 @@ export class CommonConfig {
   //   return 1000.0;
   // }
 
+  // プレイヤー
+  static get PLAYER_WIDTH() {
+    return 32.0;
+  }
+  static get PLAYER_HEIGHT() {
+    return 32.0;
+  }
   // タンク
   static get TANK_WIDTH() {
     return 80.0;

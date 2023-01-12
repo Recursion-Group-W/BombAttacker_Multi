@@ -1,7 +1,7 @@
-import { CommonConfig } from '../commonConfig';
-import { GameObject } from './gameObject';
+import { CommonConfig } from '../../config/commonConfig';
+import { TankGameObject } from './tankgameObject';
 
-export class Wall extends GameObject {
+export class TankObstacle extends TankGameObject {
   // コンストラクタ
   constructor(x: number, y: number) {
     super(

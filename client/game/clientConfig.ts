@@ -4,8 +4,8 @@ export class ClientConfig {
   };
 
   // 背景タイルのサイズ
-  static FIELDTILE_WIDTH = 512;
-  static FIELDTILE_HEIGHT = 512;
+  static FIELDTILE_WIDTH = 1024;
+  static FIELDTILE_HEIGHT = 1024;
 
   // フィールド
   static FIELD_LINECOLOR = 'blue';

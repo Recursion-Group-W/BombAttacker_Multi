@@ -1,5 +1,5 @@
 import RoomManager from '../manager/roomManager';
-import { ServerConfig } from './serverConfig';
+import { ServerConfig } from './config/serverConfig';
 import { Stage } from './stage/stage';
 
 export class Game {
@@ -8,10 +8,15 @@ export class Game {
   roomManager: RoomManager;
   stage: Stage;
 
-  constructor(roomId: string, roomManager: RoomManager) {
+  constructor(
+    roomId: string,
+    roomManager: RoomManager,
+    stage: Stage
+  ) {
     this.roomId = roomId;
     this.roomManager = roomManager;
-    this.stage = new Stage(1, roomId, roomManager);
+    this.stage = stage;
+    // this.stage = new Stage(1, roomId, roomManager);
 
     this.update();
   }
@@ -40,11 +45,37 @@ export class Game {
         .in(this.roomId)
         .emit('syncGame', {
           nanoSecDiff,
+          playerArr: Array.from(this.stage.playerSet),
+          obstacleArr: Array.from(this.stage.obstacleSet),
           tankArr: Array.from(this.stage.tankSet),
-          wallArr: Array.from(this.stage.wallSet),
+          tankObstacleArr: Array.from(
+            this.stage.tankobstacleSet
+          ),
           bulletArr: Array.from(this.stage.bulletSet),
           botArr: Array.from(this.stage.botSet),
         });
     }, 1000 / ServerConfig.FRAMERATE); // 単位は[ms]。1000[ms] / FRAMERATE[回]
   }
+
+  getInitialState() {
+    return {
+      playerArr: Array.from(this.stage.playerSet),
+      obstacleArr: Array.from(this.stage.obstacleSet),
+    };
+  }
+
+  // // //ルーム内のユーザーにデータを送信
+  // this.roomManager.ioNspGame
+  // .in(this.roomId)
+  // .emit('syncGame', {
+  //   nanoSecDiff,
+  //   playerArr: Array.from(this.stage.playerSet),
+  //   obstacleArr: Array.from(this.stage.obstacleSet),
+  //   tankArr: Array.from(this.stage.tankSet),
+  //   tankObstacleArr: Array.from(
+  //     this.stage.tankobstacleSet
+  //   ),
+  //   bulletArr: Array.from(this.stage.bulletSet),
+  //   botArr: Array.from(this.stage.botSet),
+  // });
 }

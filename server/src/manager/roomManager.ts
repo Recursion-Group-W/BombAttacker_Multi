@@ -1,10 +1,9 @@
 import { Namespace } from 'socket.io';
 
 import { v4 as uuidv4 } from 'uuid';
-import { createGame } from '../tankGame/createGame';
-import { Game } from '../tankGame/game';
-import { ServerConfig } from '../tankGame/serverConfig';
-import { RoomMap, Users } from '../types/multiGame.type';
+import { ServerConfig } from '../game/config/serverConfig';
+import { RoomMap } from '../types/room.type';
+import { Users } from '../types/user.type';
 import { GameManager } from './gameManager';
 
 export default class RoomManager {
@@ -37,9 +36,10 @@ export default class RoomManager {
     let stage =
       this.roomMap[socket.roomId].gameManager.game.stage;
 
-    // createPlayer()
+    // プレイヤーを作成
+    stage.createPlayer(socket.clientId, userName);
     //タンクを作成
-    stage.createTank(socket.clientId, userName);
+    // stage.createTank(socket.clientId, userName);
   }
 
   // socketを使ってユーザを入室させる
@@ -69,8 +69,7 @@ export default class RoomManager {
     );
 
     //ゲームを作成し、gameManagerにゲームを登録
-    let game: Game = createGame(roomId, this);
-    let gameManager = new GameManager(game);
+    let gameManager = new GameManager(roomId, this);
 
     this.roomMap[roomId] = {
       roomId: roomId,
@@ -117,7 +116,8 @@ export default class RoomManager {
       this.roomMap[socket.roomId].gameManager.game.stage;
 
     //ステージからプレイヤーを削除
-    stage.destroyTank(socket.clientId);
+    // stage.destroyTank(socket.clientId);
+    stage.destroyPlayer(socket.clientId);
   }
 
   //roomとroomMapからクライアントを削除
