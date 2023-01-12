@@ -15,14 +15,12 @@ export class Stage {
   // backgroundSet;
   // obstacleSet;
   // abstacleSet;
-  playerSet = new Set<Player>();
-  playerId: number = 0;
+  playerSet = new Set<Player>(); //とりあえずSetを使う。あとでDequeを使って修正したい。
   // npcSet;
   // stageFactory;
   roomId: string;
   roomManager: RoomManager;
   tankSet = new Set<Tank>();
-  tankId: number = 0;
   obstacleSet = new Set<TankObstacle>(); // 壁リスト
   bulletSet = new Set<Bullet>();
   botSet = new Set<BotTank>();
@@ -145,9 +143,6 @@ export class Stage {
     });
   }
 
-  newTankId() {
-    return this.tankId++;
-  }
   newBotTankId() {
     this.botId++;
     return this.botId;
@@ -155,9 +150,14 @@ export class Stage {
 
   // タンクの生成
   createTank(clientId: string, userName: string) {
+    const tankArr = Array.from(this.tankSet);
+    const id =
+      tankArr.length === 0
+        ? 0
+        : tankArr[tankArr.length - 1].id + 1;
     // タンクの生成
     const tank = new Tank(
-      this.newTankId(),
+      id,
       clientId,
       userName,
       this.obstacleSet
