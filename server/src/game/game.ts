@@ -8,10 +8,11 @@ export class Game {
   roomManager: RoomManager;
   stage: Stage;
 
-  constructor(roomId: string, roomManager: RoomManager) {
+  constructor(roomId: string, roomManager: RoomManager,stage: Stage) {
     this.roomId = roomId;
     this.roomManager = roomManager;
-    this.stage = new Stage(1, roomId, roomManager);
+    this.stage = stage;
+    // this.stage = new Stage(1, roomId, roomManager);
 
     this.update();
   }
@@ -41,7 +42,7 @@ export class Game {
         .emit('syncGame', {
           nanoSecDiff,
           tankArr: Array.from(this.stage.tankSet),
-          obstacleArr: Array.from(this.stage.obstacleSet),
+          obstacleArr: Array.from(this.stage.tankobstacleSet),
           bulletArr: Array.from(this.stage.bulletSet),
           botArr: Array.from(this.stage.botSet),
         });

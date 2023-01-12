@@ -33,7 +33,6 @@ export class Player extends Character {
   // 更新
   update(
     deltaTime: number,
-    rectField: RectBound,
     obstacleSet: Set<Obstacle>
   ) {
     // 移動前座標値のバックアップ
@@ -66,7 +65,7 @@ export class Player extends Character {
     //衝突判定
     let collision = false;
     if (
-      !OverlapTester.pointInRect(rectField, {
+      !OverlapTester.pointInRect(this.rectField, {
         x: this.getPosition.x,
         y: this.getPosition.y,
       })

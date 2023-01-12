@@ -4,11 +4,19 @@ import { ServerConfig } from '../../config/serverConfig';
 import { OverlapTester } from '../../util/overlapTester';
 import { TankGameObject } from './tankgameObject';
 import { Tank } from './tank';
+import { ObjectUtil } from '../../util/object.util';
 
 // 弾丸クラス
 export class Bullet extends TankGameObject {
+  static WIDTH = 15;
+  static HEIGHT = 15;
   fSpeed = ServerConfig.BULLET_SPEED;
   fLifeTime = ServerConfig.BULLET_LIFETIME_MAX;
+
+  rectField = ObjectUtil.calRectField(
+    Bullet.WIDTH,
+    Bullet.HEIGHT
+  );
 
   constructor(
     x: number,
@@ -17,13 +25,7 @@ export class Bullet extends TankGameObject {
     public tank: Tank
   ) {
     // 親クラスのコンストラクタ呼び出し
-    super(
-      CommonConfig.BULLET_WIDTH,
-      CommonConfig.BULLET_HEIGHT,
-      x,
-      y,
-      angle
-    );
+    super(Bullet.WIDTH, Bullet.HEIGHT, x, y, angle);
   }
 
   // 更新
@@ -32,7 +34,6 @@ export class Bullet extends TankGameObject {
   //               呼び出され側で領域を狭めのは、処理コストが無駄なので、呼び出す側で領域を狭めて渡す。
   update(
     deltaTime: number,
-    rectField: RectBound,
     obstacleSet: any
   ) {
     this.fLifeTime -= deltaTime;
@@ -51,7 +52,7 @@ export class Bullet extends TankGameObject {
     // 不可侵領域との衝突のチェック
     let bCollision = false;
     if (
-      !OverlapTester.pointInRect(rectField, {
+      !OverlapTester.pointInRect(this.rectField, {
         x: this.getPosition.x,
         y: this.getPosition.y,
       })

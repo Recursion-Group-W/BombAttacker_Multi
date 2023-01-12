@@ -1,8 +1,6 @@
 import { Namespace } from 'socket.io';
 
 import { v4 as uuidv4 } from 'uuid';
-import { createGame } from '../game/createGame';
-import { Game } from '../game/game';
 import { ServerConfig } from '../game/config/serverConfig';
 import { RoomMap } from '../types/room.type';
 import { Users } from '../types/user.type';
@@ -70,8 +68,7 @@ export default class RoomManager {
     );
 
     //ゲームを作成し、gameManagerにゲームを登録
-    let game: Game = createGame(roomId, this);
-    let gameManager = new GameManager(game);
+    let gameManager = new GameManager(roomId, this);
 
     this.roomMap[roomId] = {
       roomId: roomId,

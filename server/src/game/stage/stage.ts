@@ -7,6 +7,7 @@ import { TankObstacle } from '../model/tank/tankObstacle';
 import { ServerConfig } from '../config/serverConfig';
 import { OverlapTester } from '../util/overlapTester';
 import { Player } from '../model/player';
+import { Obstacle } from '../model/obstacle';
 
 export class Stage {
   // name = "normal"
@@ -14,14 +15,14 @@ export class Stage {
   // background = ""
   // backgroundSet;
   // obstacleSet;
-  // abstacleSet;
+  obstacleSet = new Set<Obstacle>();
   playerSet = new Set<Player>(); //とりあえずSetを使う。あとでDequeを使って修正したい。
   // npcSet;
   // stageFactory;
   roomId: string;
   roomManager: RoomManager;
   tankSet = new Set<Tank>();
-  obstacleSet = new Set<TankObstacle>(); // 壁リスト
+  tankobstacleSet = new Set<TankObstacle>(); // 壁リスト
   bulletSet = new Set<Bullet>();
   botSet = new Set<BotTank>();
   botId: number = 0;
@@ -52,7 +53,7 @@ export class Stage {
         fY_bottom + CommonConfig.WALL_HEIGHT * 0.5
       );
       // 壁リストへの登録
-      this.obstacleSet.add(wall);
+      this.tankobstacleSet.add(wall);
     }
 
     // ボットの生成
@@ -75,54 +76,24 @@ export class Stage {
 
   // オブジェクトの座標値の更新
   updateObjects(deltaTime: number) {
-    // タンクの可動域
-    const rectTankField = {
-      left: 0 + CommonConfig.TANK_WIDTH * 0.5,
-      bottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
-      right:
-        CommonConfig.FIELD_WIDTH -
-        CommonConfig.TANK_WIDTH * 0.5,
-      top:
-        CommonConfig.FIELD_HEIGHT -
-        CommonConfig.TANK_HEIGHT * 0.5,
-    };
-
+    this.playerSet.forEach((player) => {
+      player.update(deltaTime, this.obstacleSet);
+    });
     // タンクごとの処理
     this.tankSet.forEach((tank) => {
-      tank.update(
-        deltaTime,
-        rectTankField,
-        this.obstacleSet
-      );
+      tank.update(deltaTime, this.tankobstacleSet);
     });
 
     //ボットごとの処理
     this.botSet.forEach((bot) => {
-      bot.update(
-        deltaTime,
-        rectTankField,
-        this.obstacleSet
-      );
+      bot.update(deltaTime, this.tankobstacleSet);
     });
-
-    // 弾丸の可動域
-    const rectBulletField = {
-      left: 0 + CommonConfig.BULLET_WIDTH * 0.5,
-      bottom: 0 + CommonConfig.BULLET_HEIGHT * 0.5,
-      right:
-        CommonConfig.FIELD_WIDTH -
-        CommonConfig.BULLET_WIDTH * 0.5,
-      top:
-        CommonConfig.FIELD_HEIGHT -
-        CommonConfig.BULLET_HEIGHT * 0.5,
-    };
 
     // 弾丸ごとの処理
     this.bulletSet.forEach((bullet) => {
       const bDisappear = bullet.update(
         deltaTime,
-        rectBulletField,
-        this.obstacleSet
+        this.tankobstacleSet
       );
       if (bDisappear) {
         // 消失
@@ -160,7 +131,7 @@ export class Stage {
       id,
       clientId,
       userName,
-      this.obstacleSet
+      this.tankobstacleSet
     );
     console.log('tankが作成されました', tank);
 
@@ -176,7 +147,7 @@ export class Stage {
     const bot = new BotTank(
       this.newBotTankId(),
       userName,
-      this.obstacleSet
+      this.tankobstacleSet
     );
 
     // タンクリストへの登録

@@ -73,7 +73,6 @@ export class Tank extends TankGameObject {
   // 更新
   update(
     deltaTime: number,
-    rectField: RectBound,
     obstacleSet: Set<TankObstacle>
   ) {
     const fX_old = this.getPosition.x; // 移動前座標値のバックアップ
@@ -106,7 +105,7 @@ export class Tank extends TankGameObject {
       // 動きがある場合は、不可侵領域との衝突のチェック
       let bCollision = false;
       if (
-        !OverlapTester.pointInRect(rectField, {
+        !OverlapTester.pointInRect(this.rectField, {
           x: this.getPosition.x,
           y: this.getPosition.y,
         })

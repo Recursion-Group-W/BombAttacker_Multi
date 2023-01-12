@@ -24,15 +24,10 @@ export class BotTank extends Tank {
   //               呼び出され側で領域を狭めのは、処理コストが無駄なので、呼び出す側で領域を狭めて渡す。
   update(
     deltaTime: number,
-    rectField: any,
     obstacleSet: Set<TankObstacle>
   ) {
     // 親クラスの関数呼び出し
-    const bDrived = super.update(
-      deltaTime,
-      rectField,
-      obstacleSet
-    );
+    const bDrived = super.update(deltaTime, obstacleSet);
 
     if (!bDrived) {
       // 前進できなかった
@@ -54,9 +49,11 @@ export class BotTank extends Tank {
 
     // 新しい弾丸の生成（先端から出ているようにするために、幅の半分オフセットした位置に生成する）
     const x =
-      this.getPosition.x + this.getWidth * 0.5 * Math.cos(this.angle);
+      this.getPosition.x +
+      this.getWidth * 0.5 * Math.cos(this.angle);
     const y =
-      this.getPosition.y + this.getWidth * 0.5 * Math.sin(this.angle);
+      this.getPosition.y +
+      this.getWidth * 0.5 * Math.sin(this.angle);
     return new Bullet(x, y, this.angle, this);
   }
 }
