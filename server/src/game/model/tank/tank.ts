@@ -1,4 +1,3 @@
-import { RectBound } from '../../../types/rectBound.type';
 import { CommonConfig } from '../../config/commonConfig';
 import { ServerConfig } from '../../config/serverConfig';
 import { ObjectUtil } from '../../util/object.util';

@@ -26,42 +26,54 @@ export default class IoGame {
       );
 
       // //クライアントから、ゲームの初期状態をリクエストされる
-      // socket.on('getInitialState', () => {
-      //   //作成されたゲームオブジェクトをjsonに変換する処理
+      socket.on('getInitialState', () => {
+        //作成されたゲームオブジェクトをjsonに変換する処理
 
-      //   //クライアントに送るデータを準備
-      //   let payload = {
-      //     time: this.time,
-      //     roomId: 0,
-      //     objects: null, // ゲームオブジェクト(Arcadeオブジェクトをjsonに変換したもの)
-      //     connectCounter: 0, //入室しているクライアントの人数
-      //   };
-      //   //クライアントにゲームのデータを送信
-      //   socket.emit('SyncGame', payload);
-      // });
-
-      // socket.on('movePlayer', (movement: any) => {
-      //   const playerSet =
-      //     this.roomManager.roomMap[socket.roomId]
-      //       .gameManager.game.stage.playerSet;
-
-      //   let foundPlayer = null;
-      //   playerSet.forEach((player) => {
-      //     if (player.clientId === socket.clientId) {
-      //       foundPlayer = player;
-      //       if (foundPlayer.iLife === 0) return;
-      //     }
+        //クライアントに送るデータを準備
+        let payload =
+          this.roomManager.roomMap[
+            socket.roomId
+          ].gameManager.game.getInitialState();
+        //クライアントにゲームのデータを送信
+        socket.emit('SyncGame', payload);
+      });
+      // // //ルーム内のユーザーにデータを送信
+      // this.roomManager.ioNspGame
+      //   .in(this.roomId)
+      //   .emit('syncGame', {
+      //     nanoSecDiff,
+      //     playerArr: Array.from(this.stage.playerSet),
+      //     obstacleArr: Array.from(this.stage.obstacleSet),
+      //     tankArr: Array.from(this.stage.tankSet),
+      //     tankObstacleArr: Array.from(
+      //       this.stage.tankobstacleSet
+      //     ),
+      //     bulletArr: Array.from(this.stage.bulletSet),
+      //     botArr: Array.from(this.stage.botSet),
       //   });
-      //   if (!foundPlayer) return;
 
-      //   // console.log(movement);
-      //   this.roomManager.roomMap[
-      //     socket.roomId
-      //   ].gameManager.game.stage.moveTank(
-      //     socket.clientId,
-      //     movement
-      //   );
-      // });
+      socket.on('movePlayer', (movement: any) => {
+        const playerSet =
+          this.roomManager.roomMap[socket.roomId]
+            .gameManager.game.stage.playerSet;
+
+        let foundPlayer = null;
+        playerSet.forEach((player) => {
+          if (player.clientId === socket.clientId) {
+            foundPlayer = player;
+            if (foundPlayer.getLife === 0) return;
+          }
+        });
+        if (!foundPlayer) return;
+
+        console.log(movement);
+        this.roomManager.roomMap[
+          socket.roomId
+        ].gameManager.game.stage.movePlayer(
+          socket.clientId,
+          movement
+        );
+      });
 
       socket.on('moveTank', (objMovement: any) => {
         const tankSet =

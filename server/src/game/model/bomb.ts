@@ -13,7 +13,7 @@ export class Bomb extends GameObject {
     private player: Player
   ) {
     // 親クラスのコンストラクタ呼び出し
-    super(Bomb.WIDTH, Bomb.HEIGHT, x, y);
+    super(x, y,Bomb.WIDTH, Bomb.HEIGHT);
   }
 
   update(deltaTime: number) {

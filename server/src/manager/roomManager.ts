@@ -36,9 +36,10 @@ export default class RoomManager {
     let stage =
       this.roomMap[socket.roomId].gameManager.game.stage;
 
-    // createPlayer()
+    // プレイヤーを作成
+    stage.createPlayer(socket.clientId, userName);
     //タンクを作成
-    stage.createTank(socket.clientId, userName);
+    // stage.createTank(socket.clientId, userName);
   }
 
   // socketを使ってユーザを入室させる
@@ -115,7 +116,8 @@ export default class RoomManager {
       this.roomMap[socket.roomId].gameManager.game.stage;
 
     //ステージからプレイヤーを削除
-    stage.destroyTank(socket.clientId);
+    // stage.destroyTank(socket.clientId);
+    stage.destroyPlayer(socket.clientId);
   }
 
   //roomとroomMapからクライアントを削除

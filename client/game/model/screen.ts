@@ -12,6 +12,9 @@ export class Screen {
   bulletArr = Array<any>();
   botArr = Array<any>();
 
+  playerArr = Array<any>();
+  obstacleArr = Array<any>();
+
   // 描画中心座標値
   centerX = CommonConfig.FIELD_WIDTH * 0.5;
   centerY = CommonConfig.FIELD_HEIGHT * 0.5;
@@ -44,14 +47,18 @@ export class Screen {
       'syncGame',
       (res: {
         nanoSecDiff: number;
-        tankArr: any[];
+        playerArr: any[];
         obstacleArr: any[];
+        tankArr: any[];
+        tankObstacleArr: any[];
         bulletArr: any[];
         botArr: any[];
       }) => {
         this.iProcessingTimeNanoSec = res.nanoSecDiff;
+        this.playerArr = res.playerArr;
+        this.obstacleArr = res.obstacleArr;
         this.tankArr = res.tankArr;
-        this.wallArr = res.obstacleArr;
+        this.wallArr = res.tankObstacleArr;
         this.bulletArr = res.bulletArr;
         this.botArr = res.botArr;
       }
@@ -74,6 +81,15 @@ export class Screen {
   // 描画。animateから無限に呼び出される
   render(currTime: number) {
     if (!this.context) return;
+
+    let myPlayer = null;
+    if (this.playerArr.length !== 0) {
+      this.playerArr.forEach((player) => {
+        if (player.clientId === this.socket.clientId) {
+          myPlayer = player;
+        }
+      });
+    }
 
     let myTank = null;
     if (this.tankArr.length !== 0) {
@@ -113,6 +129,16 @@ export class Screen {
     // キャンバスの塗りつぶし
     this.renderField();
 
+    // this.renderWalls();
+
+    if (this.playerArr.length !== 0) {
+      const currTimeSec = currTime * 0.001; // currTimeは、ミリ秒。秒に変換。
+      const frameIndex = Math.round(currTimeSec / 0.2) % 3; // フレーム番号
+      this.playerArr.forEach((player) => {
+        this.renderPlayer(player, frameIndex);
+      });
+    }
+
     // タンクの描画
     if (this.tankArr.length !== 0) {
       const currTimeSec = currTime * 0.001; // iTimeCurrentは、ミリ秒。秒に変換。
@@ -128,6 +154,15 @@ export class Screen {
       const frameIndex = Math.round(currTimeSec / 0.2) % 2; // フレーム番号
       this.botArr.forEach((bot) => {
         this.renderTank(bot, frameIndex);
+      });
+    }
+
+    //障害物の描画
+    if (this.obstacleArr.length !== 0) {
+      let i = 0;
+      this.obstacleArr.forEach((obstacle) => {
+        this.renderObstacle(obstacle, i % 2);
+        i++;
       });
     }
 
@@ -149,18 +184,29 @@ export class Screen {
     // this.context.restore();
 
     // キャンバスの枠の描画
-    this.context.save();
-    this.context.strokeStyle = ClientConfig.FIELD_LINECOLOR;
-    this.context.lineWidth = ClientConfig.FIELD_LINEWIDTH;
-    this.context.strokeRect(
-      0,
-      0,
-      this.canvas.width,
-      this.canvas.height
-    );
-    this.context.restore();
+    // this.context.save();
+    // this.context.strokeStyle = ClientConfig.FIELD_LINECOLOR;
+    // this.context.lineWidth = ClientConfig.FIELD_LINEWIDTH;
+    // this.context.strokeRect(
+    //   0,
+    //   0,
+    //   this.canvas.width,
+    //   this.canvas.height
+    // );
+    // this.context.restore();
 
-    // console.log('mytank: ', myTank);
+    if (myPlayer) {
+      this.context.save();
+      this.context.font = ClientConfig.SCORE_FONT;
+      this.context.fillStyle = ClientConfig.SCORE_COLOR;
+      this.context.fillText(
+        'Score : ' + myPlayer.score,
+        20,
+        40
+      );
+      this.context.restore();
+    }
+
     // 画面左上に得点表示
     if (myTank) {
       this.context.save();
@@ -175,17 +221,17 @@ export class Screen {
     }
 
     // 画面右上にサーバー処理時間表示
-    this.context.save();
-    this.context.font = ClientConfig.PROCESSINGTIME_FONT;
-    this.context.fillStyle =
-      ClientConfig.PROCESSINGTIME_COLOR;
-    this.context.fillText(
-      (this.iProcessingTimeNanoSec * 1e-9).toFixed(9) +
-        ' [s]',
-      this.canvas.width - 30 * 10,
-      40
-    );
-    this.context.restore();
+    // this.context.save();
+    // this.context.font = ClientConfig.PROCESSINGTIME_FONT;
+    // this.context.fillStyle =
+    //   ClientConfig.PROCESSINGTIME_COLOR;
+    // this.context.fillText(
+    //   (this.iProcessingTimeNanoSec * 1e-9).toFixed(9) +
+    //     ' [s]',
+    //   this.canvas.width - 30 * 10,
+    //   40
+    // );
+    // this.context.restore();
   }
 
   renderField() {
@@ -215,6 +261,72 @@ export class Screen {
         ); // 描画先領域の大きさ
       }
     }
+
+    this.context.restore();
+  }
+
+  renderPlayer(player: any, frameIndex: number) {
+    if (!this.context) return;
+
+    this.context.save();
+
+    // タンクの座標値に移動
+    this.context.translate(player.x, player.y);
+
+    // 画像描画
+    this.context.save();
+    this.context.drawImage(
+      this.assets.imagePlayer,
+      this.assets.rectPlayerImage[frameIndex].sx,
+      this.assets.rectPlayerImage[frameIndex].sy, // 描画元画像の右上座標
+      this.assets.rectPlayerImage[frameIndex].sw,
+      this.assets.rectPlayerImage[frameIndex].sh, // 描画元画像の大きさ
+      -CommonConfig.PLAYER_WIDTH * 0.5, // 画像先領域の右上座標（領域中心が、原点になるように指定する）
+      -CommonConfig.PLAYER_HEIGHT * 0.5, // 画像先領域の右上座標（領域中心が、原点になるように指定する）
+      CommonConfig.PLAYER_WIDTH, // 描画先領域の大きさ
+      CommonConfig.PLAYER_HEIGHT
+    ); // 描画先領域の大きさ
+    this.context.restore();
+
+    // ライフ
+    const fLifeCellWidth =
+      CommonConfig.PLAYER_WIDTH / player.getInitLife;
+    const fLifeCellStartX = -(
+      fLifeCellWidth *
+      player.getInitLife *
+      0.5
+    );
+    // ゼロからライフ値まで：REMAINING_COLOR
+
+    this.context.fillStyle =
+      ClientConfig.LIFE_REMAINING_COLOR;
+    this.context.fillRect(
+      fLifeCellStartX,
+      CommonConfig.PLAYER_WIDTH * 0.5,
+      fLifeCellWidth * player.getLife,
+      10
+    );
+
+    // ライフ値からライフマックスまで：MISSING_COLOR
+    if (player.getLife < player.getInitLife) {
+      this.context.fillStyle =
+        ClientConfig.LIFE_MISSING_COLOR;
+      this.context.fillRect(
+        fLifeCellStartX + fLifeCellWidth * player.iLife,
+        CommonConfig.PLAYER_WIDTH * 0.5,
+        fLifeCellWidth *
+          (player.getInitLife - player.iLife),
+        10
+      );
+    }
+
+    // ニックネーム
+    this.context.save();
+    this.context.textAlign = 'center';
+    this.context.font = ClientConfig.NICKNAME_FONT;
+    this.context.fillStyle = ClientConfig.NICKNAME_COLOR;
+    this.context.fillText(player.userName, 0, -50);
+    this.context.restore();
 
     this.context.restore();
   }
@@ -283,6 +395,24 @@ export class Screen {
     this.context.restore();
 
     this.context.restore();
+  }
+
+  renderObstacle(obstacle: any, index: number) {
+    if (!this.context) return;
+
+    const TILE_SIZE = 32;
+
+    this.context.drawImage(
+      this.assets.imageObstacles,
+      this.assets.rectObstacleImage[index].sx,
+      this.assets.rectObstacleImage[index].sy,
+      this.assets.rectObstacleImage[index].sw,
+      this.assets.rectObstacleImage[index].sh,
+      obstacle.x - TILE_SIZE * 0.5,
+      obstacle.y - TILE_SIZE * 0.5,
+      TILE_SIZE,
+      TILE_SIZE
+    );
   }
 
   renderWall(wall: any) {

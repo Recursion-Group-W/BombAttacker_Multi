@@ -5,11 +5,13 @@ import { GameObject } from './gameObject';
 import { Obstacle } from './obstacle';
 
 export class Character extends GameObject {
-  static WIDTH = 16;
-  static HEIGHT = 16;
+  static WIDTH = 32;
+  static HEIGHT = 32;
+  private spriteKey = '';
 
   protected direction = 2; // 0:up, 1:right, 2:down, 3:left
-  protected speed = 0; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
+  protected speed = 100; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
+  protected initLife = 3;
   protected life = 3;
   protected animation: string | undefined = undefined;
 
@@ -47,6 +49,9 @@ export class Character extends GameObject {
   get getLife(): number {
     return this.life;
   }
+  get getInitLife(): number {
+    return this.initLife;
+  }
   get getRect(): RectBound {
     return this.rectField;
   }
@@ -61,7 +66,7 @@ export class Character extends GameObject {
     this.direction = value;
   }
   set setAnimation(value: string) {
-    this.animation = value
+    this.animation = value;
   }
   damage() {
     return this.life--;
@@ -88,5 +93,34 @@ export class Character extends GameObject {
             (this.rectField.top - this.rectField.bottom)
       );
     } while (this.overlapObstacles(obstacleSet));
+  }
+
+  protected set setSpriteKey(key: string) {
+    this.spriteKey = key;
+  }
+  protected move(x: number, y: number) {
+    this.setPosition(
+      this.getPosition.x + x,
+      this.getPosition.y + y
+    );
+  }
+
+  protected animWalkUp() {
+    this.animation = `${this.spriteKey}-up`;
+  }
+  protected animWalkRight() {
+    this.animation = `${this.spriteKey}-right`;
+  }
+  protected animWalkDown() {
+    this.animation = `${this.spriteKey}-down`;
+  }
+  protected animTurnUp() {
+    this.animation = `${this.spriteKey}-turn-up`;
+  }
+  protected animTurnRight() {
+    this.animation = `${this.spriteKey}-turn-right`;
+  }
+  protected animTurnDown() {
+    this.animation = `${this.spriteKey}-turn-down`;
   }
 }

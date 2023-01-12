@@ -1,0 +1,13 @@
+.canvasBorder {
+  border: 20px solid;
+  border-image: linear-gradient(
+      to right bottom,
+      #e0d9b6,
+      #b4983a
+    )
+    1 / 15px;
+  outline: 3px outset #efe9cc;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 1px 3px 10px #999;
+}
