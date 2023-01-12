@@ -1,27 +1,29 @@
 import RoomManager from '../../manager/roomManager';
 import { CommonConfig } from '../config/commonConfig';
-import { BotTank } from '../model/botTank';
-import { Bullet } from '../model/bullet';
-import { Tank } from '../model/tank';
-import { Wall } from '../model/wall';
+import { BotTank } from '../model/tank/botTank';
+import { Bullet } from '../model/tank/bullet';
+import { Tank } from '../model/tank/tank';
+import { TankObstacle } from '../model/tank/tankObstacle';
 import { ServerConfig } from '../config/serverConfig';
 import { OverlapTester } from '../util/overlapTester';
+import { Player } from '../model/player';
 
 export class Stage {
   // name = "normal"
   level: number;
   // background = ""
   // backgroundSet;
-  // wallSet;
+  // obstacleSet;
   // abstacleSet;
-  // playerSet;
+  playerSet = new Set<Player>();
+  playerId: number = 0;
   // npcSet;
   // stageFactory;
   roomId: string;
   roomManager: RoomManager;
   tankSet = new Set<Tank>();
   tankId: number = 0;
-  wallSet = new Set<Wall>(); // 壁リスト
+  obstacleSet = new Set<TankObstacle>(); // 壁リスト
   bulletSet = new Set<Bullet>();
   botSet = new Set<BotTank>();
   botId: number = 0;
@@ -47,12 +49,12 @@ export class Stage {
         (CommonConfig.FIELD_HEIGHT -
           CommonConfig.WALL_HEIGHT);
       // 壁生成l
-      const wall = new Wall(
+      const wall = new TankObstacle(
         fX_left + CommonConfig.WALL_WIDTH * 0.5,
         fY_bottom + CommonConfig.WALL_HEIGHT * 0.5
       );
       // 壁リストへの登録
-      this.wallSet.add(wall);
+      this.obstacleSet.add(wall);
     }
 
     // ボットの生成
@@ -89,12 +91,20 @@ export class Stage {
 
     // タンクごとの処理
     this.tankSet.forEach((tank) => {
-      tank.update(deltaTime, rectTankField, this.wallSet);
+      tank.update(
+        deltaTime,
+        rectTankField,
+        this.obstacleSet
+      );
     });
 
     //ボットごとの処理
     this.botSet.forEach((bot) => {
-      bot.update(deltaTime, rectTankField, this.wallSet);
+      bot.update(
+        deltaTime,
+        rectTankField,
+        this.obstacleSet
+      );
     });
 
     // 弾丸の可動域
@@ -114,7 +124,7 @@ export class Stage {
       const bDisappear = bullet.update(
         deltaTime,
         rectBulletField,
-        this.wallSet
+        this.obstacleSet
       );
       if (bDisappear) {
         // 消失
@@ -145,25 +155,12 @@ export class Stage {
 
   // タンクの生成
   createTank(clientId: string, userName: string) {
-    // タンクの可動域
-    const rectTankField = {
-      left: 0 + CommonConfig.TANK_WIDTH * 0.5,
-      bottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
-      right:
-        CommonConfig.FIELD_WIDTH -
-        CommonConfig.TANK_WIDTH * 0.5,
-      top:
-        CommonConfig.FIELD_HEIGHT -
-        CommonConfig.TANK_HEIGHT * 0.5,
-    };
-
     // タンクの生成
     const tank = new Tank(
       this.newTankId(),
       clientId,
       userName,
-      rectTankField,
-      this.wallSet
+      this.obstacleSet
     );
     console.log('tankが作成されました', tank);
 
@@ -175,24 +172,11 @@ export class Stage {
 
   // ボットタンクの生成
   createBotTank(userName: string) {
-    // タンクの可動域
-    const rectTankField = {
-      left: 0 + CommonConfig.TANK_WIDTH * 0.5,
-      bottom: 0 + CommonConfig.TANK_HEIGHT * 0.5,
-      right:
-        CommonConfig.FIELD_WIDTH -
-        CommonConfig.TANK_WIDTH * 0.5,
-      top:
-        CommonConfig.FIELD_HEIGHT -
-        CommonConfig.TANK_HEIGHT * 0.5,
-    };
-
     // ボットタンクの生成
     const bot = new BotTank(
       this.newBotTankId(),
       userName,
-      rectTankField,
-      this.wallSet
+      this.obstacleSet
     );
 
     // タンクリストへの登録

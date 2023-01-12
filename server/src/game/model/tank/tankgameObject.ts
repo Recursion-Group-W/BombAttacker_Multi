@@ -1,9 +1,9 @@
-import { Position } from '../../types/position.type';
-import { RectBound } from '../../types/rectBound.type';
-import { OverlapTester } from '../util/overlapTester';
-import { Obstacle } from './obstacle';
+import { Position } from '../../../types/position.type';
+import { RectBound } from '../../../types/rectBound.type';
+import { OverlapTester } from '../../util/overlapTester';
+import { TankObstacle } from './tankObstacle';
 
-export class GameObject {
+export class TankGameObject {
   rectBound: RectBound = {
     top: 0,
     left: 0,
@@ -11,18 +11,20 @@ export class GameObject {
     right: 0,
   };
   constructor(
+    private width: number,
+    private height: number,
     private x: number,
     private y: number,
-    private width: number,
-    private height: number
+    public angle: number
   ) {
     this.setPosition(x, y);
   }
 
   toJSON() {
     return {
-      x: this.getPosition.x,
-      y: this.getPosition.y,
+      x: this.x,
+      y: this.y,
+      angle: this.angle,
     };
   }
   get getWidth() {
@@ -40,7 +42,7 @@ export class GameObject {
     this.setRectBound(x, y);
   }
 
-  private setRectBound(x: number, y: number) {
+  setRectBound(x: number, y: number) {
     this.rectBound = {
       left: x - this.width * 0.5,
       bottom: y - this.height * 0.5,
@@ -50,7 +52,7 @@ export class GameObject {
   }
 
   // 壁との干渉チェック
-  overlapObstacles(obstacleSet: Set<Obstacle>) {
+  overlapObstacles(obstacleSet: Set<TankObstacle>) {
     return Array.from(obstacleSet).some((obstacle) => {
       if (
         OverlapTester.overlapRects(

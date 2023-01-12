@@ -41,7 +41,7 @@ export class Game {
         .emit('syncGame', {
           nanoSecDiff,
           tankArr: Array.from(this.stage.tankSet),
-          wallArr: Array.from(this.stage.wallSet),
+          obstacleArr: Array.from(this.stage.obstacleSet),
           bulletArr: Array.from(this.stage.bulletSet),
           botArr: Array.from(this.stage.botSet),
         });

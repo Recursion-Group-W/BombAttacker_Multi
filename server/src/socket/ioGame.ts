@@ -22,7 +22,6 @@ export default class IoGame {
           //入室する処理
           await roomManager.joinRoom(socket, req.userName);
           console.log(`New user connected! to room`);
-          //ゲームを新規作成する処理
         }
       );
 
@@ -39,6 +38,29 @@ export default class IoGame {
       //   };
       //   //クライアントにゲームのデータを送信
       //   socket.emit('SyncGame', payload);
+      // });
+
+      // socket.on('movePlayer', (movement: any) => {
+      //   const playerSet =
+      //     this.roomManager.roomMap[socket.roomId]
+      //       .gameManager.game.stage.playerSet;
+
+      //   let foundPlayer = null;
+      //   playerSet.forEach((player) => {
+      //     if (player.clientId === socket.clientId) {
+      //       foundPlayer = player;
+      //       if (foundPlayer.iLife === 0) return;
+      //     }
+      //   });
+      //   if (!foundPlayer) return;
+
+      //   // console.log(movement);
+      //   this.roomManager.roomMap[
+      //     socket.roomId
+      //   ].gameManager.game.stage.moveTank(
+      //     socket.clientId,
+      //     movement
+      //   );
       // });
 
       socket.on('moveTank', (objMovement: any) => {

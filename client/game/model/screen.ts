@@ -45,13 +45,13 @@ export class Screen {
       (res: {
         nanoSecDiff: number;
         tankArr: any[];
-        wallArr: any[];
+        obstacleArr: any[];
         bulletArr: any[];
         botArr: any[];
       }) => {
         this.iProcessingTimeNanoSec = res.nanoSecDiff;
         this.tankArr = res.tankArr;
-        this.wallArr = res.wallArr;
+        this.wallArr = res.obstacleArr;
         this.bulletArr = res.bulletArr;
         this.botArr = res.botArr;
       }
