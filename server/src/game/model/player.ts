@@ -40,6 +40,7 @@ export class Player extends Character {
     if (
       !Object.values(this.movement).some((value) => value)
     ) {
+      this.setVelocity(0, 0);
       //キーが押されていない時
       switch (this.getDirection) {
         case 0:
@@ -58,29 +59,29 @@ export class Player extends Character {
       return;
     }
 
-    const distance = this.speed * deltaTime;
-
     // movementによって、プレイヤーの向きと位置を更新
     if (this.movement.up) {
       this.setDirection = 0;
+      this.setVelocity(0, -this.getSpeed);
       this.animWalkUp();
-      this.move(0, -distance);
     }
     if (this.movement.right) {
       this.setDirection = 1;
+      this.setVelocity(this.getSpeed, 0);
       this.animWalkRight();
-      this.move(distance, 0);
     }
     if (this.movement.down) {
       this.setDirection = 2;
+      this.setVelocity(0, this.getSpeed);
       this.animWalkDown();
-      this.move(0, distance);
     }
     if (this.movement.left) {
       this.setDirection = 3;
+      this.setVelocity(-this.getSpeed, 0);
       this.animWalkRight();
-      this.move(-distance, 0);
     }
+    //衝突判定の前に動作を実行する
+    this.move(deltaTime);
 
     //衝突判定
     let collision = false;
@@ -98,6 +99,7 @@ export class Player extends Character {
     }
     if (collision) {
       this.setPosition(prevPosition.x, prevPosition.y);
+      this.setVelocity(0, 0);
     }
   }
   toJSON() {
@@ -125,7 +127,6 @@ export class Player extends Character {
     this.bombList.push(bomb);
     return bomb;
   }
-
 
   // 爆弾を置けるかどうか
   private canPutBomb() {

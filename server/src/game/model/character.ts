@@ -10,10 +10,12 @@ export class Character extends GameObject {
   private spriteKey = '';
 
   protected direction = 2; // 0:up, 1:right, 2:down, 3:left
-  protected speed = 100; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
+  protected speed = 50; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
   protected initLife = 3;
   protected life = 3;
   protected animation: string | undefined = undefined;
+
+  protected velocity = { x: 0, y: 0 };
 
   // 可動域
   protected rectField = ObjectUtil.calRectField(
@@ -39,6 +41,9 @@ export class Character extends GameObject {
       life: this.life,
     });
   }
+  get getVelocity() {
+    return this.velocity;
+  }
 
   get getSpeed(): number {
     return this.speed;
@@ -57,6 +62,13 @@ export class Character extends GameObject {
   }
   get getAnimation() {
     return this.animation;
+  }
+
+  setVelocity(x: number, y: number) {
+    this.velocity = {
+      x,
+      y,
+    };
   }
 
   set setSpeed(value: number) {
@@ -98,10 +110,10 @@ export class Character extends GameObject {
   protected set setSpriteKey(key: string) {
     this.spriteKey = key;
   }
-  protected move(x: number, y: number) {
+  protected move(deltaTime: number) {
     this.setPosition(
-      this.getPosition.x + x,
-      this.getPosition.y + y
+      this.getPosition.x + this.getVelocity.x * deltaTime,
+      this.getPosition.y + this.getVelocity.y * deltaTime
     );
   }
 
