@@ -1,5 +1,11 @@
 import { useSocketStore } from '../src/store/useSocketStore';
 import styles from '../styles/GameDisplay.module.css';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { Box } from '@mui/system';
+import { PreloadScene } from '../src/game/scene/PreloadScene';
+import { MainScene } from '../src/game/scene/MainScene';
+import { Screen } from '../src/game/model/screen';
 
 const GameDisplay = () => {
   const { socketState } = useSocketStore();
