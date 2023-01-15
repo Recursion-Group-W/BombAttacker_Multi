@@ -1,23 +1,27 @@
 import { MathUtil } from '../util/math.util';
 import { OverlapTester } from '../util/overlapTester';
 import { Character } from './character';
-import { Obstacle } from './obstacle';
-import { Player } from './player';
+import { GenericObstacle } from './obstacle/generic/genericObstacle';
+import { Player } from './player/player';
 
 export class Npc extends Character {
+  static readonly SPRITE_KEY = 'npc';
   // コンストラクタ
   constructor(
     public id: number,
-    obstacleSet: Set<Obstacle>
+    obstacleSet: Set<GenericObstacle>
   ) {
-    super('npc', obstacleSet);
+    super('npc', Npc.SPRITE_KEY, obstacleSet);
     this.setSpriteKey = 'npc';
+
+    //初めに進む向きと速度をランダムにセット
+    this.setMoveRamdom();
   }
 
   // 更新
   update(
     deltaTime: number,
-    obstacleSet: Set<Obstacle>,
+    obstacleSet: Set<GenericObstacle>,
     playerSet: Set<Player>
   ) {
     // 移動前座標値のバックアップ
@@ -26,52 +30,29 @@ export class Npc extends Character {
       y: this.getPosition.y,
     };
 
-    //movementにtrueの値がない（動作がない）場合
+    //速度が0の場合、
     //移動や衝突判定はせず、アニメーションだけセットする
-    // if (
-    //   !Object.values(this.movement).some((value) => value)
-    // ) {
-    //   //キーが押されていない時
-    //   switch (this.getDirection) {
-    //     case 0:
-    //       this.animTurnUp();
-    //       break;
-    //     case 1:
-    //       this.animTurnRight();
-    //       break;
-    //     case 2:
-    //       this.animTurnDown();
-    //       break;
-    //     case 3:
-    //       this.animTurnRight();
-    //       break;
-    //   }
-    //   return;
-    // }
+    if (!this.isMoving()) {
+      //キーが押されていない時
+      switch (this.getDirection) {
+        case 0:
+          this.animTurnUp();
+          break;
+        case 1:
+          this.animTurnRight();
+          break;
+        case 2:
+          this.animTurnDown();
+          break;
+        case 3:
+          this.animTurnRight();
+          break;
+      }
+      return;
+    }
 
-    const distance = this.speed * deltaTime;
-
-    // movementによって、プレイヤーの向きと位置を更新
-    if (this.movement.up) {
-      this.setDirection = 0;
-      this.animWalkUp();
-      this.move(0, -distance);
-    }
-    if (this.movement.right) {
-      this.setDirection = 1;
-      this.animWalkRight();
-      this.move(distance, 0);
-    }
-    if (this.movement.down) {
-      this.setDirection = 2;
-      this.animWalkDown();
-      this.move(0, distance);
-    }
-    if (this.movement.left) {
-      this.setDirection = 3;
-      this.animWalkRight();
-      this.move(-distance, 0);
-    }
+    //現在向いている方向に進む(deltaTimeの時間)
+    this.move(deltaTime);
 
     //衝突判定
     let collision = false;
@@ -81,20 +62,28 @@ export class Npc extends Character {
         y: this.getPosition.y,
       })
     ) {
-      // フィールドの外に出た。
+      // ステージの端に衝突
       collision = true;
     } else if (this.overlapObstacles(obstacleSet)) {
-      // 壁に当たった。
+      //障害物に衝突
       collision = true;
     } else if (this.overlapPlayers(playerSet)) {
+      //プレイヤーに衝突
       collision = true;
     }
     if (collision) {
+      //this.moveByDirection(this.getDirection, deltaTime)を実行する前の位置に戻す
       this.setPosition(prevPosition.x, prevPosition.y);
+
+      //向きを変える
+      //方向をランダムに選択
+      this.setMoveRamdom();
     }
   }
   toJSON() {
-    return Object.assign(super.toJSON(), {});
+    return Object.assign(super.toJSON(), {
+      id: this.id,
+    });
   }
 
   protected overlapPlayers(playerSet: Set<Player>) {
@@ -110,19 +99,15 @@ export class Npc extends Character {
     });
   }
 
-  //ランダムな動き
-  moveRamdom(deltaTime: number) {
-    if (this.isMoving()) return;
-
-    if (this.getVelocity.x + this.getVelocity.y === 0) {
-      //4方向をランダムに選択して動かす
-      const randomDir: number = MathUtil.getRandomInt(0, 3);
-      this.moveByDirection(randomDir, deltaTime);
-    }
+  //ランダムな動きをセット
+  setMoveRamdom() {
+    //4方向をランダムに選択して動かす
+    const randomDir: number = MathUtil.getRandomInt(0, 3);
+    this.setMoveByDirection(randomDir);
   }
 
-  //XかYのどちらかの単調な動き
-  moveMonotone(deltaTime: number) {
+  //XかYのどちらかの単調な動きをセット
+  setMoveMonotone() {
     if (this.isMoving()) return;
 
     if (this.getVelocity.x + this.getVelocity.y === 0) {
@@ -130,10 +115,10 @@ export class Npc extends Character {
       const randomDir: number = MathUtil.getRandomInt(0, 1);
       switch (randomDir) {
         case 0:
-          this.moveMonoX(deltaTime);
+          this.setMoveMonoX();
           break;
         case 1:
-          this.moveMonoY(deltaTime);
+          this.setMoveMonoY();
           break;
       }
     }
@@ -144,14 +129,14 @@ export class Npc extends Character {
     const opposite = this.getOppositeDirection(
       this.getDirection
     );
-    this.moveByDirection(opposite, deltaTime);
+    this.setMoveByDirection(opposite);
   }
 
-  //追跡する動き
+  //Playerを追跡する動き
   chasePlayer(player: Player) {}
 
   //X方向の単調な動き
-  private moveMonoX(deltaTime: number) {
+  private setMoveMonoX() {
     //動いている(障害物にぶつかっていない) → 何もしない
     if (this.isMoving()) return;
 
@@ -163,12 +148,12 @@ export class Npc extends Character {
       const opposite = this.getOppositeDirection(
         this.getDirection
       );
-      this.moveByDirection(opposite, deltaTime);
+      this.setMoveByDirection(opposite);
     }
   }
 
-  //Y方向の単調な動き
-  private moveMonoY(deltaTime: number) {
+  //Y方向の単調な動きをセット
+  private setMoveMonoY() {
     //動いている(障害物にぶつかっていない) → 何もしない
     if (this.isMoving()) return;
 
@@ -180,7 +165,7 @@ export class Npc extends Character {
       const opposite = this.getOppositeDirection(
         this.getDirection
       );
-      this.moveByDirection(opposite, deltaTime);
+      this.setMoveByDirection(opposite);
     }
   }
 
@@ -201,53 +186,46 @@ export class Npc extends Character {
     return hashmap[direction];
   }
 
-  //direction(方向)を受け取って、その方向に動かすメソッド
-  private moveByDirection(
-    direction: number,
-    deltaTime: number
-  ) {
+  //direction(方向)を受け取って、その方向にセットするメソッド
+  private setMoveByDirection(direction: number) {
     switch (direction) {
       case 0:
-        this.moveUp(deltaTime);
+        this.setMoveUp();
         break;
       case 1:
-        this.moveRight(deltaTime);
+        this.setMoveRight();
         break;
       case 2:
-        this.moveDown(deltaTime);
+        this.setMoveDown();
         break;
       case 3:
-        this.moveLeft(deltaTime);
+        this.setMoveLeft();
         break;
     }
   }
 
-  private moveUp(deltaTime: number) {
+  private setMoveUp() {
     this.setDirection = 0;
     this.setVelocity(0, -this.getSpeed);
-    this.move(deltaTime);
     this.animWalkUp();
   }
 
-  private moveRight(deltaTime: number) {
+  private setMoveRight() {
     this.setDirection = 1;
     this.setVelocity(this.getSpeed, 0);
-    this.move(deltaTime);
     // this.flipX = false; //クライアントで反転を制御
     this.animWalkRight();
   }
 
-  private moveDown(deltaTime: number) {
+  private setMoveDown() {
     this.setDirection = 2;
     this.setVelocity(0, this.getSpeed);
-    this.move(deltaTime);
     this.animWalkDown();
   }
 
-  private moveLeft(deltaTime: number) {
+  private setMoveLeft() {
     this.setDirection = 3;
     this.setVelocity(-this.getSpeed, 0);
-    this.move(deltaTime);
     // this.flipX = true;//クライアントで反転を制御
     this.animWalkRight();
   }

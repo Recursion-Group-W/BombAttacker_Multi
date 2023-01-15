@@ -1,8 +1,8 @@
-import { StageFactory } from '../game/factory/stage/stageFactory';
+import { PaintStageFactory } from '../game/factory/stage/paint/paintStageFactory';
 
 //ステージを拡張する場合に使う
 export class StageManager {
-  normalStageFactory() {
-    return new StageFactory();
+  paintStageFactory() {
+    return new PaintStageFactory();
   }
 }

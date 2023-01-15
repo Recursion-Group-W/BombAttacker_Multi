@@ -1,10 +1,11 @@
-import { Movement } from '../../types/movement.type';
-import { OverlapTester } from '../util/overlapTester';
-import { Bomb } from './bomb';
-import { Character } from './character';
-import { Obstacle } from './obstacle';
+import { Movement } from '../../../types/movement.type';
+import { OverlapTester } from '../../util/overlapTester';
+import { Bomb } from '../bomb';
+import { Character } from '../character';
+import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
 export class Player extends Character {
+  static readonly SPRITE_KEY = 'player';
   private movement: Movement = {
     up: false,
     right: false,
@@ -21,14 +22,13 @@ export class Player extends Character {
     public id: number,
     public clientId: string,
     public userName: string,
-    obstacleSet: Set<Obstacle>
+    obstacleSet: Set<GenericObstacle>
   ) {
-    super(userName, obstacleSet);
-    this.setSpriteKey = 'player';
+    super(userName, Player.SPRITE_KEY, obstacleSet);
   }
 
   // 更新
-  update(deltaTime: number, obstacleSet: Set<Obstacle>) {
+  update(deltaTime: number, obstacleSet: Set<GenericObstacle>) {
     // 移動前座標値のバックアップ
     const prevPosition = {
       x: this.getPosition.x,

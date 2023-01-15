@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from 'react';
-import { Screen } from '../game/model/screen';
 import { useSocketStore } from '../src/store/useSocketStore';
 import styles from '../styles/GameDisplay.module.css';
 
@@ -11,30 +9,24 @@ const GameDisplay = () => {
 
   //Phaserの初期設定を行うメソッド
   const initPhaser = async () => {
-    //PhaserとSceneを非同期でインポート
-    const Phaser = await import('phaser');
-    const { GameScene } = await import(
-      '../game/model/scene'
-    );
-    const { PreloadScene } = await import(
-        '../game/model/PreloadScene'
-      );
-
     //描画設定
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
-      parent: 'game',
-      width: 800,
+      scale: {
+        parent: 'phaser-game',
+        width: 1024,
+        height: 1024,
+      },
       physics: {
         default: 'arcade',
         arcade: {
           gravity: { y: 0 },
-          debug: true,
+          debug: false,
         },
       },
-      height: 800,
+
       pixelArt: true,
-      scene: [GameScene,PreloadScene],
+      scene: [PreloadScene, MainScene],
       backgroundColor: '#a9a9a9',
       callbacks: {
         preBoot: (game) => {
@@ -140,10 +132,24 @@ const GameDisplay = () => {
   }, []);
   return (
     <>
-      <canvas
-        id='game-canvas'
-        className={styles.canvasBorder}
-      ></canvas>
+      <Box
+        sx={{
+          my: 4,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <canvas
+          id='game-canvas'
+          className={styles.canvasBorder}
+        ></canvas>
+        <div
+          id='phaser-game'
+          className={styles.canvasBorder}
+        ></div>
+      </Box>
     </>
   );
 };
