@@ -1,8 +1,6 @@
 import { ClientConfig } from '../clientConfig';
 import { CommonConfig } from '../commonConfig';
 import { Assets } from './assets';
-import { Player } from './player';
-import { Scene } from 'phaser';
 
 // スクリーンクラス
 export class Screen {
@@ -25,8 +23,6 @@ export class Screen {
   constructor(
     public socket: any,
     public canvas: HTMLCanvasElement,
-    public Player: Player,
-    public Scene: Scene
   ) {
     this.context = canvas.getContext('2d');
 
@@ -67,17 +63,6 @@ export class Screen {
         this.botArr = res.botArr;
       }
     );
-
-    // デッドした時の処理
-    this.socket.on('dead', () => {
-      // $('#start-screen').show();
-    });
-    
-    // playerRight
-    this.socket.on('playerAnimation-right', function
-    (movementDate) {
-      this.anims.play('player-right', true);
-    });
   }
 
   // アニメーション（無限ループ処理）

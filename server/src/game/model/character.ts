@@ -2,12 +2,11 @@ import { RectBound } from '../../types/rectBound.type';
 import { CommonConfig } from '../config/commonConfig';
 import { ObjectUtil } from '../util/object.util';
 import { GameObject } from './gameObject';
-import { Obstacle } from './obstacle';
+import { GenericObstacle } from './obstacle/generic/genericObstacle';
 
 export class Character extends GameObject {
   static WIDTH = 32;
   static HEIGHT = 32;
-  private spriteKey = '';
 
   protected direction = 2; // 0:up, 1:right, 2:down, 3:left
   protected speed = 50; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
@@ -27,9 +26,16 @@ export class Character extends GameObject {
   // コンストラクタ
   constructor(
     public userName: string,
-    obstacleSet: Set<Obstacle>
+    spriteKey: string,
+    obstacleSet: Set<GenericObstacle>
   ) {
-    super(0.0, 0.0, Character.WIDTH, Character.HEIGHT);
+    super(
+      0.0,
+      0.0,
+      Character.WIDTH,
+      Character.HEIGHT,
+      spriteKey
+    );
 
     //初期位置に配置
     this.setInitialPosition(obstacleSet);
@@ -39,6 +45,8 @@ export class Character extends GameObject {
     return Object.assign(super.toJSON(), {
       userName: this.userName,
       life: this.life,
+      direction: this.direction,
+      animation: this.animation,
     });
   }
   get getVelocity() {
@@ -85,7 +93,7 @@ export class Character extends GameObject {
   }
 
   //初期位置に配置するメソッド
-  setInitialPosition(obstacleSet: Set<Obstacle>) {
+  setInitialPosition(obstacleSet: Set<GenericObstacle>) {
     // 初期位置
     this.setPosition(
       Math.random() *
@@ -107,9 +115,6 @@ export class Character extends GameObject {
     } while (this.overlapObstacles(obstacleSet));
   }
 
-  protected set setSpriteKey(key: string) {
-    this.spriteKey = key;
-  }
   protected move(deltaTime: number) {
     this.setPosition(
       this.getPosition.x + this.getVelocity.x * deltaTime,
