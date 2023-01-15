@@ -8,7 +8,6 @@ import Button from '@mui/material/Button';
 import GoogleIcon from '@mui/icons-material/Google';
 import { signInWithPopup, signOut } from 'firebase/auth';
 import { auth, provider } from '../firebase';
-import { GameDisplay2 } from '../game/model/GameDisplay';
 
 export default function Home() {
   const [isAuth, setIsAuth] = React.useState(false);
@@ -74,7 +73,6 @@ export default function Home() {
           </Button>
         </Box>
         <Copyright />
-        <GameDisplay2/>
       </Box>
     </Container>
   );

@@ -1,7 +1,7 @@
 import { Position } from '../../types/position.type';
 import { RectBound } from '../../types/rectBound.type';
 import { OverlapTester } from '../util/overlapTester';
-import { Obstacle } from './obstacle';
+import { GenericObstacle } from './obstacle/generic/genericObstacle';
 
 export class GameObject {
   rectBound: RectBound = {
@@ -14,7 +14,8 @@ export class GameObject {
     private x: number,
     private y: number,
     private width: number,
-    private height: number
+    private height: number,
+    protected spriteKey: string
   ) {
     this.setPosition(x, y);
   }
@@ -23,6 +24,7 @@ export class GameObject {
     return {
       x: this.getPosition.x,
       y: this.getPosition.y,
+      spriteKey: this.spriteKey,
     };
   }
   get getWidth() {
@@ -39,6 +41,9 @@ export class GameObject {
     this.y = y;
     this.setRectBound(x, y);
   }
+  protected set setSpriteKey(key: string) {
+    this.spriteKey = key;
+  }
 
   private setRectBound(x: number, y: number) {
     this.rectBound = {
@@ -50,7 +55,7 @@ export class GameObject {
   }
 
   // 壁との干渉チェック
-  overlapObstacles(obstacleSet: Set<Obstacle>) {
+  overlapObstacles(obstacleSet: Set<GenericObstacle>) {
     return Array.from(obstacleSet).some((obstacle) => {
       if (
         OverlapTester.overlapRects(

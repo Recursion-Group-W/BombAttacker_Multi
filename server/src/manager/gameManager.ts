@@ -1,5 +1,5 @@
 import { Game } from '../game/game';
-import { Stage } from '../game/stage/stage';
+import { FirstPaintStage } from '../game/stage/firstPaintStage';
 import RoomManager from './roomManager';
 import { StageManager } from './stageManager';
 
@@ -13,12 +13,13 @@ export class GameManager {
       roomId,
       roomManager,
       this.stageManager
-        .normalStageFactory()
+        .paintStageFactory()
         .createFirstStage(roomId, roomManager)
     );
   }
 
-  switchStage(stage: Stage, playerSet: any) {
+  //interfaceを実装して、stage: Stageに変更が必要
+  switchStage(stage: FirstPaintStage, playerSet: any) {
     this.game.stage = stage;
     this.game.stage.playerSet = playerSet;
   }

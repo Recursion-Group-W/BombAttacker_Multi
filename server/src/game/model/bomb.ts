@@ -1,6 +1,6 @@
 import { Explosion } from './explosion';
 import { GameObject } from './gameObject';
-import { Player } from './player';
+import { Player } from './player/player';
 
 export class Bomb extends GameObject {
   static WIDTH = 16;
@@ -13,7 +13,7 @@ export class Bomb extends GameObject {
     private player: Player
   ) {
     // 親クラスのコンストラクタ呼び出し
-    super(x, y,Bomb.WIDTH, Bomb.HEIGHT);
+    super(x, y, Bomb.WIDTH, Bomb.HEIGHT, 'bomb');
   }
 
   update(deltaTime: number) {

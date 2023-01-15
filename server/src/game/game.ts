@@ -1,17 +1,17 @@
 import RoomManager from '../manager/roomManager';
 import { ServerConfig } from './config/serverConfig';
-import { Stage } from './stage/stage';
+import { FirstPaintStage } from './stage/firstPaintStage';
 
 export class Game {
   time: number = Date.now();
   roomId: string;
   roomManager: RoomManager;
-  stage: Stage;
+  stage: FirstPaintStage; //interfaceを実装して、stage: Stageに変更が必要
 
   constructor(
     roomId: string,
     roomManager: RoomManager,
-    stage: Stage
+    stage: FirstPaintStage //interfaceを実装して、stage: Stageに変更が必要
   ) {
     this.roomId = roomId;
     this.roomManager = roomManager;
@@ -46,6 +46,7 @@ export class Game {
         .emit('syncGame', {
           nanoSecDiff,
           playerArr: Array.from(this.stage.playerSet),
+          npcArr: Array.from(this.stage.npcSet),
           obstacleArr: Array.from(this.stage.obstacleSet),
           tankArr: Array.from(this.stage.tankSet),
           tankObstacleArr: Array.from(

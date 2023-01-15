@@ -1,8 +1,12 @@
 import { Box, Container } from '@mui/material';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
-import GameDisplay from '../../component/GameDisplay';
-
+// import GameDisplay from '../../component/GameDisplay';
+const GameDisplay = dynamic(
+  () => import('../../component/GameDisplay'),
+  { ssr: false }
+);
 const Room = () => {
   const router = useRouter();
 
