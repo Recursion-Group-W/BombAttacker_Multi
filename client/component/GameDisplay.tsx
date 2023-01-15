@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Screen } from '../game/model/screen';
 import { useSocketStore } from '../src/store/useSocketStore';
 import styles from '../styles/GameDisplay.module.css';
