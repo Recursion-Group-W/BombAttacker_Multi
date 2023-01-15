@@ -1,8 +1,3 @@
-import { Box } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { Screen } from '../src/game/model/screen';
-import { MainScene } from '../src/game/scene/MainScene';
-import { PreloadScene } from '../src/game/scene/PreloadScene';
 import { useSocketStore } from '../src/store/useSocketStore';
 import styles from '../styles/GameDisplay.module.css';
 
