@@ -1,4 +1,4 @@
-import { GameManager } from "../manager/gameManager";
+import { GameManager } from "../gameManager";
 import { Users } from "./user.type";
 
 export type Room = {

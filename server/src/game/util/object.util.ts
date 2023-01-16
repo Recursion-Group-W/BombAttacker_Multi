@@ -1,4 +1,4 @@
-import { RectBound } from '../../types/rectBound.type';
+import { RectBound } from '../types/rectBound.type';
 import { CommonConfig } from '../config/commonConfig';
 
 export class ObjectUtil {

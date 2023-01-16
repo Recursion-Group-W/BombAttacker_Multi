@@ -1,4 +1,4 @@
-import { Movement } from '../../../types/movement.type';
+import { Movement } from '../../types/movement.type';
 import { OverlapTester } from '../../util/overlapTester';
 import { Bomb } from '../bomb';
 import { Character } from '../character/character';
@@ -28,7 +28,10 @@ export class Player extends Character {
   }
 
   // 更新
-  update(deltaTime: number, obstacleSet: Set<GenericObstacle>) {
+  update(
+    deltaTime: number,
+    obstacleSet: Set<GenericObstacle>
+  ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
       x: this.getPosition.x,

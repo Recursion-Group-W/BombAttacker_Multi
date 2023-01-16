@@ -1,4 +1,4 @@
-import { RectBound } from '../../../types/rectBound.type';
+import { RectBound } from '../../types/rectBound.type';
 import { CommonConfig } from '../../config/commonConfig';
 import { ServerConfig } from '../../config/serverConfig';
 import { OverlapTester } from '../../util/overlapTester';
@@ -32,10 +32,7 @@ export class Bullet extends TankGameObject {
   // ※rectField : フィールド矩形は、オブジェクト中心と判定する。（OverlapTester.pointInRect()）
   //               オブジェクトの大きさ分狭めた(上下左右で、大きさの半分づつ狭めた）矩形が必要。
   //               呼び出され側で領域を狭めのは、処理コストが無駄なので、呼び出す側で領域を狭めて渡す。
-  update(
-    deltaTime: number,
-    obstacleSet: any
-  ) {
+  update(deltaTime: number, obstacleSet: any) {
     this.fLifeTime -= deltaTime;
     if (0 > this.fLifeTime) {
       // 寿命が尽きた

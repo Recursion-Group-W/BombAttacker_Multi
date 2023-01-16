@@ -31,29 +31,30 @@ export class Game {
       //console.log( 'DeltaTime = %f[s]', fDeltaTime );
 
       // 処理時間計測用
-      const hrtime = process.hrtime(); // ナノ秒単位で取得
+      // const hrtime = process.hrtime(); // ナノ秒単位で取得
 
       // ゲームワールドの更新
       this.stage.update(deltaTime);
 
-      const hrtimeDiff = process.hrtime(hrtime);
-      const nanoSecDiff =
-        hrtimeDiff[0] * 1e9 + hrtimeDiff[1];
+      // const hrtimeDiff = process.hrtime(hrtime);
+      // const nanoSecDiff =
+      //   hrtimeDiff[0] * 1e9 + hrtimeDiff[1];
 
       // //ルーム内のユーザーにデータを送信
       this.roomManager.ioNspGame
         .in(this.roomId)
         .emit('syncGame', {
-          nanoSecDiff,
+          // nanoSecDiff,
+          time: this.time,
           playerArr: Array.from(this.stage.playerSet),
           npcArr: Array.from(this.stage.npcSet),
           // obstacleArr: Array.from(this.stage.obstacleSet),
-          tankArr: Array.from(this.stage.tankSet),
-          tankObstacleArr: Array.from(
-            this.stage.tankobstacleSet
-          ),
-          bulletArr: Array.from(this.stage.bulletSet),
-          botArr: Array.from(this.stage.botSet),
+          // tankArr: Array.from(this.stage.tankSet),
+          // tankObstacleArr: Array.from(
+          //   this.stage.tankobstacleSet
+          // ),
+          // bulletArr: Array.from(this.stage.bulletSet),
+          // botArr: Array.from(this.stage.botSet),
         });
     }, 1000 / ServerConfig.FRAMERATE); // 単位は[ms]。1000[ms] / FRAMERATE[回]
   }

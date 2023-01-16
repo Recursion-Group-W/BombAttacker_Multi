@@ -2,9 +2,9 @@ import { Namespace } from 'socket.io';
 
 import { v4 as uuidv4 } from 'uuid';
 import { ServerConfig } from '../game/config/serverConfig';
-import { CustomSocket } from '../interface/customSocket.interface';
-import { RoomMap } from '../types/room.type';
-import { User } from '../types/user.type';
+import { CustomSocket } from '../socket/interface/customSocket.interface';
+import { RoomMap } from './types/room.type';
+import { User } from './types/user.type';
 import { GameManager } from './gameManager';
 
 export default class RoomManager {

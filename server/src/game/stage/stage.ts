@@ -1,4 +1,5 @@
 import RoomManager from '../../manager/roomManager';
+import { Npc } from '../model/npc/npc';
 import { GenericObstacle } from '../model/obstacle/generic/genericObstacle';
 import { Player } from '../model/player/player';
 import { BotTank } from '../model/tank/botTank';
@@ -11,12 +12,13 @@ export class Stage {
   readonly TILE_SPAN_SCALE = 1.0;
   obstacleSet = new Set<GenericObstacle>();
   playerSet = new Set<Player>(); //とりあえずSetを使う。あとでDequeを使って修正したい。
+  npcSet = new Set<Npc>();
 
-  tankSet = new Set<Tank>();
-  tankobstacleSet = new Set<TankObstacle>();
-  bulletSet = new Set<Bullet>();
-  botSet = new Set<BotTank>();
-  botId: number = 0;
+  // tankSet = new Set<Tank>();
+  // tankobstacleSet = new Set<TankObstacle>();
+  // bulletSet = new Set<Bullet>();
+  // botSet = new Set<BotTank>();
+  // botId: number = 0;
   constructor(
     public level: number,
     public roomId: string,
@@ -32,5 +34,4 @@ export class Stage {
     // // 新たな行動（特に、ボットに関する生成や動作
     // this.doNewActions(deltaTime);
   }
-
 }
