@@ -26,6 +26,8 @@ export class MainScene extends Scene {
   create() {
     if (!this.socket) return;
 
+    this.socket.emit('getInitialState');
+
     this.socket.on(
       'syncGame',
       (res: {
@@ -33,7 +35,7 @@ export class MainScene extends Scene {
         npcArr: NpcDto[];
         obstacleArr: ObstacleDto[];
       }) => {
-        if (res.playerArr.length > 0) {
+        if (res.playerArr && res.playerArr.length > 0) {
           res.playerArr.forEach((player) => {
             //clientIdに対応するデータがない場合、新たにspriteを作成する
             if (!this.objects.playerMap[player.clientId]) {
@@ -43,7 +45,8 @@ export class MainScene extends Scene {
                   player.y,
                   player.spriteKey
                 )
-                .setOrigin(0.5).setScale(1.2);
+                .setOrigin(0.5)
+                .setScale(1.2);
               this.objects.playerMap[player.clientId] = {
                 sprite: sprite,
                 sync: null,
@@ -56,12 +59,13 @@ export class MainScene extends Scene {
           });
         }
 
-        if (res.npcArr.length > 0) {
+        if (res.npcArr && res.npcArr.length > 0) {
           res.npcArr.forEach((npc) => {
             if (!this.objects.npcMap[npc.id]) {
               let sprite = this.add
                 .sprite(npc.x, npc.y, npc.spriteKey)
-                .setOrigin(0.5).setScale(1.2);
+                .setOrigin(0.5)
+                .setScale(1.2);
               this.objects.npcMap[npc.id] = {
                 sprite: sprite,
                 sync: null,
@@ -70,7 +74,7 @@ export class MainScene extends Scene {
             this.objects.npcMap[npc.id]['sync'] = npc;
           });
         }
-        if (res.obstacleArr.length > 0) {
+        if (res.obstacleArr && res.obstacleArr.length > 0) {
           res.obstacleArr.map((obstacle) => {
             if (!this.objects.obstacleMap[obstacle.id]) {
               let sprite = this.add
@@ -79,7 +83,8 @@ export class MainScene extends Scene {
                   obstacle.y,
                   obstacle.spriteKey
                 )
-                .setOrigin(0.5).setScale(1.25);
+                .setOrigin(0.5)
+                .setScale(1.25);
               this.objects.obstacleMap[obstacle.id] = {
                 sprite: sprite,
                 sync: null,

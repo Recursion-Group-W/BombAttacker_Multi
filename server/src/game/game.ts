@@ -47,7 +47,7 @@ export class Game {
           nanoSecDiff,
           playerArr: Array.from(this.stage.playerSet),
           npcArr: Array.from(this.stage.npcSet),
-          obstacleArr: Array.from(this.stage.obstacleSet),
+          // obstacleArr: Array.from(this.stage.obstacleSet),
           tankArr: Array.from(this.stage.tankSet),
           tankObstacleArr: Array.from(
             this.stage.tankobstacleSet
@@ -61,6 +61,7 @@ export class Game {
   getInitialState() {
     return {
       playerArr: Array.from(this.stage.playerSet),
+      npcArr: Array.from(this.stage.npcSet),
       obstacleArr: Array.from(this.stage.obstacleSet),
     };
   }

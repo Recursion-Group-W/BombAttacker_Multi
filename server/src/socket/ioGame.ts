@@ -17,21 +17,22 @@ export default class IoGame {
         //clientIdを生成して送信する処理
         roomManager.generateClientId(socket);
 
-        // //入室
+        // 入室
         socket.on(
           'joinRoom',
           async (req: { userName: string }) => {
-            console.log(req);
+            // console.log(req);
+
             //入室する処理
             await roomManager.joinRoom(
               socket,
               req.userName
             );
-            console.log(`New user connected! to room`);
           }
         );
 
-        // //クライアントから、ゲームの初期状態をリクエストされる
+        // クライアントから、ゲームの初期状態をリクエストされる
+        // (ゲームに参加した際の１度だけ)
         socket.on('getInitialState', () => {
           if (!socket.roomId) return;
 
@@ -41,22 +42,8 @@ export default class IoGame {
               socket.roomId
             ].gameManager.game.getInitialState();
           //クライアントにゲームのデータを送信
-          socket.emit('SyncGame', payload);
+          socket.emit('syncGame', payload);
         });
-        // // //ルーム内のユーザーにデータを送信
-        // this.roomManager.ioNspGame
-        //   .in(this.roomId)
-        //   .emit('syncGame', {
-        //     nanoSecDiff,
-        //     playerArr: Array.from(this.stage.playerSet),
-        //     obstacleArr: Array.from(this.stage.obstacleSet),
-        //     tankArr: Array.from(this.stage.tankSet),
-        //     tankObstacleArr: Array.from(
-        //       this.stage.tankobstacleSet
-        //     ),
-        //     bulletArr: Array.from(this.stage.bulletSet),
-        //     botArr: Array.from(this.stage.botSet),
-        //   });
 
         socket.on('movePlayer', (movement: any) => {
           if (!socket.roomId || !socket.clientId) return;
