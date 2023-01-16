@@ -1,10 +1,10 @@
-import { GameObject } from '../../gameObject';
+import { GameObject } from '../../gameObject/gameObject';
 
 //将来の拡張に対応するためのGenericクラス
 export class GenericObstacle extends GameObject {
   id = 0;
-  static WIDTH = 32;
-  static HEIGHT = 32;
+  static WIDTH = 40;
+  static HEIGHT = 40;
 
   protected endurance = 0;
 

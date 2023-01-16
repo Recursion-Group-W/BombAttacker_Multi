@@ -1,4 +1,4 @@
-import { GameObject } from './gameObject';
+import { GameObject } from './gameObject/gameObject';
 
 export class Explosion extends GameObject {
   //   constructor() {

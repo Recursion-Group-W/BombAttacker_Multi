@@ -1,7 +1,7 @@
-import { Position } from '../../types/position.type';
-import { RectBound } from '../../types/rectBound.type';
-import { OverlapTester } from '../util/overlapTester';
-import { GenericObstacle } from './obstacle/generic/genericObstacle';
+import { Position } from '../../../types/position.type';
+import { RectBound } from '../../../types/rectBound.type';
+import { OverlapTester } from '../../util/overlapTester';
+import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
 export class GameObject {
   rectBound: RectBound = {

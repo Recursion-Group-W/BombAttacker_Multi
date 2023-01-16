@@ -1,8 +1,8 @@
-import { MathUtil } from '../util/math.util';
-import { OverlapTester } from '../util/overlapTester';
-import { Character } from './character';
-import { GenericObstacle } from './obstacle/generic/genericObstacle';
-import { Player } from './player/player';
+import { MathUtil } from '../../util/math.util';
+import { OverlapTester } from '../../util/overlapTester';
+import { Character } from '../character/character';
+import { GenericObstacle } from '../obstacle/generic/genericObstacle';
+import { Player } from '../player/player';
 
 export class Npc extends Character {
   static readonly SPRITE_KEY = 'npc';
@@ -102,7 +102,10 @@ export class Npc extends Character {
   //ランダムな動きをセット
   setMoveRamdom() {
     //4方向をランダムに選択して動かす
-    const randomDir: number = MathUtil.getRandomInt(0, 3);
+    let randomDir: number = MathUtil.getRandomInt(0, 3);
+    while (randomDir === this.getDirection) {
+      randomDir = MathUtil.getRandomInt(0, 3);
+    }
     this.setMoveByDirection(randomDir);
   }
 

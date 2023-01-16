@@ -7,8 +7,8 @@ import { Tank } from '../model/tank/tank';
 import { TankObstacle } from '../model/tank/tankObstacle';
 
 export class Stage {
-  readonly TILE_SIZE = 32;
-  readonly TILE_SPAN_SCALE = 1.25;
+  readonly TILE_SIZE = 40;
+  readonly TILE_SPAN_SCALE = 1.0;
   obstacleSet = new Set<GenericObstacle>();
   playerSet = new Set<Player>(); //とりあえずSetを使う。あとでDequeを使って修正したい。
 

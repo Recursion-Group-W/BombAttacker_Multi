@@ -1,5 +1,5 @@
 import { Explosion } from './explosion';
-import { GameObject } from './gameObject';
+import { GameObject } from './gameObject/gameObject';
 import { Player } from './player/player';
 
 export class Bomb extends GameObject {

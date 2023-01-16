@@ -1,10 +1,15 @@
 import { Scene } from 'phaser';
+import { CustomSocket } from '../../socket/interface/customSocket.interface';
+import { NpcDto } from '../dto/npc.dto';
+import { ObstacleDto } from '../dto/obstacle.dto';
+import { PlayerDto } from '../dto/player.dto';
+import { Objects } from '../types/objects.type';
 import { AnimationUtil } from '../util/animationUtil';
 
 export class MainScene extends Scene {
-  public socket: any;
+  public socket: CustomSocket | null = null;
 
-  objects: { [key: string]: { [id: string]: any } } = {
+  objects: Objects = {
     playerMap: {},
     npcMap: {},
     obstacleMap: {},
@@ -12,35 +17,25 @@ export class MainScene extends Scene {
 
   constructor() {
     super({ key: 'MainScene' });
-    // playerRight
-    // this.socket.on('', function
-    // (movementDate) {
-    // Player.anims.play('player-right', true);
-    // });
+  }
+
+  init() {
+    this.socket = this.registry.get('socket');
   }
 
   create() {
-    // this.initAnimation();
-    this.socket = this.registry.get('socket');
-    console.log('socket: ', this.socket);
-    // this.socket.on('', function
-    // (movementDate) {
-    // Player.anims.play('player-right', true);
-    // });
+    if (!this.socket) return;
+
     this.socket.on(
       'syncGame',
       (res: {
-        nanoSecDiff: number;
-        playerArr: any[];
-        npcArr: any[];
-        obstacleArr: any[];
-        tankArr: any[];
-        tankObstacleArr: any[];
-        bulletArr: any[];
-        botArr: any[];
+        playerArr: PlayerDto[];
+        npcArr: NpcDto[];
+        obstacleArr: ObstacleDto[];
       }) => {
         if (res.playerArr.length > 0) {
           res.playerArr.forEach((player) => {
+            //clientIdに対応するデータがない場合、新たにspriteを作成する
             if (!this.objects.playerMap[player.clientId]) {
               let sprite = this.add
                 .sprite(
@@ -48,11 +43,13 @@ export class MainScene extends Scene {
                   player.y,
                   player.spriteKey
                 )
-                .setOrigin(0.5);
+                .setOrigin(0.5).setScale(1.2);
               this.objects.playerMap[player.clientId] = {
                 sprite: sprite,
+                sync: null,
               };
             }
+            //updateメソッドで使用するためのデータをsyncに格納する
             this.objects.playerMap[player.clientId][
               'sync'
             ] = player;
@@ -64,9 +61,10 @@ export class MainScene extends Scene {
             if (!this.objects.npcMap[npc.id]) {
               let sprite = this.add
                 .sprite(npc.x, npc.y, npc.spriteKey)
-                .setOrigin(0.5);
+                .setOrigin(0.5).setScale(1.2);
               this.objects.npcMap[npc.id] = {
                 sprite: sprite,
+                sync: null,
               };
             }
             this.objects.npcMap[npc.id]['sync'] = npc;
@@ -81,9 +79,10 @@ export class MainScene extends Scene {
                   obstacle.y,
                   obstacle.spriteKey
                 )
-                .setOrigin(0.5);
+                .setOrigin(0.5).setScale(1.25);
               this.objects.obstacleMap[obstacle.id] = {
                 sprite: sprite,
+                sync: null,
               };
             }
             this.objects.obstacleMap[obstacle.id]['sync'] =
@@ -95,12 +94,16 @@ export class MainScene extends Scene {
   }
 
   update(): void {
+    //syncのデータを基に、spriteの座標とアニメーションを更新
     if (Object.keys(this.objects.playerMap).length > 0) {
       Object.values(this.objects.playerMap).forEach(
         (player) => {
+          if (!player.sync) return;
+          //座標を更新
           player.sprite.x = player.sync.x;
           player.sprite.y = player.sync.y;
 
+          //アニメーションを更新
           AnimationUtil.setPlayerAnimation(
             player.sprite,
             player.sync.animation,
@@ -112,6 +115,8 @@ export class MainScene extends Scene {
 
     if (Object.keys(this.objects.npcMap).length > 0) {
       Object.values(this.objects.npcMap).forEach((npc) => {
+        if (!npc.sync) return;
+
         npc.sprite.x = npc.sync.x;
         npc.sprite.y = npc.sync.y;
 

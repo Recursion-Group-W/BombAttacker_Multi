@@ -1,7 +1,7 @@
 import { Movement } from '../../../types/movement.type';
 import { OverlapTester } from '../../util/overlapTester';
 import { Bomb } from '../bomb';
-import { Character } from '../character';
+import { Character } from '../character/character';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
 export class Player extends Character {

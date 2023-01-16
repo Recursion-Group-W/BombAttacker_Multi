@@ -1,12 +1,12 @@
-import { RectBound } from '../../types/rectBound.type';
-import { CommonConfig } from '../config/commonConfig';
-import { ObjectUtil } from '../util/object.util';
-import { GameObject } from './gameObject';
-import { GenericObstacle } from './obstacle/generic/genericObstacle';
+import { RectBound } from '../../../types/rectBound.type';
+import { CommonConfig } from '../../config/commonConfig';
+import { ObjectUtil } from '../../util/object.util';
+import { GameObject } from '../gameObject/gameObject';
+import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
 export class Character extends GameObject {
-  static WIDTH = 32;
-  static HEIGHT = 32;
+  static WIDTH = 38.4;
+  static HEIGHT = 38.4;
 
   protected direction = 2; // 0:up, 1:right, 2:down, 3:left
   protected speed = 50; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。

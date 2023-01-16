@@ -190,30 +190,30 @@ export class Screen {
     // );
     // this.context.restore();
 
-    if (myPlayer) {
-      this.context.save();
-      this.context.font = ClientConfig.SCORE_FONT;
-      this.context.fillStyle = ClientConfig.SCORE_COLOR;
-      this.context.fillText(
-        'Score : ' + myPlayer.score,
-        20,
-        40
-      );
-      this.context.restore();
-    }
+    // if (myPlayer) {
+    //   this.context.save();
+    //   this.context.font = ClientConfig.SCORE_FONT;
+    //   this.context.fillStyle = ClientConfig.SCORE_COLOR;
+    //   this.context.fillText(
+    //     'Score : ' + myPlayer.score,
+    //     20,
+    //     40
+    //   );
+    //   this.context.restore();
+    // }
 
     // 画面左上に得点表示
-    if (myTank) {
-      this.context.save();
-      this.context.font = ClientConfig.SCORE_FONT;
-      this.context.fillStyle = ClientConfig.SCORE_COLOR;
-      this.context.fillText(
-        'Score : ' + myTank.iScore,
-        20,
-        40
-      );
-      this.context.restore();
-    }
+    // if (myTank) {
+    //   this.context.save();
+    //   this.context.font = ClientConfig.SCORE_FONT;
+    //   this.context.fillStyle = ClientConfig.SCORE_COLOR;
+    //   this.context.fillText(
+    //     'Score : ' + myTank.iScore,
+    //     20,
+    //     40
+    //   );
+    //   this.context.restore();
+    // }
 
     // 画面右上にサーバー処理時間表示
     // this.context.save();

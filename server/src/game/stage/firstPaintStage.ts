@@ -11,7 +11,7 @@ import { Movement } from '../../types/movement.type';
 import { FirstStage } from './firstStage';
 import { BrickFactory } from '../factory/obstacle/brick/brickFactory';
 import { MathUtil } from '../util/math.util';
-import { Npc } from '../model/npc';
+import { Npc } from '../model/npc/npc';
 
 export class FirstPaintStage extends FirstStage {
   // type='paint'
@@ -180,7 +180,7 @@ export class FirstPaintStage extends FirstStage {
     }
 
     //後でfactoryを作成して、npc作成の機能をステージから切り離したい
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 10; i++) {
       this.createNpc();
     }
   }

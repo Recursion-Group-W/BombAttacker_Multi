@@ -1,5 +1,7 @@
+import { CustomSocket } from '../../socket/interface/customSocket.interface';
+
 export type SocketState = {
-  socket: any;
+  socket: CustomSocket | null;
 };
 
 //useGameStoreが持つ状態とメソッドの型
