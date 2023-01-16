@@ -9,8 +9,8 @@ export class ObjectUtil {
     return {
       left: 0 + width * 0.5,
       bottom: 0 + height * 0.5,
-      right: CommonConfig.FIELD_WIDTH - width * 0.5,
-      top: CommonConfig.FIELD_HEIGHT - height * 0.5,
+      right: CommonConfig.STAGE_WIDTH - width * 0.5,
+      top: CommonConfig.STAGE_HEIGHT - height * 0.5,
     };
   }
 }

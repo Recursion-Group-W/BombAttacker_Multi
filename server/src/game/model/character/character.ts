@@ -97,9 +97,9 @@ export class Character extends GameObject {
     // 初期位置
     this.setPosition(
       Math.random() *
-        (CommonConfig.FIELD_WIDTH - this.getWidth),
+        (CommonConfig.STAGE_WIDTH - this.getWidth),
       Math.random() *
-        (CommonConfig.FIELD_HEIGHT - this.getHeight)
+        (CommonConfig.STAGE_HEIGHT - this.getHeight)
     );
 
     // 障害物にぶつからない初期位置の算出

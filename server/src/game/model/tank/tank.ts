@@ -47,9 +47,9 @@ export class Tank extends TankGameObject {
     // 初期位置
     this.setPosition(
       Math.random() *
-        (CommonConfig.FIELD_WIDTH - Tank.WIDTH),
+        (CommonConfig.STAGE_WIDTH - Tank.WIDTH),
       Math.random() *
-        (CommonConfig.FIELD_HEIGHT - Tank.HEIGHT)
+        (CommonConfig.STAGE_HEIGHT - Tank.HEIGHT)
     );
 
     // 障害物にぶつからない初期位置の算出

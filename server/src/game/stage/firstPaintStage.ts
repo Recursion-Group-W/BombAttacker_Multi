@@ -104,30 +104,28 @@ export class FirstPaintStage extends FirstStage {
 
     //耐久力の低い障害物を配置
     for (
-      let i = 2;
+      let i = 0;
       i <
       Math.floor(
         this.STAGE_WIDTH /
           this.TILE_SIZE /
           this.TILE_SPAN_SCALE
-      ) -
-        2;
-      i = i + 2
+      );
+      i = i + 1
     ) {
       for (
-        let j = 2;
+        let j = 0;
         j <
         Math.floor(
           this.STAGE_HEIGHT /
             this.TILE_SIZE /
             this.TILE_SPAN_SCALE
-        ) -
-          2;
-        j = j + 2
+        );
+        i % 2 !== 0 ? (j = j + 2) : (j = j + 1)
       ) {
-        // 3/5の確率で障害物を置く
+        // 1/5の確率で障害物を置く
         const willPut = MathUtil.getRandomInt(0, 4);
-        if (willPut >= 3) continue;
+        if (willPut >= 1) continue;
 
         const x =
           i * this.TILE_SIZE * this.TILE_SPAN_SCALE +
