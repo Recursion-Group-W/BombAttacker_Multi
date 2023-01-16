@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { AnimationUtil } from '../util/animationUtil';
+import { AnimationUtil } from '../util/animation.util';
 
 export class PreloadScene extends Scene {
   constructor() {
