@@ -20,8 +20,8 @@ const GameDisplay = () => {
       type: Phaser.AUTO,
       scale: {
         parent: 'phaser-game',
-        width: 1024,
-        height: 1024,
+        width: 1160,
+        height: 1160,
       },
       physics: {
         default: 'arcade',
@@ -120,21 +120,21 @@ const GameDisplay = () => {
     const canvas: HTMLCanvasElement | null =
       document.querySelector('#game-canvas');
     if (canvas) {
-      const screen = new Screen(socket, canvas);
-      // キャンバスの描画開始
-      screen.animate(0);
+      // const screen = new Screen(socket, canvas);
+      // // キャンバスの描画開始
+      // screen.animate(0);
 
-      document.addEventListener(
-        'keydown',
-        keyDownHandler,
-        false
-      );
-      document.addEventListener(
-        'keyup',
-        keyUpHandler,
-        false
-      );
     }
+    document.addEventListener(
+      'keydown',
+      keyDownHandler,
+      false
+    );
+    document.addEventListener(
+      'keyup',
+      keyUpHandler,
+      false
+    );
   }, []);
   return (
     <>
@@ -147,10 +147,10 @@ const GameDisplay = () => {
           alignItems: 'center',
         }}
       >
-        <canvas
+        {/* <canvas
           id='game-canvas'
           className={styles.canvasBorder}
-        ></canvas>
+        ></canvas> */}
         <div
           id='phaser-game'
           className={styles.canvasBorder}
