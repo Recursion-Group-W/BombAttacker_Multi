@@ -1,6 +1,6 @@
-import { ClientConfig } from '../clientConfig';
-import { CommonConfig } from '../commonConfig';
-import { Assets } from './assets';
+import { ClientConfig } from '../../clientConfig';
+import { CommonConfig } from '../../commonConfig';
+import { Assets } from '../tank/assets';
 
 // スクリーンクラス
 export class Screen {
