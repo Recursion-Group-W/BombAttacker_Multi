@@ -1,6 +1,6 @@
 import { GenericThirdObstacle } from "./genericThirdObstacle";
 
-export class FourthObstacle extends GenericThirdObstacle {
+export class FourthObstacle extends GenericThirdObstacle implements FourthObstacle{
     constructor(
       id: number,
       x: number,

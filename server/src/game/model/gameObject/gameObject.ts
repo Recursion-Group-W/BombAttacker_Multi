@@ -54,7 +54,7 @@ export class GameObject {
     };
   }
 
-  // 壁との干渉チェック
+  // 障害物との干渉チェック
   overlapObstacles(obstacleSet: Set<GenericObstacle>) {
     return Array.from(obstacleSet).some((obstacle) => {
       if (

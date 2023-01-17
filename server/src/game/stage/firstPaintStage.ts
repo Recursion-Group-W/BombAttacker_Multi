@@ -10,169 +10,28 @@ import { GenericObstacle } from '../model/obstacle/generic/genericObstacle';
 import { Movement } from '../types/movement.type';
 import { FirstStage } from './firstStage';
 import { BrickFactory } from '../factory/obstacle/brick/brickFactory';
-import { MathUtil } from '../util/math.util';
 import { Npc } from '../model/npc/npc';
 import { Bomb } from '../model/bomb';
 
 export class FirstPaintStage extends FirstStage {
   // type='paint'
   // background = ""
-  obstacleFactory = new BrickFactory();
+  obstacleFactory = new BrickFactory(); //障害物を作成するFactory
 
-  constructor(
-    level: number,
-    roomId: string,
-    roomManager: RoomManager
-  ) {
+  // GenericLinkedList<Integer> integerLinkedList = new GenericLinkedList<Integer>();
+  constructor(level: number, roomId: string, roomManager: RoomManager) {
     super(level, roomId, roomManager);
 
     //障害物の生成
-    this.createObstacles();
+    this.createObstacles(
+      this.STAGE_WIDTH,
+      this.STAGE_HEIGHT,
+      this.obstacleFactory
+    );
 
     //npc作成
     //後でfactoryを作成して、npc作成の機能をステージから切り離したい
-    for (let i = 0; i < 10; i++) {
-      this.createNpc();
-    }
-
-    // ボットの生成
-    // for (let i = 0; i < ServerConfig.BOTTANK_COUNT; i++) {
-    //   this.createBotTank('Bot' + (i + 1));
-    // }
-  }
-
-  //障害物の生成
-  createObstacles() {
-    //ステージ余白を均等にするために、余白extraを算出
-    const extra = Math.floor(
-      (this.STAGE_WIDTH %
-        (this.TILE_SIZE * this.TILE_SPAN_SCALE)) /
-        2
-    );
-
-    //耐久力の高い障害物を均等に配置
-    for (
-      let i = 1;
-      i <
-      Math.floor(
-        this.STAGE_WIDTH /
-          this.TILE_SIZE /
-          this.TILE_SPAN_SCALE
-      ) -
-        1;
-      i = i + 2
-    ) {
-      for (
-        let j = 1;
-        j <
-        Math.floor(
-          this.STAGE_HEIGHT /
-            this.TILE_SIZE /
-            this.TILE_SPAN_SCALE
-        ) -
-          1;
-        j = j + 2
-      ) {
-        const x =
-          i * this.TILE_SIZE * this.TILE_SPAN_SCALE +
-          this.TILE_SIZE * 0.5 +
-          extra;
-        const y =
-          j * this.TILE_SIZE * this.TILE_SPAN_SCALE +
-          this.TILE_SIZE * 0.5 +
-          extra;
-
-        //後で双方向リストに書き換えて計算量減らしたい
-        const obstacleArr = Array.from(this.obstacleSet);
-        const id =
-          obstacleArr.length <= 0
-            ? 0
-            : obstacleArr[obstacleArr.length - 1].id + 1;
-
-        const obstacle =
-          this.obstacleFactory.createFourthObstacle(
-            id,
-            x,
-            y
-          );
-        this.obstacleSet.add(obstacle);
-      }
-    }
-
-    //耐久力の低い障害物を配置
-    for (
-      let i = 0;
-      i <
-      Math.floor(
-        this.STAGE_WIDTH /
-          this.TILE_SIZE /
-          this.TILE_SPAN_SCALE
-      );
-      i = i + 1
-    ) {
-      for (
-        let j = 0;
-        j <
-        Math.floor(
-          this.STAGE_HEIGHT /
-            this.TILE_SIZE /
-            this.TILE_SPAN_SCALE
-        );
-        i % 2 !== 0 ? (j = j + 2) : (j = j + 1)
-      ) {
-        // 1/5の確率で障害物を置く
-        const willPut = MathUtil.getRandomInt(0, 4);
-        if (willPut >= 1) continue;
-
-        const x =
-          i * this.TILE_SIZE * this.TILE_SPAN_SCALE +
-          this.TILE_SIZE * 0.5 +
-          extra;
-        const y =
-          j * this.TILE_SIZE * this.TILE_SPAN_SCALE +
-          this.TILE_SIZE * 0.5 +
-          extra;
-
-        //後で双方向リストに書き換えて計算量減らしたい
-        const obstacleArr = Array.from(this.obstacleSet);
-        const id =
-          obstacleArr.length <= 0
-            ? 0
-            : obstacleArr[obstacleArr.length - 1].id + 1;
-
-        //障害物の種類をランダムに決定
-        const obstacleLevel = MathUtil.getRandomInt(1, 3);
-
-        let obstacle = null;
-        switch (obstacleLevel) {
-          case 3:
-            obstacle =
-              this.obstacleFactory.createThirdObstacle(
-                id,
-                x,
-                y
-              );
-            break;
-          case 2:
-            obstacle =
-              this.obstacleFactory.createSecondObstacle(
-                id,
-                x,
-                y
-              );
-            break;
-          case 1:
-            obstacle =
-              this.obstacleFactory.createFirstObstacle(
-                id,
-                x,
-                y
-              );
-            break;
-        }
-        if (obstacle) this.obstacleSet.add(obstacle);
-      }
-    }
+    this.createNpcs(this.npcSet, this.obstacleSet, this.NPC_COUNT);
   }
 
   // 更新処理
@@ -193,23 +52,14 @@ export class FirstPaintStage extends FirstStage {
     this.playerSet.forEach((player) => {
       player.update(deltaTime, this.obstacleSet);
     });
-    //npxごとの処理
+    //npcごとの処理
     this.npcSet.forEach((npc) => {
-      npc.update(
-        deltaTime,
-        this.obstacleSet,
-        this.playerSet
-      );
+      npc.update(deltaTime, this.obstacleSet, this.playerSet);
     });
-    // // タンクごとの処理
-    // this.tankSet.forEach((tank) => {
-    //   tank.update(deltaTime, this.tankobstacleSet);
-    // });
 
-    // //ボットごとの処理
-    // this.botSet.forEach((bot) => {
-    //   bot.update(deltaTime, this.tankobstacleSet);
-    // });
+    //爆弾ごとの処理
+
+    //爆風ごとの処理
 
     // // 弾丸ごとの処理
     // this.bulletSet.forEach((bullet) => {
@@ -227,11 +77,11 @@ export class FirstPaintStage extends FirstStage {
   //clientIdが一致するプレイヤーに動作(movement)をセットする
   movePlayer(clientId: string, movement: Movement) {
     this.playerSet.forEach((player) => {
-      console.log(
-        `player.clientId === clientId : ${
-          player.clientId === clientId
-        }`
-      );
+      // console.log(
+      //   `player.clientId === clientId : ${
+      //     player.clientId === clientId
+      //   }`
+      // );
       if (player.clientId && player.clientId === clientId) {
         player.setMovement(movement);
       }
@@ -259,15 +109,8 @@ export class FirstPaintStage extends FirstStage {
   createPlayer(clientId: string, userName: string) {
     const playerArr = Array.from(this.playerSet);
     const id =
-      playerArr.length === 0
-        ? 0
-        : playerArr[playerArr.length - 1].id + 1;
-    const player = new Player(
-      id,
-      clientId,
-      userName,
-      this.obstacleSet
-    );
+      playerArr.length === 0 ? 0 : playerArr[playerArr.length - 1].id + 1;
+    const player = new Player(id, clientId, userName, this.obstacleSet);
     console.log('プレイヤーが作成されました。');
 
     this.playerSet.add(player);
@@ -275,17 +118,14 @@ export class FirstPaintStage extends FirstStage {
     return player;
   }
 
-  createNpc() {
-    const npcArr = Array.from(this.npcSet);
-    const id =
-      npcArr.length === 0
-        ? 0
-        : npcArr[npcArr.length - 1].id + 1;
-    const npc = new Npc(id, this.obstacleSet);
+  // createNpc(npcSet: Set<Npc>, obstacleSet: Set<GenericObstacle>) {
+  //   const npcArr = Array.from(npcSet);
+  //   const id = npcArr.length === 0 ? 0 : npcArr[npcArr.length - 1].id + 1;
+  //   const npc = new Npc(id, obstacleSet);
 
-    this.npcSet.add(npc);
-    return npc;
-  }
+  //   npcSet.add(npc);
+  //   return npc;
+  // }
 
   // タンクの生成
   // createTank(clientId: string, userName: string) {
@@ -330,9 +170,7 @@ export class FirstPaintStage extends FirstStage {
         this.playerSet.delete(player);
 
         //削除したプレイヤーのクライアントに"dead"イベントを送信
-        this.roomManager.ioNspGame
-          .to(player.clientId)
-          .emit('dead');
+        this.roomManager.ioNspGame.to(player.clientId).emit('dead');
 
         //clientIdのプレイヤーSpriteを破棄するようにクライアントに指示する
         this.roomManager.ioNspGame

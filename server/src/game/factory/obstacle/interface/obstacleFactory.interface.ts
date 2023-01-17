@@ -1,4 +1,7 @@
+import { GenericFirstObstacle } from '../../../model/obstacle/generic/genericFirstObstacle';
 import { FourthObstacle } from '../../../model/obstacle/generic/genericFourthObstacle';
+import { GenericSecondObstacle } from '../../../model/obstacle/generic/genericSecondObstacle';
+import { GenericThirdObstacle } from '../../../model/obstacle/generic/genericThirdObstacle';
 import { FirstObstacle } from '../../../model/obstacle/interface/firstObstacle.interface';
 import { SecondObstacle } from '../../../model/obstacle/interface/secondObstacle.interface';
 import { ThirdObstacle } from '../../../model/obstacle/interface/thirdObstacle.interface';
@@ -9,23 +12,23 @@ export interface ObstacleFactory {
     id: number,
     x: number,
     y: number
-  ): FirstObstacle;
+  ): GenericFirstObstacle;
 
   createSecondObstacle(
     id: number,
     x: number,
     y: number
-  ): SecondObstacle;
+  ): GenericSecondObstacle;
 
   createThirdObstacle(
     id: number,
     x: number,
     y: number
-  ): ThirdObstacle;
+  ): GenericThirdObstacle;
 
   createFourthObstacle(
     id: number,
     x: number,
     y: number
-  ): FourthObstacle;
+  ): GenericFirstObstacle;
 }
