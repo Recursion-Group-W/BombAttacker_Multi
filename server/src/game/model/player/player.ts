@@ -1,3 +1,4 @@
+import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import { Movement } from '../../types/movement.type';
 import { OverlapTester } from '../../util/overlapTester';
 import { Bomb } from '../bomb';
@@ -22,15 +23,17 @@ export class Player extends Character {
     public id: number,
     public clientId: string,
     public userName: string,
-    obstacleSet: Set<GenericObstacle>
+    // obstacleSet: Set<GenericObstacle>
+    obstacleList: GenericLinkedList<GenericObstacle>
   ) {
-    super(userName, Player.SPRITE_KEY, obstacleSet);
+    super(userName, Player.SPRITE_KEY, obstacleList);
   }
 
   // 更新
   update(
     deltaTime: number,
-    obstacleSet: Set<GenericObstacle>
+    // obstacleSet: Set<GenericObstacle>
+    obstacleList: GenericLinkedList<GenericObstacle>
   ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
@@ -96,7 +99,7 @@ export class Player extends Character {
     ) {
       // フィールドの外に出た。
       collision = true;
-    } else if (this.overlapObstacles(obstacleSet)) {
+    } else if (this.overlapObstacles(obstacleList)) {
       // 壁に当たった。
       collision = true;
     }

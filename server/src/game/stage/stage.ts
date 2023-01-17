@@ -1,3 +1,4 @@
+import { GenericLinkedList } from '../../linkedList/generic/genericLinkedList';
 import RoomManager from '../../manager/roomManager';
 import { ObstacleFactory } from '../factory/obstacle/interface/obstacleFactory.interface';
 import { Npc } from '../model/npc/npc';
@@ -8,9 +9,10 @@ import { MathUtil } from '../util/math.util';
 export class Stage {
   readonly TILE_SIZE = 40;
   readonly TILE_SPAN_SCALE = 1.0;
-  obstacleSet = new Set<GenericObstacle>();
+  // obstacleSet = new Set<GenericObstacle>();
   playerSet = new Set<Player>(); //とりあえずSetを使う。あとでDequeを使って修正したい。
   npcSet = new Set<Npc>();
+  obstacleList = new GenericLinkedList<GenericObstacle>();
 
   constructor(
     public level: number,
@@ -59,11 +61,14 @@ export class Stage {
           extra;
 
         //後で双方向リストに書き換えて計算量減らしたい
-        const obstacleArr = Array.from(this.obstacleSet);
-        const id =
-          obstacleArr.length <= 0
-            ? 0
-            : obstacleArr[obstacleArr.length - 1].id + 1;
+        // const obstacleArr = Array.from(this.obstacleSet);
+        // const id =
+        //   obstacleArr.length <= 0
+        //     ? 0
+        //     : obstacleArr[obstacleArr.length - 1].id + 1;
+
+        const tail = this.obstacleList.peekBack();
+        const id = tail ? tail.id + 1 : 0;
 
         let obstacle = null;
 
@@ -91,27 +96,46 @@ export class Stage {
               break;
           }
         }
-        if (obstacle) this.obstacleSet.add(obstacle);
+        // if (obstacle) this.obstacleSet.add(obstacle);
+        if (obstacle) this.obstacleList.add(obstacle);
       }
     }
   }
 
   createNpcs(
     npcSet: Set<Npc>,
-    obstacleSet: Set<GenericObstacle>,
+    obstacleList:GenericLinkedList<GenericObstacle>,
     count: number
   ) {
     for (let i = 0; i < count; i++) {
-      this.createNpc(npcSet, obstacleSet);
+      this.createNpc(npcSet, obstacleList);
     }
   }
 
-  createNpc(npcSet: Set<Npc>, obstacleSet: Set<GenericObstacle>) {
+  createNpc(npcSet: Set<Npc>, obstacleList:GenericLinkedList<GenericObstacle>) {
     const npcArr = Array.from(npcSet);
     const id = npcArr.length === 0 ? 0 : npcArr[npcArr.length - 1].id + 1;
-    const npc = new Npc(id, obstacleSet);
+    const npc = new Npc(id, obstacleList);
 
     npcSet.add(npc);
     return npc;
   }
+  // createNpcs(
+  //   npcSet: Set<Npc>,
+  //   obstacleSet: Set<GenericObstacle>,
+  //   count: number
+  // ) {
+  //   for (let i = 0; i < count; i++) {
+  //     this.createNpc(npcSet, obstacleSet);
+  //   }
+  // }
+
+  // createNpc(npcSet: Set<Npc>, obstacleSet: Set<GenericObstacle>) {
+  //   const npcArr = Array.from(npcSet);
+  //   const id = npcArr.length === 0 ? 0 : npcArr[npcArr.length - 1].id + 1;
+  //   const npc = new Npc(id, obstacleSet);
+
+  //   npcSet.add(npc);
+  //   return npc;
+  // }
 }

@@ -1,3 +1,4 @@
+import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import { MathUtil } from '../../util/math.util';
 import { OverlapTester } from '../../util/overlapTester';
 import { Character } from '../character/character';
@@ -9,9 +10,10 @@ export class Npc extends Character {
   // コンストラクタ
   constructor(
     public id: number,
-    obstacleSet: Set<GenericObstacle>
+    // obstacleSet: Set<GenericObstacle>
+    obstacleList: GenericLinkedList<GenericObstacle>
   ) {
-    super('npc', Npc.SPRITE_KEY, obstacleSet);
+    super('npc', Npc.SPRITE_KEY, obstacleList);
     this.setSpriteKey = 'npc';
 
     //初めに進む向きと速度をランダムにセット
@@ -21,7 +23,8 @@ export class Npc extends Character {
   // 更新
   update(
     deltaTime: number,
-    obstacleSet: Set<GenericObstacle>,
+    // obstacleSet: Set<GenericObstacle>,
+    obstacleList:GenericLinkedList<GenericObstacle>,
     playerSet: Set<Player>
   ) {
     // 移動前座標値のバックアップ
@@ -64,7 +67,7 @@ export class Npc extends Character {
     ) {
       // ステージの端に衝突
       collision = true;
-    } else if (this.overlapObstacles(obstacleSet)) {
+    } else if (this.overlapObstacles(obstacleList)) {
       //障害物に衝突
       collision = true;
     } else if (this.overlapPlayers(playerSet)) {

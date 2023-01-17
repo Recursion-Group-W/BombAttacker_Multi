@@ -1,12 +1,5 @@
 import RoomManager from '../../manager/roomManager';
-import { BotTank } from '../model/tank/botTank';
-import { Bullet } from '../model/tank/bullet';
-import { Tank } from '../model/tank/tank';
-import { TankObstacle } from '../model/tank/tankObstacle';
-import { ServerConfig } from '../config/serverConfig';
-import { OverlapTester } from '../util/overlapTester';
 import { Player } from '../model/player/player';
-import { GenericObstacle } from '../model/obstacle/generic/genericObstacle';
 import { Movement } from '../types/movement.type';
 import { FirstStage } from './firstStage';
 import { BrickFactory } from '../factory/obstacle/brick/brickFactory';
@@ -31,7 +24,7 @@ export class FirstPaintStage extends FirstStage {
 
     //npc作成
     //後でfactoryを作成して、npc作成の機能をステージから切り離したい
-    this.createNpcs(this.npcSet, this.obstacleSet, this.NPC_COUNT);
+    this.createNpcs(this.npcSet, this.obstacleList, this.NPC_COUNT);
   }
 
   // 更新処理
@@ -50,11 +43,11 @@ export class FirstPaintStage extends FirstStage {
   updateObjects(deltaTime: number) {
     //プレイヤーごとの処理
     this.playerSet.forEach((player) => {
-      player.update(deltaTime, this.obstacleSet);
+      player.update(deltaTime, this.obstacleList);
     });
     //npcごとの処理
     this.npcSet.forEach((npc) => {
-      npc.update(deltaTime, this.obstacleSet, this.playerSet);
+      npc.update(deltaTime, this.obstacleList, this.playerSet);
     });
 
     //爆弾ごとの処理
@@ -110,7 +103,7 @@ export class FirstPaintStage extends FirstStage {
     const playerArr = Array.from(this.playerSet);
     const id =
       playerArr.length === 0 ? 0 : playerArr[playerArr.length - 1].id + 1;
-    const player = new Player(id, clientId, userName, this.obstacleSet);
+    const player = new Player(id, clientId, userName, this.obstacleList);
     console.log('プレイヤーが作成されました。');
 
     this.playerSet.add(player);

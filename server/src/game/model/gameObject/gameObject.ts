@@ -1,3 +1,4 @@
+import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import { Position } from '../../types/position.type';
 import { RectBound } from '../../types/rectBound.type';
 import { OverlapTester } from '../../util/overlapTester';
@@ -55,16 +56,26 @@ export class GameObject {
   }
 
   // 障害物との干渉チェック
-  overlapObstacles(obstacleSet: Set<GenericObstacle>) {
-    return Array.from(obstacleSet).some((obstacle) => {
-      if (
-        OverlapTester.overlapRects(
-          this.rectBound,
-          obstacle.rectBound
-        )
-      ) {
+  overlapObstacles(obstacleList: GenericLinkedList<GenericObstacle>) {
+    let iterator = obstacleList.getHead();
+    while (iterator !== null) {
+      if (OverlapTester.overlapRects(this.rectBound, iterator.data.rectBound)) {
         return true;
       }
-    });
+      iterator = iterator.next;
+    }
+    return false;
   }
+  // overlapObstacles(obstacleSet: Set<GenericObstacle>) {
+  //   return Array.from(obstacleSet).some((obstacle) => {
+  //     if (
+  //       OverlapTester.overlapRects(
+  //         this.rectBound,
+  //         obstacle.rectBound
+  //       )
+  //     ) {
+  //       return true;
+  //     }
+  //   });
+  // }
 }

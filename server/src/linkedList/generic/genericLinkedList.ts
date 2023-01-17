@@ -12,6 +12,14 @@ export class GenericLinkedList<E>
   constructor() {
     super();
   }
+  public getHead(): Node<E> | null {
+    if (this.head === null) return null;
+    return this.head;
+  }
+  public getTail(): Node<E> | null {
+    if (this.tail === null) return this.getHead();
+    return this.tail;
+  }
 
   public peekFront(): E | null {
     if (this.head == null) return null;
@@ -179,6 +187,7 @@ export class GenericLinkedList<E>
     while (iterator !== null && i < arr.length) {
       arr[i] = iterator.data;
       iterator = iterator.next;
+      i++;
     }
     return arr;
   }
