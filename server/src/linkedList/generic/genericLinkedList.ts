@@ -13,16 +13,6 @@ export class GenericLinkedList<E>
     super();
   }
 
-  // public toString():string{
-  //     StringBuilder str = new StringBuilder("[");
-  //     let iterator = this.head;
-  //     while(iterator != null){
-  //         str.append(iterator.data + ", ");
-  //         iterator = iterator.next;
-  //     }
-  //     str.append("]");
-  //     return str.toString();
-  // }
   public peekFront(): E | null {
     if (this.head == null) return null;
     return this.head.data;
@@ -171,10 +161,7 @@ export class GenericLinkedList<E>
       endNode.prev = startNode.prev;
     }
   }
-  public subList(
-    start: number,
-    end: number
-  ): GenericAbstractList<E> {
+  public subList(start: number, end: number): GenericAbstractList<E> {
     let iterator = this.at(start);
     let endNode = this.at(end);
     let deepCopy = new GenericLinkedList<E>();
@@ -183,5 +170,16 @@ export class GenericLinkedList<E>
       iterator = iterator.next;
     }
     return deepCopy;
+  }
+
+  public toArray(): E[] {
+    let arr: E[] = new Array(this.size());
+    let iterator = this.head;
+    let i = 0;
+    while (iterator !== null && i < arr.length) {
+      arr[i] = iterator.data;
+      iterator = iterator.next;
+    }
+    return arr;
   }
 }
