@@ -1,4 +1,4 @@
-import { Deque } from './generic/interface/deque';
+import { Deque } from './interface/deque';
 import { GenericAbstractList } from './genericAbstractList';
 import { Node } from './node';
 
