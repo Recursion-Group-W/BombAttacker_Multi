@@ -98,6 +98,8 @@ export default class IoGame {
         socket.on('putBomb', () => {
           if (!socket.roomId || !socket.clientId) return;
 
+          console.log('⚠ 爆弾設置！！！');
+
           const playerSet =
             this.roomManager.roomMap[socket.roomId]
               .gameManager.game.stage.playerSet;
