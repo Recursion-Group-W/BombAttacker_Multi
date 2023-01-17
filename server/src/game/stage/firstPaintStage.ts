@@ -24,7 +24,7 @@ export class FirstPaintStage extends FirstStage {
 
     //npc作成
     //後でfactoryを作成して、npc作成の機能をステージから切り離したい
-    this.createNpcs(this.npcSet, this.obstacleList, this.NPC_COUNT);
+    this.createNpcs(this.npcList, this.obstacleList, this.NPC_COUNT);
   }
 
   // 更新処理
@@ -46,9 +46,15 @@ export class FirstPaintStage extends FirstStage {
       player.update(deltaTime, this.obstacleList);
     });
     //npcごとの処理
-    this.npcSet.forEach((npc) => {
-      npc.update(deltaTime, this.obstacleList, this.playerSet);
-    });
+    // this.npcSet.forEach((npc) => {
+    //   npc.update(deltaTime, this.obstacleList, this.playerSet);
+    // });
+
+    let npcIterator = this.npcList.getHead();
+    while (npcIterator !== null) {
+      npcIterator.data.update(deltaTime, this.obstacleList, this.playerSet);
+      npcIterator = npcIterator.next;
+    }
 
     //爆弾ごとの処理
 

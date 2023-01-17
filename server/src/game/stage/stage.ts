@@ -11,7 +11,8 @@ export class Stage {
   readonly TILE_SPAN_SCALE = 1.0;
   // obstacleSet = new Set<GenericObstacle>();
   playerSet = new Set<Player>(); //とりあえずSetを使う。あとでDequeを使って修正したい。
-  npcSet = new Set<Npc>();
+  // npcSet = new Set<Npc>();
+  npcList = new GenericLinkedList<Npc>();
   obstacleList = new GenericLinkedList<GenericObstacle>();
 
   constructor(
@@ -103,37 +104,41 @@ export class Stage {
   }
 
   createNpcs(
-    npcSet: Set<Npc>,
-    obstacleList:GenericLinkedList<GenericObstacle>,
+    npcList: GenericLinkedList<Npc>,
+    obstacleList: GenericLinkedList<GenericObstacle>,
     count: number
   ) {
     for (let i = 0; i < count; i++) {
-      this.createNpc(npcSet, obstacleList);
+      this.createNpc(npcList, obstacleList);
     }
   }
 
-  createNpc(npcSet: Set<Npc>, obstacleList:GenericLinkedList<GenericObstacle>) {
-    const npcArr = Array.from(npcSet);
-    const id = npcArr.length === 0 ? 0 : npcArr[npcArr.length - 1].id + 1;
+  createNpc(
+    npcList: GenericLinkedList<Npc>,
+    obstacleList: GenericLinkedList<GenericObstacle>
+  ) {
+    
+    const tail = npcList.getTail();
+    const id = tail ? tail.data.id + 1 : 0;
     const npc = new Npc(id, obstacleList);
 
-    npcSet.add(npc);
+    npcList.add(npc);
     return npc;
   }
   // createNpcs(
   //   npcSet: Set<Npc>,
-  //   obstacleSet: Set<GenericObstacle>,
+  //   obstacleList:GenericLinkedList<GenericObstacle>,
   //   count: number
   // ) {
   //   for (let i = 0; i < count; i++) {
-  //     this.createNpc(npcSet, obstacleSet);
+  //     this.createNpc(npcSet, obstacleList);
   //   }
   // }
 
-  // createNpc(npcSet: Set<Npc>, obstacleSet: Set<GenericObstacle>) {
+  // createNpc(npcSet: Set<Npc>, obstacleList:GenericLinkedList<GenericObstacle>) {
   //   const npcArr = Array.from(npcSet);
   //   const id = npcArr.length === 0 ? 0 : npcArr[npcArr.length - 1].id + 1;
-  //   const npc = new Npc(id, obstacleSet);
+  //   const npc = new Npc(id, obstacleList);
 
   //   npcSet.add(npc);
   //   return npc;

@@ -45,7 +45,8 @@ export class Game {
         // nanoSecDiff,
         time: this.time,
         playerArr: Array.from(this.stage.playerSet),
-        npcArr: Array.from(this.stage.npcSet),
+        npcArr:this.stage.npcList.toArray(),
+        // npcArr: Array.from(this.stage.npcSet),
         // obstacleArr: Array.from(this.stage.obstacleSet),
         // tankArr: Array.from(this.stage.tankSet),
         // tankObstacleArr: Array.from(
@@ -61,7 +62,9 @@ export class Game {
     console.log(this.stage.obstacleList.toArray());
     return {
       playerArr: Array.from(this.stage.playerSet),
-      npcArr: Array.from(this.stage.npcSet),
+      
+      // npcArr: Array.from(this.stage.npcSet),
+      npcArr:this.stage.npcList.toArray(),
       // obstacleArr: Array.from(this.stage.obstacleSet),
       obstacleArr: this.stage.obstacleList.toArray(),
     };
