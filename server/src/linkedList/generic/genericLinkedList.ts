@@ -12,19 +12,23 @@ export class GenericLinkedList<E>
   constructor() {
     super();
   }
+  //先頭のノードを取得
   public getHead(): Node<E> | null {
     if (this.head === null) return null;
     return this.head;
   }
+  //末尾のノードを取得
   public getTail(): Node<E> | null {
     if (this.tail === null) return this.getHead();
     return this.tail;
   }
 
+  //先頭のデータを取得
   public peekFront(): E | null {
     if (this.head == null) return null;
     return this.head.data;
   }
+  //先頭を削除
   public popFront(): E | null {
     if (this.head == null) return null;
     let temp = this.head;
@@ -34,6 +38,7 @@ export class GenericLinkedList<E>
 
     return temp.data;
   }
+  //末尾に追加
   public pushBack(data: E): void {
     let node = new Node<E>(data);
     if (this.peekBack() == null) {
@@ -47,10 +52,12 @@ export class GenericLinkedList<E>
       }
     }
   }
+  //末尾のデータを取得
   public peekBack(): E | null {
     if (this.tail == null) return this.peekFront();
     return this.tail.data;
   }
+  //末尾を削除
   public popBack(): E | null {
     if (this.tail == null) return null;
     let temp = this.tail;
@@ -60,6 +67,7 @@ export class GenericLinkedList<E>
 
     return temp.data;
   }
+  //先頭に追加
   public pushFront(data: E): void {
     let node = new Node<E>(data);
     if (this.peekFront() == null) {
@@ -73,6 +81,7 @@ export class GenericLinkedList<E>
       }
     }
   }
+  //指定したindexのノードを取得
   public at(index: number): Node<E> | null {
     if (index < 0) return null;
     let iterator = this.head;
@@ -84,6 +93,7 @@ export class GenericLinkedList<E>
     }
     return iterator;
   }
+  //リストのサイズを取得
   public size(): number {
     if (this.head == null) return 0;
     let size = 0;
@@ -94,17 +104,8 @@ export class GenericLinkedList<E>
     }
     return size;
   }
-  public get(index: number): E | null {
-    let found = this.at(index);
-    if (found == null) return null;
-    return found.data;
-  }
-  public add(element: E): void {
-    this.pushBack(element);
-  }
-  public pop(): E | null {
-    return this.popBack();
-  }
+
+  //指定した位置にデータを追加
   public addAt(index: number, element: E): void {
     if (index < 0) return;
     if (index == this.size()) {
@@ -126,6 +127,7 @@ export class GenericLinkedList<E>
       }
     }
   }
+  //ノードを削除
   public remove(deleteNode: Node<E>): E | null {
     if (deleteNode === null) return null;
     if (deleteNode === this.head) this.popFront();
@@ -141,6 +143,7 @@ export class GenericLinkedList<E>
     return deleteNode.data;
   }
 
+  //指定した位置のノードを削除
   public removeAt(index: number): E | null {
     let deleteNode = this.at(index);
     if (deleteNode == null) return null;
@@ -156,6 +159,7 @@ export class GenericLinkedList<E>
     }
     return deleteNode.data;
   }
+  //startからendまで削除
   public removeAllAt(start: number, end: number): void {
     let startNode = this.at(start);
     let endNode = this.at(end);
@@ -169,6 +173,7 @@ export class GenericLinkedList<E>
       endNode.prev = startNode.prev;
     }
   }
+  //startからendまでの部分リスト(deepcopy)を取得
   public subList(start: number, end: number): GenericAbstractList<E> {
     let iterator = this.at(start);
     let endNode = this.at(end);
@@ -180,6 +185,7 @@ export class GenericLinkedList<E>
     return deepCopy;
   }
 
+  //配列に変換
   public toArray(): E[] {
     let arr: E[] = new Array(this.size());
     let iterator = this.head;

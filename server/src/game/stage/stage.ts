@@ -98,7 +98,7 @@ export class Stage {
           }
         }
         // if (obstacle) this.obstacleSet.add(obstacle);
-        if (obstacle) this.obstacleList.add(obstacle);
+        if (obstacle) this.obstacleList.pushBack(obstacle);
       }
     }
   }
@@ -122,7 +122,7 @@ export class Stage {
     const id = tail ? tail.data.id + 1 : 0;
     const npc = new Npc(id, obstacleList);
 
-    npcList.add(npc);
+    npcList.pushBack(npc);
     return npc;
   }
   // createNpcs(
