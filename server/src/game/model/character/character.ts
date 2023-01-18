@@ -30,15 +30,9 @@ export class Character extends GameObject {
     public userName: string,
     spriteKey: string,
     // obstacleSet: Set<GenericObstacle>
-    obstacleList:GenericLinkedList<GenericObstacle>
+    obstacleList: GenericLinkedList<GenericObstacle>
   ) {
-    super(
-      0.0,
-      0.0,
-      Character.WIDTH,
-      Character.HEIGHT,
-      spriteKey
-    );
+    super(0.0, 0.0, Character.WIDTH, Character.HEIGHT, spriteKey);
 
     //初期位置に配置
     this.setInitialPosition(obstacleList);
@@ -117,24 +111,20 @@ export class Character extends GameObject {
   //     );
   //   } while (this.overlapObstacles(obstacleSet));
   // }
-  setInitialPosition(obstacleList:GenericLinkedList<GenericObstacle>) {
+  setInitialPosition(obstacleList: GenericLinkedList<GenericObstacle>) {
     // 初期位置
     this.setPosition(
-      Math.random() *
-        (CommonConfig.STAGE_WIDTH - this.getWidth),
-      Math.random() *
-        (CommonConfig.STAGE_HEIGHT - this.getHeight)
+      Math.random() * (CommonConfig.STAGE_WIDTH - this.getWidth),
+      Math.random() * (CommonConfig.STAGE_HEIGHT - this.getHeight)
     );
 
     // 障害物にぶつからない初期位置の算出
     do {
       this.setPosition(
         this.rectField.left +
-          Math.random() *
-            (this.rectField.right - this.rectField.left),
+          Math.random() * (this.rectField.right - this.rectField.left),
         this.rectField.bottom +
-          Math.random() *
-            (this.rectField.top - this.rectField.bottom)
+          Math.random() * (this.rectField.top - this.rectField.bottom)
       );
     } while (this.overlapObstacles(obstacleList));
   }

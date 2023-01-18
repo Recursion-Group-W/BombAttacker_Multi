@@ -60,11 +60,11 @@ export class GameObject {
     let iterator = obstacleList.getHead();
     while (iterator !== null) {
       if (OverlapTester.overlapRects(this.rectBound, iterator.data.rectBound)) {
-        return true;
+        return iterator;
       }
       iterator = iterator.next;
     }
-    return false;
+    return null;
   }
   // overlapObstacles(obstacleSet: Set<GenericObstacle>) {
   //   return Array.from(obstacleSet).some((obstacle) => {

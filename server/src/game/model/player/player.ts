@@ -1,5 +1,6 @@
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import { Movement } from '../../types/movement.type';
+import { ObjectUtil } from '../../util/object.util';
 import { OverlapTester } from '../../util/overlapTester';
 import { Bomb } from '../bomb';
 import { Character } from '../character/character';
@@ -89,6 +90,11 @@ export class Player extends Character {
 
     //衝突判定
     let collision = false;
+    //補正値
+    let correction = {
+      x: 0,
+      y: 0,
+    };
     if (
       !OverlapTester.pointInRect(this.rectField, {
         x: this.getPosition.x,
@@ -97,12 +103,51 @@ export class Player extends Character {
     ) {
       // フィールドの外に出た。
       collision = true;
-    } else if (this.overlapObstacles(obstacleList)) {
-      // 壁に当たった。
-      collision = true;
+    } else {
+      //衝突した障害物
+      let obstacleNode = this.overlapObstacles(obstacleList);
+      if (obstacleNode) {
+        // 障害物に当たった。
+        collision = true;
+
+        //補正値を計算
+        ObjectUtil.calCorrection(obstacleNode, this, correction);
+
+        // const obstacle = obstacleNode.data;
+        // if (
+        //   this.getPosition.x >= obstacle.getPosition.x &&
+        //   this.getPosition.y <= obstacle.getPosition.y
+        // ) {
+        //   const diffX = this.getPosition.x - obstacle.getPosition.x;
+        //   const diffY = obstacle.getPosition.y - this.getPosition.y;
+        //   if (diffX >= diffY) {
+        //     if (
+        //       diffY >=
+        //       ((obstacle.getHeight + this.getHeight) / 2) * (2 / 5)
+        //     ) {
+        //       //隣の障害物
+        //       let nextObstacle = obstacleNode.prev?.data;
+        //       if (nextObstacle) {
+        //         if (
+        //           !OverlapTester.overlapRects(
+        //             nextObstacle.rectBound,
+        //             this.rectBound
+        //           )
+        //         ) {
+        //           correction.y =
+        //             -1 *
+        //             (obstacle.getHeight / 2 +
+        //               this.getHeight / 2 -
+        //               (obstacle.getPosition.y - this.getPosition.y));
+        //         }
+        //       }
+        //     }
+        //   }
+        // }
+      }
     }
     if (collision) {
-      this.setPosition(prevPosition.x, prevPosition.y);
+      this.setPosition(prevPosition.x, prevPosition.y + correction.y);
       this.setVelocity(0, 0);
     }
   }
