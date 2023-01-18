@@ -14,7 +14,7 @@ export class Player extends Character {
     left: false,
   };
 
-  private bombList: Bomb[] = [];
+  private bombList = new GenericLinkedList<Bomb>();
   private bombCountMax = 1;
   private score = 0;
 
@@ -43,9 +43,7 @@ export class Player extends Character {
 
     //movementにtrueの値がない（動作がない）場合
     //移動や衝突判定はせず、アニメーションだけセットする
-    if (
-      !Object.values(this.movement).some((value) => value)
-    ) {
+    if (!Object.values(this.movement).some((value) => value)) {
       this.setVelocity(0, 0);
       //キーが押されていない時
       switch (this.getDirection) {
@@ -125,17 +123,13 @@ export class Player extends Character {
       return null;
     }
 
-    const bomb = new Bomb(
-      this.getPosition.x,
-      this.getPosition.y,
-      this
-    );
-    this.bombList.push(bomb);
+    const bomb = new Bomb(this.getPosition.x, this.getPosition.y, this);
+    this.bombList.pushBack(bomb);
     return bomb;
   }
 
   // 爆弾を置けるかどうか
   private canPutBomb() {
-    return this.bombList.length < this.bombCountMax;
+    return this.bombList.size() < this.bombCountMax;
   }
 }

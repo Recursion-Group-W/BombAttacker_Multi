@@ -257,49 +257,21 @@ export class FirstPaintStage extends FirstStage {
   //爆弾を作成
   // createBomb(clientId: string) {
   //   if (clientId === '') return;
-  //   this.playerSet.forEach((player) => {
-  //     if (player.clientId && player.clientId === clientId) {
-  //       const bomb = player.putBomb();
+  //   let iterator = this.playerList.getHead();
+  //   while (iterator !== null) {
+  //     if (iterator.data.clientId && iterator.data.clientId === clientId) {
+  //       const bomb = iterator.data.putBomb();
   //       if (bomb) {
-  //         this.bombSet.add(bomb);
+  //         this.bombList.pushBack(bomb);
   //       }
   //     }
-  //   });
-  // }
-
-  // 弾丸の生成
-  // createBullet(clientId: string, id: number) {
-  //   if (clientId !== '') {
-  //     this.tankSet.forEach((tank) => {
-  //       if (tank.clientId && tank.clientId === clientId) {
-  //         const bullet = tank.shoot();
-  //         if (bullet) {
-  //           this.bulletSet.add(bullet);
-  //         }
-  //       }
-  //     });
-  //   } else {
-  //     this.botSet.forEach((bot) => {
-  //       if (bot.id === id) {
-  //         const bullet = bot.shoot();
-  //         if (bullet) {
-  //           this.bulletSet.add(bullet);
-  //         }
-  //       }
-  //     });
   //   }
   // }
 
   //爆弾を破棄
-  //   destroyBomb(bomb:Bomb)
-  // {
-  //   this.bombSet.delete(bomb)
+  // destroyBomb(bomb: Bomb) {
+  //   this.bombList.remove(bomb)
   // }
-  //   // 弾丸の破棄
-  //   destroyBullet(bullet: Bullet) {
-  //     // 弾丸リストからの削除
-  //     this.bulletSet.delete(bullet);
-  //   }
 
   // 衝突のチェック
   checkCollisions() {
