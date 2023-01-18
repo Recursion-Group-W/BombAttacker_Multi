@@ -42,9 +42,14 @@ export class FirstPaintStage extends FirstStage {
   // オブジェクトの座標値の更新
   updateObjects(deltaTime: number) {
     //プレイヤーごとの処理
-    this.playerSet.forEach((player) => {
-      player.update(deltaTime, this.obstacleList);
-    });
+    // this.playerSet.forEach((player) => {
+    //   player.update(deltaTime, this.obstacleList);
+    // });
+    let playerIterator = this.playerList.getHead();
+    while (playerIterator !== null) {
+      playerIterator.data.update(deltaTime, this.obstacleList);
+      playerIterator = playerIterator.next;
+    }
     //npcごとの処理
     // this.npcSet.forEach((npc) => {
     //   npc.update(deltaTime, this.obstacleList, this.playerSet);
@@ -52,7 +57,7 @@ export class FirstPaintStage extends FirstStage {
 
     let npcIterator = this.npcList.getHead();
     while (npcIterator !== null) {
-      npcIterator.data.update(deltaTime, this.obstacleList, this.playerSet);
+      npcIterator.data.update(deltaTime, this.obstacleList, this.playerList);
       npcIterator = npcIterator.next;
     }
 
@@ -75,17 +80,28 @@ export class FirstPaintStage extends FirstStage {
 
   //clientIdが一致するプレイヤーに動作(movement)をセットする
   movePlayer(clientId: string, movement: Movement) {
-    this.playerSet.forEach((player) => {
-      // console.log(
-      //   `player.clientId === clientId : ${
-      //     player.clientId === clientId
-      //   }`
-      // );
-      if (player.clientId && player.clientId === clientId) {
-        player.setMovement(movement);
+    let iterator = this.playerList.getHead();
+    while (iterator !== null) {
+      if (iterator.data.clientId && iterator.data.clientId === clientId) {
+        iterator.data.setMovement(movement);
+
+        break;
       }
-    });
+      iterator = iterator.next;
+    }
   }
+  // movePlayer(clientId: string, movement: Movement) {
+  //   this.playerSet.forEach((player) => {
+  //     // console.log(
+  //     //   `player.clientId === clientId : ${
+  //     //     player.clientId === clientId
+  //     //   }`
+  //     // );
+  //     if (player.clientId && player.clientId === clientId) {
+  //       player.setMovement(movement);
+  //     }
+  //   });
+  // }
 
   // moveTank(clientId: string, objMovement: any) {
   //   this.tankSet.forEach((tank) => {
@@ -106,16 +122,26 @@ export class FirstPaintStage extends FirstStage {
 
   //プレイヤーの作成
   createPlayer(clientId: string, userName: string) {
-    const playerArr = Array.from(this.playerSet);
-    const id =
-      playerArr.length === 0 ? 0 : playerArr[playerArr.length - 1].id + 1;
+    const tail = this.playerList.getTail();
+    const id = tail ? tail.data.id + 1 : 0;
     const player = new Player(id, clientId, userName, this.obstacleList);
     console.log('プレイヤーが作成されました。');
 
-    this.playerSet.add(player);
+    this.playerList.pushBack(player);
 
     return player;
   }
+  // createPlayer(clientId: string, userName: string) {
+  //   const playerArr = Array.from(this.playerSet);
+  //   const id =
+  //     playerArr.length === 0 ? 0 : playerArr[playerArr.length - 1].id + 1;
+  //   const player = new Player(id, clientId, userName, this.obstacleList);
+  //   console.log('プレイヤーが作成されました。');
+
+  //   this.playerSet.add(player);
+
+  //   return player;
+  // }
 
   // createNpc(npcSet: Set<Npc>, obstacleSet: Set<GenericObstacle>) {
   //   const npcArr = Array.from(npcSet);
@@ -163,21 +189,41 @@ export class FirstPaintStage extends FirstStage {
 
   //プレイヤーの破棄
   destroyPlayer(clientId: string) {
-    this.playerSet.forEach((player) => {
-      if (player.clientId === clientId) {
+    let iterator = this.playerList.getHead();
+    while (iterator !== null) {
+      if (iterator.data.clientId === clientId) {
         //プレイヤーリストから削除
-        this.playerSet.delete(player);
+        this.playerList.remove(iterator);
 
         //削除したプレイヤーのクライアントに"dead"イベントを送信
-        this.roomManager.ioNspGame.to(player.clientId).emit('dead');
+        this.roomManager.ioNspGame.to(iterator.data.clientId).emit('dead');
 
         //clientIdのプレイヤーSpriteを破棄するようにクライアントに指示する
         this.roomManager.ioNspGame
           .in(this.roomId)
           .emit('deadPlayer', { clientId: clientId });
+
+        break;
       }
-    });
+      iterator = iterator.next;
+    }
   }
+  // destroyPlayer(clientId: string) {
+  //   this.playerSet.forEach((player) => {
+  //     if (player.clientId === clientId) {
+  //       //プレイヤーリストから削除
+  //       this.playerSet.delete(player);
+
+  //       //削除したプレイヤーのクライアントに"dead"イベントを送信
+  //       this.roomManager.ioNspGame.to(player.clientId).emit('dead');
+
+  //       //clientIdのプレイヤーSpriteを破棄するようにクライアントに指示する
+  //       this.roomManager.ioNspGame
+  //         .in(this.roomId)
+  //         .emit('deadPlayer', { clientId: clientId });
+  //     }
+  //   });
+  // }
 
   // タンクの破棄
   // destroyTank(clientId: string) {

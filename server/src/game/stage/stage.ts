@@ -10,7 +10,8 @@ export class Stage {
   readonly TILE_SIZE = 40;
   readonly TILE_SPAN_SCALE = 1.0;
   // obstacleSet = new Set<GenericObstacle>();
-  playerSet = new Set<Player>(); //とりあえずSetを使う。あとでDequeを使って修正したい。
+  // playerSet = new Set<Player>(); //とりあえずSetを使う。あとでDequeを使って修正したい。
+  playerList = new GenericLinkedList<Player>();
   // npcSet = new Set<Npc>();
   npcList = new GenericLinkedList<Npc>();
   obstacleList = new GenericLinkedList<GenericObstacle>();
@@ -117,7 +118,6 @@ export class Stage {
     npcList: GenericLinkedList<Npc>,
     obstacleList: GenericLinkedList<GenericObstacle>
   ) {
-    
     const tail = npcList.getTail();
     const id = tail ? tail.data.id + 1 : 0;
     const npc = new Npc(id, obstacleList);

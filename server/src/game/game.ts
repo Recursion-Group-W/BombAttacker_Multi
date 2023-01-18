@@ -44,8 +44,9 @@ export class Game {
       this.roomManager.ioNspGame.in(this.roomId).emit('syncGame', {
         // nanoSecDiff,
         time: this.time,
-        playerArr: Array.from(this.stage.playerSet),
-        npcArr:this.stage.npcList.toArray(),
+        playerArr: this.stage.playerList.toArray(),
+        // playerArr: Array.from(this.stage.playerSet),
+        npcArr: this.stage.npcList.toArray(),
         // npcArr: Array.from(this.stage.npcSet),
         // obstacleArr: Array.from(this.stage.obstacleSet),
         // tankArr: Array.from(this.stage.tankSet),
@@ -59,12 +60,12 @@ export class Game {
   }
 
   getInitialState() {
-    console.log(this.stage.obstacleList.toArray());
     return {
-      playerArr: Array.from(this.stage.playerSet),
-      
+      playerArr: this.stage.playerList.toArray(),
+      // playerArr: Array.from(this.stage.playerSet),
+
       // npcArr: Array.from(this.stage.npcSet),
-      npcArr:this.stage.npcList.toArray(),
+      npcArr: this.stage.npcList.toArray(),
       // obstacleArr: Array.from(this.stage.obstacleSet),
       obstacleArr: this.stage.obstacleList.toArray(),
     };

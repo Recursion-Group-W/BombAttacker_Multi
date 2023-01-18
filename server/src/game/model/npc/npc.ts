@@ -24,8 +24,9 @@ export class Npc extends Character {
   update(
     deltaTime: number,
     // obstacleSet: Set<GenericObstacle>,
-    obstacleList:GenericLinkedList<GenericObstacle>,
-    playerSet: Set<Player>
+    obstacleList: GenericLinkedList<GenericObstacle>,
+    // playerSet: Set<Player>
+    playerList: GenericLinkedList<Player>
   ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
@@ -70,7 +71,7 @@ export class Npc extends Character {
     } else if (this.overlapObstacles(obstacleList)) {
       //障害物に衝突
       collision = true;
-    } else if (this.overlapPlayers(playerSet)) {
+    } else if (this.overlapPlayers(playerList)) {
       //プレイヤーに衝突
       collision = true;
     }
@@ -89,18 +90,23 @@ export class Npc extends Character {
     });
   }
 
-  protected overlapPlayers(playerSet: Set<Player>) {
-    return Array.from(playerSet).some((player) => {
-      if (
-        OverlapTester.overlapRects(
-          this.rectBound,
-          player.rectBound
-        )
-      ) {
+  protected overlapPlayers(playerList: GenericLinkedList<Player>) {
+    let iterator = playerList.getHead();
+    while (iterator !== null) {
+      if (OverlapTester.overlapRects(this.rectBound, iterator.data.rectBound)) {
         return true;
       }
-    });
+      iterator = iterator.next;
+    }
+    return false;
   }
+  // protected overlapPlayers(playerSet: Set<Player>) {
+  //   return Array.from(playerSet).some((player) => {
+  //     if (OverlapTester.overlapRects(this.rectBound, player.rectBound)) {
+  //       return true;
+  //     }
+  //   });
+  // }
 
   //ランダムな動きをセット
   setMoveRamdom() {
@@ -132,9 +138,7 @@ export class Npc extends Character {
 
   //プレイヤーと衝突した時、反対方向に向きを変える
   collideWithPlayer(deltaTime: number) {
-    const opposite = this.getOppositeDirection(
-      this.getDirection
-    );
+    const opposite = this.getOppositeDirection(this.getDirection);
     this.setMoveByDirection(opposite);
   }
 
@@ -151,9 +155,7 @@ export class Npc extends Character {
 
     //速度が0(障害物にぶつかったorゲームスタート時) → 方向転換する
     if (this.getVelocity.x === 0) {
-      const opposite = this.getOppositeDirection(
-        this.getDirection
-      );
+      const opposite = this.getOppositeDirection(this.getDirection);
       this.setMoveByDirection(opposite);
     }
   }
@@ -168,9 +170,7 @@ export class Npc extends Character {
 
     //速度が0(障害物にぶつかったorゲームスタート時) → 方向転換する
     if (this.getVelocity.y === 0) {
-      const opposite = this.getOppositeDirection(
-        this.getDirection
-      );
+      const opposite = this.getOppositeDirection(this.getDirection);
       this.setMoveByDirection(opposite);
     }
   }
