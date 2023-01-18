@@ -20,7 +20,7 @@ export class Bomb extends GameObject {
     }
   }
   // アニメーションを追加
-  protected animTurnRight() {
-    this.animation = `${this.spriteKey}-anim`;
-  }
+  // protected animTurnRight() {
+  //   this.animation = `${this.spriteKey}-anim`;
+  // }
 }
