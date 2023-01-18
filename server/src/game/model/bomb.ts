@@ -19,4 +19,8 @@ export class Bomb extends GameObject {
       // new Explosion();
     }
   }
+  // アニメーションを追加
+  protected animTurnRight() {
+    this.animation = `${this.spriteKey}-anim`;
+  }
 }
