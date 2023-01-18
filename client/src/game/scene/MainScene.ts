@@ -8,6 +8,7 @@ export class MainScene extends Scene {
     playerMap: {},
     npcMap: {},
     obstacleMap: {},
+    bombMap: {}
   };
 
   constructor() {
@@ -38,6 +39,8 @@ export class MainScene extends Scene {
         tankObstacleArr: any[];
         bulletArr: any[];
         botArr: any[];
+        // bombの配列を追加
+        bombArr: any[]
       }) => {
         if (res.playerArr.length > 0) {
           res.playerArr.forEach((player) => {
@@ -58,7 +61,7 @@ export class MainScene extends Scene {
             ] = player;
           });
         }
-
+        //
         if (res.npcArr.length > 0) {
           res.npcArr.forEach((npc) => {
             if (!this.objects.npcMap[npc.id]) {
@@ -87,6 +90,25 @@ export class MainScene extends Scene {
               };
             }
             this.objects.obstacleMap[obstacle.id]['sync'] =
+              obstacle;
+          });
+        }
+        // 1/18
+        if (res.bombArr.length > 0) {
+          res.bombArr.map((obstacle) => {
+            if (!this.objects.bombMap[obstacle.id]) {
+              let sprite = this.add
+                .sprite(
+                  obstacle.x,
+                  obstacle.y,
+                  obstacle.spriteKey
+                )
+                .setOrigin(0.5);
+              this.objects.bombMap[obstacle.id] = {
+                sprite: sprite,
+              };
+            }
+            this.objects.bombMap[obstacle.id]['sync'] =
               obstacle;
           });
         }
