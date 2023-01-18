@@ -1,3 +1,4 @@
+import { BombDto } from '../dto/bomb.dto';
 import { NpcDto } from '../dto/npc.dto';
 import { ObstacleDto } from '../dto/obstacle.dto';
 import { PlayerDto } from '../dto/player.dto';
@@ -24,4 +25,10 @@ export type Objects = {
       sync: ObstacleDto | null;
     };
   };
+  bombMap:{
+    [id: string]: {
+      sprite: Phaser.GameObjects.Sprite;
+      sync: BombDto | null;
+    };
+  }
 };
