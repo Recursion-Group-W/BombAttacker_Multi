@@ -1,84 +1,67 @@
-export class Cursor {
-  // none = true
-  // prevNone = true
+import { Scene } from 'phaser';
+import { CustomSocket } from '../../socket/interface/customSocket.interface';
 
-  //   left = false;
-  //   right = false;
-  //   up = false;
-  //   down = false;
-  //   objMovement: { [key: string]: boolean } = {
-  //     forward: false,
-  //     back: false,
-  //     right: false,
-  //     left: false,
-  //   };
+export default class Cursor {
+  keyboard: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  constructor(public socket: any) {
-    //   this.cursors = scene.input.keyboard.createCursorKeys()
-    //   this.scene.events.on('update', this.update, this)
+  none = true;
+  prevNone = true;
+
+  constructor(
+    public scene: Scene,
+    public socket: CustomSocket
+  ) {
+    this.keyboard = scene.input.keyboard.createCursorKeys();
   }
 
-  // function keyUpHandler(e) {
-  //     if(e.key == "Right" || e.key == "ArrowRight") {
-  //         rightPressed = false;
-  //     }
-  //     else if(e.key == "Left" || e.key == "ArrowLeft") {
-  //         leftPressed = false;
-  //     }
-  // }
+  update() {
+    if (
+      Phaser.Input.Keyboard.JustDown(this.keyboard.space)
+    ) {
+      this.socket.emit('putBomb');
+    }
 
-  //   cursorsDown() {
-  //     return {
-  //       left: this.left,
-  //       right: this.right,
-  //       up: this.up,
-  //       none: this.none,
-  //     };
-  //   }
+    if (
+      !this.keyboard.left ||
+      !this.keyboard.right ||
+      !this.keyboard.up ||
+      !this.keyboard.down
+    )
+      return;
 
-  //   update() {
-  //     if (
-  //       !this.cursors.left ||
-  //       !this.cursors.right ||
-  //       !this.cursors.up
-  //     )
-  //       return;
+    //キーが押されているかどうか
+    this.none =
+      this.keyboard.left.isDown ||
+      this.keyboard.right.isDown ||
+      this.keyboard.up.isDown ||
+      this.keyboard.down.isDown
+        ? false
+        : true;
 
-  //     this.none =
-  //       this.cursors.left.isDown ||
-  //       this.cursors.right.isDown ||
-  //       this.cursors.up.isDown
-  //         ? false
-  //         : true;
+    //キーが現在押されている、
+    //または、
+    //離した（現在押されていなくて直前に押されていた）場合
+    if (!this.none || this.none !== this.prevNone) {
+      let arrowInput = {
+        up: false,
+        right: false,
+        down: false,
+        left: false,
+      };
 
-  //     if (!this.none || this.none !== this.prevNone) {
-  //       this.left = false;
-  //       this.right = false;
-  //       this.up = false;
+      if (this.keyboard.left.isDown) {
+        arrowInput.left = true;
+      } else if (this.keyboard.right.isDown) {
+        arrowInput.right = true;
+      } else if (this.keyboard.up.isDown) {
+        arrowInput.up = true;
+      } else if (this.keyboard.down.isDown) {
+        arrowInput.down = true;
+      }
 
-  //       if (this.cursors.left.isDown) {
-  //         this.left = true;
-  //       } else if (this.cursors.right.isDown) {
-  //         this.right = true;
-  //       }
+      this.socket.emit('movePlayer', arrowInput);
+    }
 
-  //       if (this.cursors.up.isDown) {
-  //         this.up = true;
-  //       }
-
-  //       if (!PHYSICS_DEBUG) {
-  //         let total = 0;
-  //         if (this.left) total += 1;
-  //         if (this.right) total += 2;
-  //         if (this.up) total += 4;
-  //         if (this.none) total += 8;
-  //         this.socket.emit(
-  //           'U' /* short for updateDude */,
-  //           total
-  //         );
-  //       }
-  //     }
-
-  //     this.prevNone = this.none;
-  //   }
+    this.prevNone = this.none;
+  }
 }

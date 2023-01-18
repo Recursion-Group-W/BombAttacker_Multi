@@ -1,33 +1,30 @@
 import { Namespace } from 'socket.io';
+import { CustomSocket } from './interface/customSocket.interface';
 import RoomManager from '../manager/roomManager';
+import { Movement } from '../game/types/movement.type';
 
 export default class IoGame {
   time: Date = new Date();
 
-  constructor(
-    public ioNspGame: Namespace,
-    public roomManager: RoomManager
-  ) {
-    ioNspGame.on('connect', async (socket: any) => {
+  constructor(public ioNspGame: Namespace, public roomManager: RoomManager) {
+    ioNspGame.on('connect', async (socket: CustomSocket) => {
       console.log('クライアントと接続しました');
 
       //clientIdを生成して送信する処理
       roomManager.generateClientId(socket);
 
-      // //入室
-      socket.on(
-        'joinRoom',
-        async (req: { userName: string }) => {
-          console.log(req);
-          //入室する処理
-          await roomManager.joinRoom(socket, req.userName);
-          console.log(`New user connected! to room`);
-        }
-      );
+      // 入室
+      socket.on('joinRoom', async (req: { userName: string }) => {
+        // console.log(req);
 
-      // //クライアントから、ゲームの初期状態をリクエストされる
+        //入室する処理
+        await roomManager.joinRoom(socket, req.userName);
+      });
+
+      // クライアントから、ゲームの初期状態をリクエストされる
+      // (ゲームに参加した際の１度だけ)
       socket.on('getInitialState', () => {
-        //作成されたゲームオブジェクトをjsonに変換する処理
+        if (!socket.roomId) return;
 
         //クライアントに送るデータを準備
         let payload =
@@ -35,91 +32,155 @@ export default class IoGame {
             socket.roomId
           ].gameManager.game.getInitialState();
         //クライアントにゲームのデータを送信
-        socket.emit('SyncGame', payload);
+        socket.emit('syncGame', payload);
       });
-      // // //ルーム内のユーザーにデータを送信
-      // this.roomManager.ioNspGame
-      //   .in(this.roomId)
-      //   .emit('syncGame', {
-      //     nanoSecDiff,
-      //     playerArr: Array.from(this.stage.playerSet),
-      //     obstacleArr: Array.from(this.stage.obstacleSet),
-      //     tankArr: Array.from(this.stage.tankSet),
-      //     tankObstacleArr: Array.from(
-      //       this.stage.tankobstacleSet
-      //     ),
-      //     bulletArr: Array.from(this.stage.bulletSet),
-      //     botArr: Array.from(this.stage.botSet),
+
+      socket.on('movePlayer', (movement: Movement) => {
+        if (!socket.roomId || !socket.clientId) return;
+
+        const playerList =
+          this.roomManager.roomMap[socket.roomId].gameManager.game.stage
+            .playerList;
+
+        let iterator = playerList.getHead();
+        while (iterator !== null) {
+          if (iterator.data.clientId === socket.clientId) {
+            if (iterator.data.getLife === 0) return;
+            else break;
+          }
+          iterator = iterator.next;
+        }
+        if (!iterator?.data) return;
+
+        this.roomManager.roomMap[
+          socket.roomId
+        ].gameManager.game.stage.movePlayer(socket.clientId, movement);
+      });
+      // socket.on('movePlayer', (movement: Movement) => {
+      //   if (!socket.roomId || !socket.clientId) return;
+
+      //   const playerSet =
+      //     this.roomManager.roomMap[socket.roomId]
+      //       .gameManager.game.stage.playerSet;
+
+      //   let foundPlayer = null;
+      //   playerSet.forEach((player) => {
+      //     if (player.clientId === socket.clientId) {
+      //       foundPlayer = player;
+      //       if (foundPlayer.getLife === 0) return;
+      //     }
       //   });
+      //   if (!foundPlayer) return;
 
-      socket.on('movePlayer', (movement: any) => {
-        const playerSet =
-          this.roomManager.roomMap[socket.roomId]
-            .gameManager.game.stage.playerSet;
+      //   this.roomManager.roomMap[
+      //     socket.roomId
+      //   ].gameManager.game.stage.movePlayer(
+      //     socket.clientId,
+      //     movement
+      //   );
+      // });
 
-        let foundPlayer = null;
-        playerSet.forEach((player) => {
-          if (player.clientId === socket.clientId) {
-            foundPlayer = player;
-            if (foundPlayer.getLife === 0) return;
+      // socket.on('moveTank', (objMovement: any) => {
+      //   if (!socket.roomId || !socket.clientId) return;
+
+      //   const tankSet =
+      //     this.roomManager.roomMap[socket.roomId]
+      //       .gameManager.game.stage.tankSet;
+      //   let foundTank = null;
+      //   tankSet.forEach((tank) => {
+      //     if (tank.clientId === socket.clientId) {
+      //       foundTank = tank;
+      //       if (foundTank.iLife === 0) return;
+      //     }
+      //   });
+      //   if (!foundTank) return;
+
+      //   // console.log(objMovement);
+      //   this.roomManager.roomMap[
+      //     socket.roomId
+      //   ].gameManager.game.stage.moveTank(
+      //     socket.clientId,
+      //     objMovement
+      //   );
+      // });
+
+      //爆弾を設置するリクエストを受け取った時の処理
+      socket.on('putBomb', () => {
+        if (!socket.roomId || !socket.clientId) return;
+
+        console.log('⚠ 爆弾設置！！！');
+
+        const playerList =
+          this.roomManager.roomMap[socket.roomId].gameManager.game.stage
+            .playerList;
+        let iterator = playerList.getHead();
+        while (iterator !== null) {
+          if (iterator.data.clientId === socket.clientId) {
+            if (iterator.data.getLife === 0) return;
+            else break;
           }
-        });
-        if (!foundPlayer) return;
+        }
+        if (!iterator?.data) return;
 
-        console.log(movement);
-        this.roomManager.roomMap[
-          socket.roomId
-        ].gameManager.game.stage.movePlayer(
-          socket.clientId,
-          movement
-        );
+        // 爆弾を設置
+        //createBombメソッドを後で実装する
+        // this.roomManager.roomMap[
+        //   socket.roomId
+        // ].gameManager.game.stage.createBomb(
+        //   socket.clientId
+        // );
       });
+      // socket.on('putBomb', () => {
+      //   if (!socket.roomId || !socket.clientId) return;
 
-      socket.on('moveTank', (objMovement: any) => {
-        const tankSet =
-          this.roomManager.roomMap[socket.roomId]
-            .gameManager.game.stage.tankSet;
-        let foundTank = null;
-        tankSet.forEach((tank) => {
-          if (tank.clientId === socket.clientId) {
-            foundTank = tank;
-            if (foundTank.iLife === 0) return;
-          }
-        });
-        if (!foundTank) return;
+      //   console.log('⚠ 爆弾設置！！！');
 
-        // console.log(objMovement);
-        this.roomManager.roomMap[
-          socket.roomId
-        ].gameManager.game.stage.moveTank(
-          socket.clientId,
-          objMovement
-        );
-      });
+      //   const playerSet =
+      //     this.roomManager.roomMap[socket.roomId].gameManager.game.stage
+      //       .playerSet;
+      //   let foundPlayer = null;
+      //   playerSet.forEach((player) => {
+      //     if (player.clientId === socket.clientId) {
+      //       foundPlayer = player;
+      //       if (foundPlayer.getLife === 0) return;
+      //     }
+      //   });
+      //   if (!foundPlayer) return;
+
+      //   // 爆弾を設置
+      //   //createBombメソッドを後で実装する
+      //   // this.roomManager.roomMap[
+      //   //   socket.roomId
+      //   // ].gameManager.game.stage.createBomb(
+      //   //   socket.clientId
+      //   // );
+      // });
 
       // ショット時の処理の指定
-      // ・クライアント側のキー入力時の「socket.emit( 'shoot' );」に対する処理
-      socket.on('shoot', () => {
-        const tankSet =
-          this.roomManager.roomMap[socket.roomId]
-            .gameManager.game.stage.tankSet;
-        let foundTank = null;
-        tankSet.forEach((tank) => {
-          if (tank.clientId === socket.clientId) {
-            foundTank = tank;
-            if (foundTank.iLife === 0) return;
-          }
-        });
-        if (!foundTank) return;
+      // クライアント側のキー入力時の「socket.emit( 'shoot' );」に対する処理
+      // socket.on('shoot', () => {
+      //   if (!socket.roomId || !socket.clientId) return;
 
-        // ショット
-        this.roomManager.roomMap[
-          socket.roomId
-        ].gameManager.game.stage.createBullet(
-          socket.clientId,
-          0
-        );
-      });
+      //   const tankSet =
+      //     this.roomManager.roomMap[socket.roomId]
+      //       .gameManager.game.stage.tankSet;
+      //   let foundTank = null;
+      //   tankSet.forEach((tank) => {
+      //     if (tank.clientId === socket.clientId) {
+      //       foundTank = tank;
+      //       if (foundTank.iLife === 0) return;
+      //     }
+      //   });
+      //   if (!foundTank) return;
+
+      //   // ショット
+      //   this.roomManager.roomMap[
+      //     socket.roomId
+      //   ].gameManager.game.stage.createBullet(
+      //     socket.clientId,
+      //     0
+      //   );
+      // });
 
       //接続が切れたとき
       socket.on('disconnect', () => {

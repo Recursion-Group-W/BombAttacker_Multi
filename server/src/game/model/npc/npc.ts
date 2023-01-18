@@ -1,17 +1,19 @@
-import { MathUtil } from '../util/math.util';
-import { OverlapTester } from '../util/overlapTester';
-import { Character } from './character';
-import { GenericObstacle } from './obstacle/generic/genericObstacle';
-import { Player } from './player/player';
+import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
+import { MathUtil } from '../../util/math.util';
+import { OverlapTester } from '../../util/overlapTester';
+import { Character } from '../character/character';
+import { GenericObstacle } from '../obstacle/generic/genericObstacle';
+import { Player } from '../player/player';
 
 export class Npc extends Character {
   static readonly SPRITE_KEY = 'npc';
   // コンストラクタ
   constructor(
     public id: number,
-    obstacleSet: Set<GenericObstacle>
+    // obstacleSet: Set<GenericObstacle>
+    obstacleList: GenericLinkedList<GenericObstacle>
   ) {
-    super('npc', Npc.SPRITE_KEY, obstacleSet);
+    super('npc', Npc.SPRITE_KEY, obstacleList);
     this.setSpriteKey = 'npc';
 
     //初めに進む向きと速度をランダムにセット
@@ -21,8 +23,10 @@ export class Npc extends Character {
   // 更新
   update(
     deltaTime: number,
-    obstacleSet: Set<GenericObstacle>,
-    playerSet: Set<Player>
+    // obstacleSet: Set<GenericObstacle>,
+    obstacleList: GenericLinkedList<GenericObstacle>,
+    // playerSet: Set<Player>
+    playerList: GenericLinkedList<Player>
   ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
@@ -64,10 +68,10 @@ export class Npc extends Character {
     ) {
       // ステージの端に衝突
       collision = true;
-    } else if (this.overlapObstacles(obstacleSet)) {
+    } else if (this.overlapObstacles(obstacleList)) {
       //障害物に衝突
       collision = true;
-    } else if (this.overlapPlayers(playerSet)) {
+    } else if (this.overlapPlayers(playerList)) {
       //プレイヤーに衝突
       collision = true;
     }
@@ -86,23 +90,31 @@ export class Npc extends Character {
     });
   }
 
-  protected overlapPlayers(playerSet: Set<Player>) {
-    return Array.from(playerSet).some((player) => {
-      if (
-        OverlapTester.overlapRects(
-          this.rectBound,
-          player.rectBound
-        )
-      ) {
+  protected overlapPlayers(playerList: GenericLinkedList<Player>) {
+    let iterator = playerList.getHead();
+    while (iterator !== null) {
+      if (OverlapTester.overlapRects(this.rectBound, iterator.data.rectBound)) {
         return true;
       }
-    });
+      iterator = iterator.next;
+    }
+    return false;
   }
+  // protected overlapPlayers(playerSet: Set<Player>) {
+  //   return Array.from(playerSet).some((player) => {
+  //     if (OverlapTester.overlapRects(this.rectBound, player.rectBound)) {
+  //       return true;
+  //     }
+  //   });
+  // }
 
   //ランダムな動きをセット
   setMoveRamdom() {
     //4方向をランダムに選択して動かす
-    const randomDir: number = MathUtil.getRandomInt(0, 3);
+    let randomDir: number = MathUtil.getRandomInt(0, 3);
+    while (randomDir === this.getDirection) {
+      randomDir = MathUtil.getRandomInt(0, 3);
+    }
     this.setMoveByDirection(randomDir);
   }
 
@@ -126,9 +138,7 @@ export class Npc extends Character {
 
   //プレイヤーと衝突した時、反対方向に向きを変える
   collideWithPlayer(deltaTime: number) {
-    const opposite = this.getOppositeDirection(
-      this.getDirection
-    );
+    const opposite = this.getOppositeDirection(this.getDirection);
     this.setMoveByDirection(opposite);
   }
 
@@ -145,9 +155,7 @@ export class Npc extends Character {
 
     //速度が0(障害物にぶつかったorゲームスタート時) → 方向転換する
     if (this.getVelocity.x === 0) {
-      const opposite = this.getOppositeDirection(
-        this.getDirection
-      );
+      const opposite = this.getOppositeDirection(this.getDirection);
       this.setMoveByDirection(opposite);
     }
   }
@@ -162,9 +170,7 @@ export class Npc extends Character {
 
     //速度が0(障害物にぶつかったorゲームスタート時) → 方向転換する
     if (this.getVelocity.y === 0) {
-      const opposite = this.getOppositeDirection(
-        this.getDirection
-      );
+      const opposite = this.getOppositeDirection(this.getDirection);
       this.setMoveByDirection(opposite);
     }
   }

@@ -1,6 +1,7 @@
+import { SecondObstacle } from '../interface/secondObstacle.interface';
 import { GenericFirstObstacle } from './genericFirstObstacle';
 
-export class GenericSecondObstacle extends GenericFirstObstacle {
+export class GenericSecondObstacle extends GenericFirstObstacle implements SecondObstacle{
   constructor(
     id: number,
     x: number,

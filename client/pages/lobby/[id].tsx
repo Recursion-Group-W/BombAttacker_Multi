@@ -9,6 +9,7 @@ import React, { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { NODE_URL } from '../../env';
 import Copyright from '../../src/Copyright';
+import { CustomSocket } from '../../src/socket/interface/customSocket.interface';
 import { useSocketStore } from '../../src/store/useSocketStore';
 
 const Lobby = () => {
@@ -19,7 +20,7 @@ const Lobby = () => {
   );
 
   const url = NODE_URL;
-  const socket = io(`${url}/game`);
+  const socket: CustomSocket = io(`${url}/game`);
   updateSocketState({ socket: socket });
 
   socket.on('connect', () => {

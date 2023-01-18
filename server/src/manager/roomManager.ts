@@ -2,8 +2,9 @@ import { Namespace } from 'socket.io';
 
 import { v4 as uuidv4 } from 'uuid';
 import { ServerConfig } from '../game/config/serverConfig';
-import { RoomMap } from '../types/room.type';
-import { Users } from '../types/user.type';
+import { CustomSocket } from '../socket/interface/customSocket.interface';
+import { RoomMap } from './types/room.type';
+import { User } from './types/user.type';
 import { GameManager } from './gameManager';
 
 export default class RoomManager {
@@ -12,7 +13,7 @@ export default class RoomManager {
   constructor(public ioNspGame: Namespace) {}
 
   //clientIdをuuidで作成
-  generateClientId(socket: any) {
+  generateClientId(socket: CustomSocket) {
     let clientId: string = uuidv4();
 
     socket.clientId = clientId;
@@ -20,7 +21,9 @@ export default class RoomManager {
   }
 
   //入室
-  async joinRoom(socket: any, userName: string) {
+  async joinRoom(socket: CustomSocket, userName: string) {
+    if (!socket.clientId) return;
+
     socket.roomId = this.chooseRoom();
 
     // 部屋が存在しなければ、新規作成する
@@ -33,29 +36,31 @@ export default class RoomManager {
     // socketを使ってユーザを入室させる
     this.addUser(socket);
 
+    console.log(
+      `ユーザー<clientId: ${socket.clientId}>が入室しました。`
+    );
+
     let stage =
       this.roomMap[socket.roomId].gameManager.game.stage;
 
     // プレイヤーを作成
     stage.createPlayer(socket.clientId, userName);
-    //タンクを作成
-    // stage.createTank(socket.clientId, userName);
   }
 
   // socketを使ってユーザを入室させる
-  addUser(socket: any) {
-    let newUsers: Users = {
-      [socket.clientId]: {
-        clientId: socket.clientId,
-        roomId: socket.roomId,
-        createdAt: Date.now(),
-      },
+  addUser(socket: CustomSocket) {
+    if (!(socket.roomId && socket.clientId)) return;
+
+    const newUser: User = {
+      clientId: socket.clientId,
+      roomId: socket.roomId,
+      createdAt: Date.now(),
     };
 
     //roomMapのroomにユーザーを追加する
     this.roomMap[socket.roomId].users = {
       ...this.roomMap[socket.roomId].users,
-      ...newUsers,
+      [socket.clientId]: newUser,
     };
 
     // socketをroomに入れる
@@ -108,7 +113,8 @@ export default class RoomManager {
   }
 
   //退室
-  leaveRoom(socket: any) {
+  leaveRoom(socket: CustomSocket) {
+    if (!(socket.roomId && socket.clientId)) return;
     //Roomからクライアントを削除
     this.removeUser(socket.roomId, socket.clientId);
 
@@ -116,7 +122,6 @@ export default class RoomManager {
       this.roomMap[socket.roomId].gameManager.game.stage;
 
     //ステージからプレイヤーを削除
-    // stage.destroyTank(socket.clientId);
     stage.destroyPlayer(socket.clientId);
   }
 

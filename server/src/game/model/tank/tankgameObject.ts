@@ -1,5 +1,5 @@
-import { Position } from '../../../types/position.type';
-import { RectBound } from '../../../types/rectBound.type';
+import { Position } from '../../types/position.type';
+import { RectBound } from '../../types/rectBound.type';
 import { OverlapTester } from '../../util/overlapTester';
 import { TankObstacle } from './tankObstacle';
 

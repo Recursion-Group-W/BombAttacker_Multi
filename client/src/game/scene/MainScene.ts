@@ -1,7 +1,14 @@
-import { Scene } from 'phaser';
+import { NpcDto } from '../dto/npc.dto';
+import { ObstacleDto } from '../dto/obstacle.dto';
+import { PlayerDto } from '../dto/player.dto';
+import Cursor from '../model/cursor';
+import { SyncUtil } from '../util/sync.util';
+import { CustomScene } from './parent/customScene';
 import { AnimationUtil } from '../util/animationUtil';
 
-export class MainScene extends Scene {
+export class MainScene extends CustomScene {
+  cursor: Cursor | null = null;
+  
   public socket: any;
 
   objects: { [key: string]: { [id: string]: any } } = {
@@ -13,86 +20,32 @@ export class MainScene extends Scene {
 
   constructor() {
     super({ key: 'MainScene' });
-    // playerRight
-    // this.socket.on('', function
-    // (movementDate) {
-    // Player.anims.play('player-right', true);
-    // });
+  }
+
+  init() {
+    this.socket = this.registry.get('socket');
+    if (this.socket) {
+      this.cursor = new Cursor(this, this.socket);
+    }
   }
 
   create() {
-    // this.initAnimation();
-    this.socket = this.registry.get('socket');
-    console.log('socket: ', this.socket);
-    // this.socket.on('', function
-    // (movementDate) {
-    // Player.anims.play('player-right', true);
-    // });
+    if (!this.socket) return;
+
+    this.socket.emit('getInitialState');
+
     this.socket.on(
       'syncGame',
       (res: {
-        nanoSecDiff: number;
-        playerArr: any[];
-        npcArr: any[];
-        obstacleArr: any[];
-        tankArr: any[];
-        tankObstacleArr: any[];
-        bulletArr: any[];
-        botArr: any[];
+        playerArr: PlayerDto[];
+        npcArr: NpcDto[];
+        obstacleArr: ObstacleDto[];
         // bombの配列を追加
         bombArr: any[]
       }) => {
-        if (res.playerArr.length > 0) {
-          res.playerArr.forEach((player) => {
-            if (!this.objects.playerMap[player.clientId]) {
-              let sprite = this.add
-                .sprite(
-                  player.x,
-                  player.y,
-                  player.spriteKey
-                )
-                .setOrigin(0.5);
-              this.objects.playerMap[player.clientId] = {
-                sprite: sprite,
-              };
-            }
-            this.objects.playerMap[player.clientId][
-              'sync'
-            ] = player;
-          });
-        }
-        //
-        if (res.npcArr.length > 0) {
-          res.npcArr.forEach((npc) => {
-            if (!this.objects.npcMap[npc.id]) {
-              let sprite = this.add
-                .sprite(npc.x, npc.y, npc.spriteKey)
-                .setOrigin(0.5);
-              this.objects.npcMap[npc.id] = {
-                sprite: sprite,
-              };
-            }
-            this.objects.npcMap[npc.id]['sync'] = npc;
-          });
-        }
-        if (res.obstacleArr.length > 0) {
-          res.obstacleArr.map((obstacle) => {
-            if (!this.objects.obstacleMap[obstacle.id]) {
-              let sprite = this.add
-                .sprite(
-                  obstacle.x,
-                  obstacle.y,
-                  obstacle.spriteKey
-                )
-                .setOrigin(0.5);
-              this.objects.obstacleMap[obstacle.id] = {
-                sprite: sprite,
-              };
-            }
-            this.objects.obstacleMap[obstacle.id]['sync'] =
-              obstacle;
-          });
-        }
+        SyncUtil.setPlayer(res.playerArr, this);
+        SyncUtil.setNpc(res.npcArr, this);
+        SyncUtil.setObstacle(res.obstacleArr, this);
         // 1/18
         if (res.bombArr.length > 0) {
           res.bombArr.map((obstacle) => {
@@ -112,37 +65,15 @@ export class MainScene extends Scene {
               obstacle;
           });
         }
+
       }
     );
   }
-
   update(): void {
-    if (Object.keys(this.objects.playerMap).length > 0) {
-      Object.values(this.objects.playerMap).forEach(
-        (player) => {
-          player.sprite.x = player.sync.x;
-          player.sprite.y = player.sync.y;
+    //syncのデータを基に、spriteの座標とアニメーションを更新
+    SyncUtil.updatePlayer(this);
+    SyncUtil.updateNpc(this);
 
-          AnimationUtil.setPlayerAnimation(
-            player.sprite,
-            player.sync.animation,
-            player.sync.direction
-          );
-        }
-      );
-    }
-
-    if (Object.keys(this.objects.npcMap).length > 0) {
-      Object.values(this.objects.npcMap).forEach((npc) => {
-        npc.sprite.x = npc.sync.x;
-        npc.sprite.y = npc.sync.y;
-
-        AnimationUtil.setNpcAnimation(
-          npc.sprite,
-          npc.sync.animation,
-          npc.sync.direction
-        );
-      });
-    }
+    this.cursor?.update();
   }
 }

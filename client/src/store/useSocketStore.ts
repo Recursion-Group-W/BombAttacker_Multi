@@ -1,5 +1,5 @@
 import create from 'zustand';
-import { SocketStore } from '../types/useSocketStore.type';
+import { SocketStore } from './types/useSocketStore.type';
 
 export const useSocketStore = create<SocketStore>(
   (set) => ({

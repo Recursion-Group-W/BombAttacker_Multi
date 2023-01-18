@@ -1,5 +1,7 @@
 import { Game } from '../game/game';
+import { Player } from '../game/model/player/player';
 import { FirstPaintStage } from '../game/stage/firstPaintStage';
+import { GenericLinkedList } from '../linkedList/generic/genericLinkedList';
 import RoomManager from './roomManager';
 import { StageManager } from './stageManager';
 
@@ -19,8 +21,8 @@ export class GameManager {
   }
 
   //interfaceを実装して、stage: Stageに変更が必要
-  switchStage(stage: FirstPaintStage, playerSet: any) {
+  switchStage(stage: FirstPaintStage, playerList:GenericLinkedList<Player>) {
     this.game.stage = stage;
-    this.game.stage.playerSet = playerSet;
+    this.game.stage.playerList = playerList;
   }
 }

@@ -1,17 +1,13 @@
 import { Explosion } from './explosion';
-import { GameObject } from './gameObject';
+import { GameObject } from './gameObject/gameObject';
 import { Player } from './player/player';
 
 export class Bomb extends GameObject {
-  static WIDTH = 16;
-  static HEIGHT = 16;
+  static WIDTH = 38.4;
+  static HEIGHT = 38.4;
   private remainTime: number = 5;
 
-  constructor(
-    x: number,
-    y: number,
-    private player: Player
-  ) {
+  constructor(x: number, y: number, private player: Player) {
     // 親クラスのコンストラクタ呼び出し
     super(x, y, Bomb.WIDTH, Bomb.HEIGHT, 'bomb');
   }

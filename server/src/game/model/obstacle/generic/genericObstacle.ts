@@ -1,10 +1,11 @@
-import { GameObject } from '../../gameObject';
+import { GameObject } from '../../gameObject/gameObject';
+import { Obstacle } from '../interface/obstacle.interface';
 
 //将来の拡張に対応するためのGenericクラス
-export class GenericObstacle extends GameObject {
+export class GenericObstacle extends GameObject implements Obstacle {
   id = 0;
-  static WIDTH = 32;
-  static HEIGHT = 32;
+  static WIDTH = 40;
+  static HEIGHT = 40;
 
   protected endurance = 0;
 
@@ -16,13 +17,7 @@ export class GenericObstacle extends GameObject {
     spriteKey: string,
     endurance: number
   ) {
-    super(
-      x,
-      y,
-      GenericObstacle.WIDTH,
-      GenericObstacle.HEIGHT,
-      spriteKey
-    );
+    super(x, y, GenericObstacle.WIDTH, GenericObstacle.HEIGHT, spriteKey);
     this.id = id;
     this.endurance = endurance;
   }

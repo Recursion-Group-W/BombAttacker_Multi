@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { Box } from '@mui/system';
 import { PreloadScene } from '../src/game/scene/PreloadScene';
 import { MainScene } from '../src/game/scene/MainScene';
-import { Screen } from '../src/game/model/screen';
+import { Screen } from '../src/game/model/tank/screen';
 
 const GameDisplay = () => {
   const { socketState } = useSocketStore();
@@ -20,8 +20,8 @@ const GameDisplay = () => {
       type: Phaser.AUTO,
       scale: {
         parent: 'phaser-game',
-        width: 1024,
-        height: 1024,
+        width: 1160,
+        height: 1160,
       },
       physics: {
         default: 'arcade',
@@ -52,89 +52,87 @@ const GameDisplay = () => {
   //初期状態を取得したいということをサーバーに伝える
   // socket.emit('getInitialState');
 
-  const playerMovement: { [key: string]: boolean } = {
-    up: false,
-    right: false,
-    down: false,
-    left: false,
-  };
+  // const playerMovement: { [key: string]: boolean } = {
+  //   up: false,
+  //   right: false,
+  //   down: false,
+  //   left: false,
+  // };
 
-  const objMovement: { [key: string]: boolean } = {
-    forward: false,
-    back: false,
-    right: false,
-    left: false,
-  };
-  const keyDownHandler = (e: KeyboardEvent) => {
-    switch (e.key) {
-      case 'ArrowUp':
-        playerMovement.up = true;
-        objMovement['forward'] = true;
-        break;
-      case 'ArrowDown':
-        playerMovement.down = true;
-        objMovement['back'] = true;
-        break;
-      case 'ArrowRight':
-        playerMovement.right = true;
-        objMovement['right'] = true;
-        break;
-      case 'ArrowLeft':
-        playerMovement.left = true;
-        objMovement['left'] = true;
-        break;
-    }
-    console.log('playerMovement: ', playerMovement);
-    console.log(objMovement);
-    socket.emit('movePlayer', playerMovement);
-    socket.emit('moveTank', objMovement);
+  // // const objMovement: { [key: string]: boolean } = {
+  // //   forward: false,
+  // //   back: false,
+  // //   right: false,
+  // //   left: false,
+  // // };
+  // const keyDownHandler = (e: KeyboardEvent) => {
+  //   switch (e.key) {
+  //     case 'ArrowUp':
+  //       playerMovement.up = true;
+  //       // objMovement['forward'] = true;
+  //       break;
+  //     case 'ArrowDown':
+  //       playerMovement.down = true;
+  //       // objMovement['back'] = true;
+  //       break;
+  //     case 'ArrowRight':
+  //       playerMovement.right = true;
+  //       // objMovement['right'] = true;
+  //       break;
+  //     case 'ArrowLeft':
+  //       playerMovement.left = true;
+  //       // objMovement['left'] = true;
+  //       break;
+  //   }
+  //   console.log('playerMovement: ', playerMovement);
+  //   // console.log(objMovement);
+  //   socket?.emit('movePlayer', playerMovement);
+  //   // socket.emit('moveTank', objMovement);
 
-    if (e.code === 'Space') {
-      socket.emit('shoot');
-    }
-  };
-  const keyUpHandler = (e: KeyboardEvent) => {
-    switch (e.key) {
-      case 'ArrowUp':
-        playerMovement.up = false;
-        objMovement['forward'] = false;
-        break;
-      case 'ArrowDown':
-        playerMovement.down = false;
-        objMovement['back'] = false;
-        break;
-      case 'ArrowRight':
-        playerMovement.right = false;
-        objMovement['right'] = false;
-        break;
-      case 'ArrowLeft':
-        playerMovement.left = false;
-        objMovement['left'] = false;
-        break;
-    }
-    socket.emit('movePlayer', objMovement);
-    socket.emit('moveTank', objMovement);
-  };
+  //   if (e.code === 'Space') {
+  //     socket?.emit('putBomb');
+  //   }
+  //   // if (e.code === 'Space') {
+  //   //   socket.emit('shoot');
+  //   // }
+  // };
+  // const keyUpHandler = (e: KeyboardEvent) => {
+  //   switch (e.key) {
+  //     case 'ArrowUp':
+  //       playerMovement.up = false;
+  //       // objMovement['forward'] = false;
+  //       break;
+  //     case 'ArrowDown':
+  //       playerMovement.down = false;
+  //       // objMovement['back'] = false;
+  //       break;
+  //     case 'ArrowRight':
+  //       playerMovement.right = false;
+  //       // objMovement['right'] = false;
+  //       break;
+  //     case 'ArrowLeft':
+  //       playerMovement.left = false;
+  //       // objMovement['left'] = false;
+  //       break;
+  //   }
+  //   socket?.emit('movePlayer', playerMovement);
+  //   // socket?.emit('moveTank', objMovement);
+  // };
 
   useEffect(() => {
     const canvas: HTMLCanvasElement | null =
       document.querySelector('#game-canvas');
     if (canvas) {
-      const screen = new Screen(socket, canvas);
-      // キャンバスの描画開始
-      screen.animate(0);
-
-      document.addEventListener(
-        'keydown',
-        keyDownHandler,
-        false
-      );
-      document.addEventListener(
-        'keyup',
-        keyUpHandler,
-        false
-      );
+      // const screen = new Screen(socket, canvas);
+      // // キャンバスの描画開始
+      // screen.animate(0);
     }
+    // document.addEventListener(
+    //   'keydown',
+    //   keyDownHandler,
+    //   false
+    // );
+    // document.addEventListener('keyup', keyUpHandler, false);
   }, []);
   return (
     <>
@@ -147,10 +145,10 @@ const GameDisplay = () => {
           alignItems: 'center',
         }}
       >
-        <canvas
+        {/* <canvas
           id='game-canvas'
           className={styles.canvasBorder}
-        ></canvas>
+        ></canvas> */}
         <div
           id='phaser-game'
           className={styles.canvasBorder}

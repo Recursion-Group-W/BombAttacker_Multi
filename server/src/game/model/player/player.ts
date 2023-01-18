@@ -1,7 +1,9 @@
-import { Movement } from '../../../types/movement.type';
+import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
+import { Movement } from '../../types/movement.type';
+import { ObjectUtil } from '../../util/object.util';
 import { OverlapTester } from '../../util/overlapTester';
 import { Bomb } from '../bomb';
-import { Character } from '../character';
+import { Character } from '../character/character';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
 export class Player extends Character {
@@ -13,7 +15,7 @@ export class Player extends Character {
     left: false,
   };
 
-  private bombList: Bomb[] = [];
+  private bombList = new GenericLinkedList<Bomb>();
   private bombCountMax = 1;
   private score = 0;
 
@@ -22,13 +24,18 @@ export class Player extends Character {
     public id: number,
     public clientId: string,
     public userName: string,
-    obstacleSet: Set<GenericObstacle>
+    // obstacleSet: Set<GenericObstacle>
+    obstacleList: GenericLinkedList<GenericObstacle>
   ) {
-    super(userName, Player.SPRITE_KEY, obstacleSet);
+    super(userName, Player.SPRITE_KEY, obstacleList);
   }
 
   // 更新
-  update(deltaTime: number, obstacleSet: Set<GenericObstacle>) {
+  update(
+    deltaTime: number,
+    // obstacleSet: Set<GenericObstacle>
+    obstacleList: GenericLinkedList<GenericObstacle>
+  ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
       x: this.getPosition.x,
@@ -37,9 +44,7 @@ export class Player extends Character {
 
     //movementにtrueの値がない（動作がない）場合
     //移動や衝突判定はせず、アニメーションだけセットする
-    if (
-      !Object.values(this.movement).some((value) => value)
-    ) {
+    if (!Object.values(this.movement).some((value) => value)) {
       this.setVelocity(0, 0);
       //キーが押されていない時
       switch (this.getDirection) {
@@ -85,6 +90,11 @@ export class Player extends Character {
 
     //衝突判定
     let collision = false;
+    //補正値
+    let correction = {
+      x: 0,
+      y: 0,
+    };
     if (
       !OverlapTester.pointInRect(this.rectField, {
         x: this.getPosition.x,
@@ -93,12 +103,51 @@ export class Player extends Character {
     ) {
       // フィールドの外に出た。
       collision = true;
-    } else if (this.overlapObstacles(obstacleSet)) {
-      // 壁に当たった。
-      collision = true;
+    } else {
+      //衝突した障害物
+      let obstacleNode = this.overlapObstacles(obstacleList);
+      if (obstacleNode) {
+        // 障害物に当たった。
+        collision = true;
+
+        //補正値を計算
+        ObjectUtil.calCorrection(obstacleNode, this, correction);
+
+        // const obstacle = obstacleNode.data;
+        // if (
+        //   this.getPosition.x >= obstacle.getPosition.x &&
+        //   this.getPosition.y <= obstacle.getPosition.y
+        // ) {
+        //   const diffX = this.getPosition.x - obstacle.getPosition.x;
+        //   const diffY = obstacle.getPosition.y - this.getPosition.y;
+        //   if (diffX >= diffY) {
+        //     if (
+        //       diffY >=
+        //       ((obstacle.getHeight + this.getHeight) / 2) * (2 / 5)
+        //     ) {
+        //       //隣の障害物
+        //       let nextObstacle = obstacleNode.prev?.data;
+        //       if (nextObstacle) {
+        //         if (
+        //           !OverlapTester.overlapRects(
+        //             nextObstacle.rectBound,
+        //             this.rectBound
+        //           )
+        //         ) {
+        //           correction.y =
+        //             -1 *
+        //             (obstacle.getHeight / 2 +
+        //               this.getHeight / 2 -
+        //               (obstacle.getPosition.y - this.getPosition.y));
+        //         }
+        //       }
+        //     }
+        //   }
+        // }
+      }
     }
     if (collision) {
-      this.setPosition(prevPosition.x, prevPosition.y);
+      this.setPosition(prevPosition.x, prevPosition.y + correction.y);
       this.setVelocity(0, 0);
     }
   }
@@ -119,17 +168,13 @@ export class Player extends Character {
       return null;
     }
 
-    const bomb = new Bomb(
-      this.getPosition.x,
-      this.getPosition.y,
-      this
-    );
-    this.bombList.push(bomb);
+    const bomb = new Bomb(this.getPosition.x, this.getPosition.y, this);
+    this.bombList.pushBack(bomb);
     return bomb;
   }
 
   // 爆弾を置けるかどうか
   private canPutBomb() {
-    return this.bombList.length < this.bombCountMax;
+    return this.bombList.size() < this.bombCountMax;
   }
 }

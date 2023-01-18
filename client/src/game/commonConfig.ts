@@ -9,11 +9,11 @@ export class CommonConfig {
   // フィールドサイズ
   // ※背景タイル画像のトリム処理未実装のため、
   // 　「FIELD_WIDTHは、FIELDTILE_WIDTHの定数倍」「FIELD_HEIGHTは、FIELDTILE_HEIGHTの定数倍」にする必要あり。
-  static get FIELD_WIDTH() {
-    return 1024.0;
+  static get STAGE_WIDTH() {
+    return 1160.0;
   }
-  static get FIELD_HEIGHT() {
-    return 1024.0;
+  static get STAGE_HEIGHT() {
+    return 1160.0;
   }
   // static get FIELD_WIDTH() {
   //   return 2048.0;

@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { AnimationUtil } from '../util/animationUtil';
+import { AnimationUtil } from '../util/animation.util';
 
 export class PreloadScene extends Scene {
   constructor() {
@@ -7,6 +7,7 @@ export class PreloadScene extends Scene {
   }
 
   preload() {
+    //画像の読み込み
     this.load.image('blueBrick', '/assets/blue_brick.png');
     this.load.image(
       'orangeBrick',
@@ -48,11 +49,13 @@ export class PreloadScene extends Scene {
     );
   }
   create() {
+    //アニメーションを作成
     AnimationUtil.createPlayerAnim(this);
     AnimationUtil.createNpcAnim(this);
   }
 
   update() {
+    //MainSceneへ移動
     this.scene.start('MainScene');
   }
 }
