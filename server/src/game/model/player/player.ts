@@ -24,7 +24,6 @@ export class Player extends Character {
     public id: number,
     public clientId: string,
     public userName: string,
-    // obstacleSet: Set<GenericObstacle>
     obstacleList: GenericLinkedList<GenericObstacle>
   ) {
     super(userName, Player.SPRITE_KEY, obstacleList);
@@ -34,7 +33,8 @@ export class Player extends Character {
   update(
     deltaTime: number,
     // obstacleSet: Set<GenericObstacle>
-    obstacleList: GenericLinkedList<GenericObstacle>
+    obstacleList: GenericLinkedList<GenericObstacle>,
+    squareCache: Array<Array<GenericObstacle | null>>
   ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
@@ -111,11 +111,11 @@ export class Player extends Character {
         collision = true;
 
         //移動補正値を計算
-        ObjectUtil.calCorrection(obstacleNode, this, correction);
+        ObjectUtil.calCorrection(squareCache, obstacleNode, this, correction);
       }
     }
     if (collision) {
-      this.setPosition(prevPosition.x, prevPosition.y + correction.y);
+      this.setPosition(prevPosition.x + correction.x, prevPosition.y + correction.y);
       this.setVelocity(0, 0);
     }
   }
