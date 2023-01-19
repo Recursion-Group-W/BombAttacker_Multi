@@ -8,23 +8,42 @@ import { Movement } from '../types/movement.type';
 import { MathUtil } from '../util/math.util';
 
 export class Stage {
+  readonly STAGE_WIDTH = 1160;
+  readonly STAGE_HEIGHT = 1160;
   readonly TILE_SIZE = 40;
   readonly TILE_SPAN_SCALE = 1.0;
   readonly WAIT_FOR_NEW_NPC = 1000 * 10; //１０秒
-  playerList = new GenericLinkedList<Player>();
-  npcList = new GenericLinkedList<Npc>();
-  obstacleList = new GenericLinkedList<GenericObstacle>();
+  public playerList = new GenericLinkedList<Player>(); //プレイヤーのリスト
+  public npcList = new GenericLinkedList<Npc>(); //Npcのリスト
+  public obstacleList = new GenericLinkedList<GenericObstacle>(); //障害物のリスト
+  public squareCache: Array<Array<GenericObstacle | null>> = new Array(
+    Math.floor(this.STAGE_WIDTH / this.TILE_SIZE)
+  ); //ステージマスのキャッシュ(29 * 29 の２次元配列)
+  //fillを使うと参照がコピーされて思った挙動にならない
+  // public squareCache: Array<Array<GenericObstacle | null>> = new Array(
+  //   Math.floor(this.STAGE_WIDTH / this.TILE_SIZE)
+  // ).fill(new Array(Math.floor(this.STAGE_HEIGHT / this.TILE_SIZE)).fill(null)); //ステージマスのキャッシュ(29 * 29 の２次元配列)
 
   constructor(
     public level: number,
     public roomId: string,
     public roomManager: RoomManager
-  ) {}
+  ) {
+    this.initSquareCache();
+  }
 
   // 更新処理
   update(deltaTime: number) {
     // オブジェクトの座標値の更新と衝突チェック
-    this.updateObjects(deltaTime);
+    this.updateObjects(deltaTime, this.squareCache);
+  }
+  //マスのキャッシュを初期化
+  initSquareCache() {
+    for (let i = 0; i < this.squareCache.length; i++) {
+      this.squareCache[i] = new Array(
+        Math.floor(this.STAGE_HEIGHT / this.TILE_SIZE)
+      );
+    }
   }
   //障害物の生成
   createObstacles(
@@ -38,27 +57,31 @@ export class Stage {
     const extra = Math.floor(
       (stageWidth % (this.TILE_SIZE * this.TILE_SPAN_SCALE)) / 2
     );
+
+    //マスのid(0 ~ 840)
+    let id = 0;
     for (
       let i = 0;
       i < Math.floor(stageWidth / this.TILE_SIZE / this.TILE_SPAN_SCALE);
       i++
     ) {
+      const x =
+        i * this.TILE_SIZE * this.TILE_SPAN_SCALE +
+        this.TILE_SIZE * 0.5 +
+        extra;
       for (
         let j = 0;
         j < Math.floor(stageHeight / this.TILE_SIZE / this.TILE_SPAN_SCALE);
         j++
       ) {
-        const x =
-          i * this.TILE_SIZE * this.TILE_SPAN_SCALE +
-          this.TILE_SIZE * 0.5 +
-          extra;
         const y =
           j * this.TILE_SIZE * this.TILE_SPAN_SCALE +
           this.TILE_SIZE * 0.5 +
           extra;
 
-        const tail = this.obstacleList.peekBack();
-        const id = tail ? tail.id + 1 : 0;
+        //末尾ノードのidから新しいidを作る
+        // const tail = this.obstacleList.peekBack();
+        // const id = tail ? tail.id + 1 : 0;
 
         let obstacle = null;
 
@@ -69,8 +92,10 @@ export class Stage {
           //耐久力の低い障害物を置く
           // 1/5の確率で置く
           const willPut = MathUtil.getRandomInt(0, 4);
-          if (willPut >= 1) continue;
-
+          if (willPut >= 1) {
+            id++;
+            continue;
+          }
           //障害物の種類をランダムに決定
           const obstacleLevel = MathUtil.getRandomInt(1, 3);
 
@@ -86,10 +111,16 @@ export class Stage {
               break;
           }
         }
-        // if (obstacle) this.obstacleSet.add(obstacle);
-        if (obstacle) this.obstacleList.pushBack(obstacle);
+
+        if (obstacle) {
+          this.obstacleList.pushBack(obstacle);
+        }
+        this.squareCache[i][j] = obstacle;
+        id++;
       }
     }
+    console.log('キャッシュ: ', this.squareCache[0]);
+    console.log('キャッシュの長さ: ', this.squareCache[0].length);
   }
 
   //プレイヤーの作成
@@ -202,11 +233,14 @@ export class Stage {
   // }
 
   // オブジェクトの座標値の更新
-  updateObjects(deltaTime: number) {
+  updateObjects(
+    deltaTime: number,
+    squareCache: Array<Array<GenericObstacle | null>>
+  ) {
     //プレイヤーごとの処理
     let playerIterator = this.playerList.getHead();
     while (playerIterator !== null) {
-      playerIterator.data.update(deltaTime, this.obstacleList);
+      playerIterator.data.update(deltaTime, this.obstacleList, squareCache);
       playerIterator = playerIterator.next;
     }
     //npcごとの処理
