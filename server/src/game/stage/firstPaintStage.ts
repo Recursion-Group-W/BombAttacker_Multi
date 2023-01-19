@@ -16,6 +16,7 @@ export class FirstPaintStage extends FirstStage {
       this.STAGE_HEIGHT,
       this.obstacleFactory
     );
+    // console.log(this.squareCache[5].length);
 
     //npc作成
     //後でfactoryを作成して、npc作成の機能をステージから切り離したい
@@ -24,7 +25,7 @@ export class FirstPaintStage extends FirstStage {
 
   // 更新処理
   update(deltaTime: number) {
-    super.update(deltaTime)
+    super.update(deltaTime);
   }
 
   //次のステージへ移動するメソッド
