@@ -3,7 +3,7 @@ import { CommonConfig } from '../config/commonConfig';
 import { Node } from '../../linkedList/generic/node';
 import { GenericObstacle } from '../model/obstacle/generic/genericObstacle';
 import { Player } from '../model/player/player';
-import { OverlapTester } from './overlapTester';
+import { OverlapUtil} from './overlap.util';
 
 export class ObjectUtil {
   static calRectField(width: number, height: number): RectBound {
@@ -34,7 +34,7 @@ export class ObjectUtil {
           let nextObstacle = obstacleNode.prev?.data;
           if (nextObstacle) {
             if (
-              !OverlapTester.overlapRects(
+              !OverlapUtil.overlapRects(
                 nextObstacle.rectBound,
                 player.rectBound
               )

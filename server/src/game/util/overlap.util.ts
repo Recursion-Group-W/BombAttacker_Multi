@@ -1,7 +1,7 @@
 import { RectBound } from '../types/rectBound.type';
 
 // 干渉するかテストする静的関数群クラス
-export class OverlapTester {
+export class OverlapUtil {
   static overlapRects(rect1: RectBound, rect2: RectBound) {
     // 矩形１の左端と矩形２の右端を比べて、矩形１の左端の方が右にあるなら、重ならない。
     if (rect1.left >= rect2.right) {

@@ -4,15 +4,14 @@ import { ObstacleFactory } from '../factory/obstacle/interface/obstacleFactory.i
 import { Npc } from '../model/npc/npc';
 import { GenericObstacle } from '../model/obstacle/generic/genericObstacle';
 import { Player } from '../model/player/player';
+import { Movement } from '../types/movement.type';
 import { MathUtil } from '../util/math.util';
 
 export class Stage {
   readonly TILE_SIZE = 40;
   readonly TILE_SPAN_SCALE = 1.0;
-  // obstacleSet = new Set<GenericObstacle>();
-  // playerSet = new Set<Player>(); //とりあえずSetを使う。あとでDequeを使って修正したい。
+  readonly WAIT_FOR_NEW_NPC = 1000 * 10; //１０秒
   playerList = new GenericLinkedList<Player>();
-  // npcSet = new Set<Npc>();
   npcList = new GenericLinkedList<Npc>();
   obstacleList = new GenericLinkedList<GenericObstacle>();
 
@@ -24,12 +23,8 @@ export class Stage {
 
   // 更新処理
   update(deltaTime: number) {
-    // // オブジェクトの座標値の更新
-    // this.updateObjects(deltaTime);
-    // // 衝突チェック
-    // this.checkCollisions();
-    // // 新たな行動（特に、ボットに関する生成や動作
-    // this.doNewActions(deltaTime);
+    // オブジェクトの座標値の更新と衝突チェック
+    this.updateObjects(deltaTime);
   }
   //障害物の生成
   createObstacles(
@@ -61,13 +56,6 @@ export class Stage {
           j * this.TILE_SIZE * this.TILE_SPAN_SCALE +
           this.TILE_SIZE * 0.5 +
           extra;
-
-        //後で双方向リストに書き換えて計算量減らしたい
-        // const obstacleArr = Array.from(this.obstacleSet);
-        // const id =
-        //   obstacleArr.length <= 0
-        //     ? 0
-        //     : obstacleArr[obstacleArr.length - 1].id + 1;
 
         const tail = this.obstacleList.peekBack();
         const id = tail ? tail.id + 1 : 0;
@@ -104,6 +92,53 @@ export class Stage {
     }
   }
 
+  //プレイヤーの作成
+  createPlayer(clientId: string, userName: string) {
+    const tail = this.playerList.getTail();
+    const id = tail ? tail.data.id + 1 : 0;
+    const player = new Player(id, clientId, userName, this.obstacleList);
+    console.log('プレイヤーが作成されました。');
+
+    this.playerList.pushBack(player);
+
+    return player;
+  }
+
+  //clientIdが一致するプレイヤーに動作(movement)をセットする
+  movePlayer(clientId: string, movement: Movement) {
+    let iterator = this.playerList.getHead();
+    while (iterator !== null) {
+      if (iterator.data.clientId && iterator.data.clientId === clientId) {
+        iterator.data.setMovement(movement);
+
+        break;
+      }
+      iterator = iterator.next;
+    }
+  }
+
+  //プレイヤーの破棄
+  destroyPlayer(clientId: string) {
+    let iterator = this.playerList.getHead();
+    while (iterator !== null) {
+      if (iterator.data.clientId === clientId) {
+        //プレイヤーリストから削除
+        this.playerList.remove(iterator);
+
+        //削除したプレイヤーのクライアントに"dead"イベントを送信
+        this.roomManager.ioNspGame.to(iterator.data.clientId).emit('dead');
+
+        //clientIdのプレイヤーSpriteを破棄するようにクライアントに指示する
+        this.roomManager.ioNspGame
+          .in(this.roomId)
+          .emit('deadPlayer', { clientId: clientId });
+
+        break;
+      }
+      iterator = iterator.next;
+    }
+  }
+
   createNpcs(
     npcList: GenericLinkedList<Npc>,
     obstacleList: GenericLinkedList<GenericObstacle>,
@@ -125,22 +160,76 @@ export class Stage {
     npcList.pushBack(npc);
     return npc;
   }
-  // createNpcs(
-  //   npcSet: Set<Npc>,
-  //   obstacleList:GenericLinkedList<GenericObstacle>,
-  //   count: number
-  // ) {
-  //   for (let i = 0; i < count; i++) {
-  //     this.createNpc(npcSet, obstacleList);
+
+  destroyNpc(id: number) {
+    let iterator = this.npcList.getHead();
+    while (iterator !== null) {
+      if (iterator.data.id && iterator.data.id === id) {
+        //削除 O(1)
+        this.npcList.remove(iterator);
+
+        //クライアントからidに対応するspriteを削除する
+        this.roomManager.ioNspGame.in(this.roomId).emit('deleteNpc', id);
+
+        //10秒後に新しく生成
+        setTimeout(() => {
+          this.createNpc(this.npcList, this.obstacleList);
+        }, this.WAIT_FOR_NEW_NPC);
+
+        break;
+      }
+      iterator = iterator.next;
+    }
+  }
+
+  //爆弾を作成
+  // createBomb(clientId: string) {
+  //   if (clientId === '') return;
+  //   let iterator = this.playerList.getHead();
+  //   while (iterator !== null) {
+  //     if (iterator.data.clientId && iterator.data.clientId === clientId) {
+  //       const bomb = iterator.data.putBomb();
+  //       if (bomb) {
+  //         this.bombList.pushBack(bomb);
+  //       }
+  //     }
   //   }
   // }
 
-  // createNpc(npcSet: Set<Npc>, obstacleList:GenericLinkedList<GenericObstacle>) {
-  //   const npcArr = Array.from(npcSet);
-  //   const id = npcArr.length === 0 ? 0 : npcArr[npcArr.length - 1].id + 1;
-  //   const npc = new Npc(id, obstacleList);
-
-  //   npcSet.add(npc);
-  //   return npc;
+  //爆弾を破棄
+  // destroyBomb(bomb: Bomb) {
+  //   this.bombList.remove(bomb)
   // }
+
+  // オブジェクトの座標値の更新
+  updateObjects(deltaTime: number) {
+    //プレイヤーごとの処理
+    let playerIterator = this.playerList.getHead();
+    while (playerIterator !== null) {
+      playerIterator.data.update(deltaTime, this.obstacleList);
+      playerIterator = playerIterator.next;
+    }
+    //npcごとの処理
+    let npcIterator = this.npcList.getHead();
+    while (npcIterator !== null) {
+      npcIterator.data.update(deltaTime, this.obstacleList, this.playerList);
+      npcIterator = npcIterator.next;
+    }
+
+    //爆弾ごとの処理
+
+    //爆風ごとの処理
+
+    // // 弾丸ごとの処理(爆弾と爆風のコードで参考にする)
+    // this.bulletSet.forEach((bullet) => {
+    //   const bDisappear = bullet.update(
+    //     deltaTime,
+    //     this.tankobstacleSet
+    //   );
+    //   if (bDisappear) {
+    //     // 消失
+    //     this.destroyBullet(bullet);
+    //   }
+    // });
+  }
 }

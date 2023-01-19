@@ -1,7 +1,7 @@
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import { Position } from '../../types/position.type';
 import { RectBound } from '../../types/rectBound.type';
-import { OverlapTester } from '../../util/overlapTester';
+import { OverlapUtil } from '../../util/overlap.util';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
 export class GameObject {
@@ -59,23 +59,11 @@ export class GameObject {
   overlapObstacles(obstacleList: GenericLinkedList<GenericObstacle>) {
     let iterator = obstacleList.getHead();
     while (iterator !== null) {
-      if (OverlapTester.overlapRects(this.rectBound, iterator.data.rectBound)) {
+      if (OverlapUtil.overlapRects(this.rectBound, iterator.data.rectBound)) {
         return iterator;
       }
       iterator = iterator.next;
     }
     return null;
   }
-  // overlapObstacles(obstacleSet: Set<GenericObstacle>) {
-  //   return Array.from(obstacleSet).some((obstacle) => {
-  //     if (
-  //       OverlapTester.overlapRects(
-  //         this.rectBound,
-  //         obstacle.rectBound
-  //       )
-  //     ) {
-  //       return true;
-  //     }
-  //   });
-  // }
 }
