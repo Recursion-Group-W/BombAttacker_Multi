@@ -1,6 +1,6 @@
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import { MathUtil } from '../../util/math.util';
-import { OverlapTester } from '../../util/overlapTester';
+import { OverlapUtil } from '../../util/overlap.util';
 import { Character } from '../character/character';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 import { Player } from '../player/player';
@@ -61,7 +61,7 @@ export class Npc extends Character {
     //衝突判定
     let collision = false;
     if (
-      !OverlapTester.pointInRect(this.rectField, {
+      !OverlapUtil.pointInRect(this.rectField, {
         x: this.getPosition.x,
         y: this.getPosition.y,
       })
@@ -93,20 +93,13 @@ export class Npc extends Character {
   protected overlapPlayers(playerList: GenericLinkedList<Player>) {
     let iterator = playerList.getHead();
     while (iterator !== null) {
-      if (OverlapTester.overlapRects(this.rectBound, iterator.data.rectBound)) {
+      if (OverlapUtil.overlapRects(this.rectBound, iterator.data.rectBound)) {
         return true;
       }
       iterator = iterator.next;
     }
     return false;
   }
-  // protected overlapPlayers(playerSet: Set<Player>) {
-  //   return Array.from(playerSet).some((player) => {
-  //     if (OverlapTester.overlapRects(this.rectBound, player.rectBound)) {
-  //       return true;
-  //     }
-  //   });
-  // }
 
   //ランダムな動きをセット
   setMoveRamdom() {

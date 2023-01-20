@@ -16,7 +16,6 @@ export class Game {
     this.roomId = roomId;
     this.roomManager = roomManager;
     this.stage = stage;
-    // this.stage = new Stage(1, roomId, roomManager);
 
     this.update();
   }
@@ -42,19 +41,9 @@ export class Game {
 
       // //ルーム内のユーザーにデータを送信
       this.roomManager.ioNspGame.in(this.roomId).emit('syncGame', {
-        // nanoSecDiff,
-        time: this.time,
+        time: deltaTime,
         playerArr: this.stage.playerList.toArray(),
-        // playerArr: Array.from(this.stage.playerSet),
         npcArr: this.stage.npcList.toArray(),
-        // npcArr: Array.from(this.stage.npcSet),
-        // obstacleArr: Array.from(this.stage.obstacleSet),
-        // tankArr: Array.from(this.stage.tankSet),
-        // tankObstacleArr: Array.from(
-        //   this.stage.tankobstacleSet
-        // ),
-        // bulletArr: Array.from(this.stage.bulletSet),
-        // botArr: Array.from(this.stage.botSet),
       });
     }, 1000 / ServerConfig.FRAMERATE); // 単位は[ms]。1000[ms] / FRAMERATE[回]
   }
@@ -62,27 +51,8 @@ export class Game {
   getInitialState() {
     return {
       playerArr: this.stage.playerList.toArray(),
-      // playerArr: Array.from(this.stage.playerSet),
-
-      // npcArr: Array.from(this.stage.npcSet),
       npcArr: this.stage.npcList.toArray(),
-      // obstacleArr: Array.from(this.stage.obstacleSet),
       obstacleArr: this.stage.obstacleList.toArray(),
     };
   }
-
-  // // //ルーム内のユーザーにデータを送信
-  // this.roomManager.ioNspGame
-  // .in(this.roomId)
-  // .emit('syncGame', {
-  //   nanoSecDiff,
-  //   playerArr: Array.from(this.stage.playerSet),
-  //   obstacleArr: Array.from(this.stage.obstacleSet),
-  //   tankArr: Array.from(this.stage.tankSet),
-  //   tankObstacleArr: Array.from(
-  //     this.stage.tankobstacleSet
-  //   ),
-  //   bulletArr: Array.from(this.stage.bulletSet),
-  //   botArr: Array.from(this.stage.botSet),
-  // });
 }

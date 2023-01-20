@@ -1,7 +1,7 @@
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import { Movement } from '../../types/movement.type';
 import { ObjectUtil } from '../../util/object.util';
-import { OverlapTester } from '../../util/overlapTester';
+import { OverlapUtil } from '../../util/overlap.util';
 import { Bomb } from '../bomb';
 import { Character } from '../character/character';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
@@ -24,7 +24,6 @@ export class Player extends Character {
     public id: number,
     public clientId: string,
     public userName: string,
-    // obstacleSet: Set<GenericObstacle>
     obstacleList: GenericLinkedList<GenericObstacle>
   ) {
     super(userName, Player.SPRITE_KEY, obstacleList);
@@ -34,7 +33,8 @@ export class Player extends Character {
   update(
     deltaTime: number,
     // obstacleSet: Set<GenericObstacle>
-    obstacleList: GenericLinkedList<GenericObstacle>
+    obstacleList: GenericLinkedList<GenericObstacle>,
+    squareCache: Array<Array<GenericObstacle | null>>
   ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
@@ -90,13 +90,13 @@ export class Player extends Character {
 
     //衝突判定
     let collision = false;
-    //補正値
+    //移動補正値
     let correction = {
       x: 0,
       y: 0,
     };
     if (
-      !OverlapTester.pointInRect(this.rectField, {
+      !OverlapUtil.pointInRect(this.rectField, {
         x: this.getPosition.x,
         y: this.getPosition.y,
       })
@@ -110,44 +110,12 @@ export class Player extends Character {
         // 障害物に当たった。
         collision = true;
 
-        //補正値を計算
-        ObjectUtil.calCorrection(obstacleNode, this, correction);
-
-        // const obstacle = obstacleNode.data;
-        // if (
-        //   this.getPosition.x >= obstacle.getPosition.x &&
-        //   this.getPosition.y <= obstacle.getPosition.y
-        // ) {
-        //   const diffX = this.getPosition.x - obstacle.getPosition.x;
-        //   const diffY = obstacle.getPosition.y - this.getPosition.y;
-        //   if (diffX >= diffY) {
-        //     if (
-        //       diffY >=
-        //       ((obstacle.getHeight + this.getHeight) / 2) * (2 / 5)
-        //     ) {
-        //       //隣の障害物
-        //       let nextObstacle = obstacleNode.prev?.data;
-        //       if (nextObstacle) {
-        //         if (
-        //           !OverlapTester.overlapRects(
-        //             nextObstacle.rectBound,
-        //             this.rectBound
-        //           )
-        //         ) {
-        //           correction.y =
-        //             -1 *
-        //             (obstacle.getHeight / 2 +
-        //               this.getHeight / 2 -
-        //               (obstacle.getPosition.y - this.getPosition.y));
-        //         }
-        //       }
-        //     }
-        //   }
-        // }
+        //移動補正値を計算
+        ObjectUtil.calCorrection(squareCache, obstacleNode, this, correction);
       }
     }
     if (collision) {
-      this.setPosition(prevPosition.x, prevPosition.y + correction.y);
+      this.setPosition(prevPosition.x + correction.x, prevPosition.y + correction.y);
       this.setVelocity(0, 0);
     }
   }

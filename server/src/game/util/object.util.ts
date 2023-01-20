@@ -3,7 +3,7 @@ import { CommonConfig } from '../config/commonConfig';
 import { Node } from '../../linkedList/generic/node';
 import { GenericObstacle } from '../model/obstacle/generic/genericObstacle';
 import { Player } from '../model/player/player';
-import { OverlapTester } from './overlapTester';
+import { OverlapUtil } from './overlap.util';
 
 export class ObjectUtil {
   static calRectField(width: number, height: number): RectBound {
@@ -17,37 +17,111 @@ export class ObjectUtil {
 
   //プレイヤー移動の補正値を計算するして更新するメソッド
   static calCorrection(
+    squareCache: Array<Array<GenericObstacle | null>>,
     obstacleNode: Node<GenericObstacle>,
     player: Player,
     correction: { x: number; y: number }
   ) {
+    //ぶつかった障害物
     const obstacle = obstacleNode.data;
-    if (
-      player.getPosition.x >= obstacle.getPosition.x &&
-      player.getPosition.y <= obstacle.getPosition.y
-    ) {
-      const diffX = player.getPosition.x - obstacle.getPosition.x;
-      const diffY = obstacle.getPosition.y - player.getPosition.y;
-      if (diffX >= diffY) {
-        if (diffY >= ((obstacle.getHeight + player.getHeight) / 2) * (2 / 5)) {
-          //隣の障害物
-          let nextObstacle = obstacleNode.prev?.data;
-          if (nextObstacle) {
-            if (
-              !OverlapTester.overlapRects(
-                nextObstacle.rectBound,
-                player.rectBound
-              )
-            ) {
+
+    const scale = 3 / 5;
+    //補正を行うかどうかの判定で使用する(ずれが2/5であれば補正する)
+    const requireX = ((obstacle.getWidth + player.getWidth) / 2) * scale;
+    const requireY = ((obstacle.getHeight + player.getHeight) / 2) * scale;
+    //マスのキャッシュ(squareCache)から、ぶつかった障害物をO(1)で探すためのインデックス
+    const iX = Math.floor(obstacle.id / squareCache.length);
+    const iY = obstacle.id % squareCache[iX].length;
+    //障害物とプレイヤーの座標の差
+    let diffX = player.getPosition.x - obstacle.getPosition.x;
+    let diffY = player.getPosition.y - obstacle.getPosition.y;
+
+    //プレイヤーが、ぶつかった障害物の右側にいる場合
+    if (diffX >= 0) {
+      //プレイヤーが、ぶつかった障害物の右上にいる場合
+      if (diffY <= 0) {
+        diffY *= -1;
+        if (diffX <= diffY) {
+          if (diffX >= requireX) {
+            let nextObstacle = squareCache[iX + 1][iY];
+            if (!nextObstacle) {
+              correction.x = (obstacle.getWidth + player.getWidth) / 2 - diffX;
+            }
+          }
+        } else {
+          if (diffY >= requireY) {
+            //隣の障害物
+            let nextObstacle = squareCache[iX][iY - 1];
+            if (!nextObstacle) {
               correction.y =
-                -1 *
-                (obstacle.getHeight / 2 +
-                  player.getHeight / 2 -
-                  (obstacle.getPosition.y - player.getPosition.y));
+                -1 * (obstacle.getHeight / 2 + player.getHeight / 2 - diffY);
             }
           }
         }
-      } else {
+      }
+      //プレイヤーが、ぶつかった障害物の右下にいる場合
+      else {
+        if (diffX >= diffY) {
+          if (diffY >= requireY) {
+            let nextObstacle = squareCache[iX][iY + 1];
+            if (!nextObstacle) {
+              correction.y =
+                obstacle.getHeight / 2 + player.getHeight / 2 - diffY;
+            }
+          }
+        } else {
+          if (diffX >= requireX) {
+            let nextObstacle = squareCache[iX + 1][iY];
+            if (!nextObstacle) {
+              correction.x = (obstacle.getWidth + player.getWidth) / 2 - diffX;
+            }
+          }
+        }
+      }
+    }
+    //プレイヤーが、ぶつかった障害物の左側にいる場合
+    else {
+      diffX *= -1;
+      //プレイヤーが、ぶつかった障害物の左下にいる場合
+      if (diffY >= 0) {
+        if (diffX <= diffY) {
+          if (diffX >= requireX) {
+            let nextObstacle = squareCache[iX - 1][iY];
+            if (!nextObstacle) {
+              correction.x =
+                -1 * ((obstacle.getWidth + player.getWidth) / 2 - diffX);
+            }
+          }
+        } else {
+          if (diffY >= requireY) {
+            let nextObstacle = squareCache[iX][iY + 1];
+            if (!nextObstacle) {
+              correction.y =
+                obstacle.getHeight / 2 + player.getHeight / 2 - diffY;
+            }
+          }
+        }
+      }
+      //プレイヤーが、ぶつかった障害物の左上にいる場合
+      else {
+        diffY *= -1;
+        if (diffX >= diffY) {
+          if (diffY >= requireY) {
+            let nextObstacle = squareCache[iX][iY - 1];
+            if (!nextObstacle) {
+              correction.y =
+                -1 * (obstacle.getHeight / 2 + player.getHeight / 2 - diffY);
+            }
+          }
+        } else {
+          if (diffX >= requireX) {
+            let nextObstacle = squareCache[iX - 1][iY];
+            if (!nextObstacle) {
+              correction.x =
+                -1 * ((obstacle.getWidth + player.getWidth) / 2 - diffX);
+            }
+          }
+        }
       }
     }
   }
