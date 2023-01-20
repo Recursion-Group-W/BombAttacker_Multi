@@ -1,5 +1,6 @@
-import { GameObjectDto } from "./gameObject.dto";
+import { GameObjectDto } from './gameObject.dto';
 
 export interface BombDto extends GameObjectDto {
-    id: number;
-  }
+  id: number;
+  animation: string;
+}
