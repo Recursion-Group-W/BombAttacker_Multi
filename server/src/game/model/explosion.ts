@@ -16,7 +16,7 @@ export class Explosion extends GameObject {
   //   this.player.getPosition.y,
   //   'explode'
   // );
-  
+
   // bombの座標は必要なはず？
   constructor(x: number, y: number, private bomb: Bomb, private player: Player) {
     super(x, y, Explosion.WIDTH, Explosion.HEIGHT, 'explosion');
@@ -57,7 +57,7 @@ export class Explosion extends GameObject {
   //   'explode'
   // );
   // アニメーションを追加
-  protected animExplosion() {
-    this.animation = `${this.spriteKey}-anim`;
-  }
+  // protected animExplosion() {
+  //   this.animation = `${this.spriteKey}-anim`;
+  // }
 }
