@@ -61,27 +61,10 @@ export default class IoGame {
       socket.on('putBomb', () => {
         if (!socket.roomId || !socket.clientId) return;
 
-        console.log('⚠ 爆弾設置！！！');
-
-        const playerList =
-          this.roomManager.roomMap[socket.roomId].gameManager.game.stage
-            .playerList;
-        let iterator = playerList.getHead();
-        while (iterator !== null) {
-          if (iterator.data.clientId === socket.clientId) {
-            if (iterator.data.getLife === 0) return;
-            else break;
-          }
-        }
-        if (!iterator?.data) return;
-
         // 爆弾を設置
-        //createBombメソッドを後で実装する
         this.roomManager.roomMap[
           socket.roomId
-        ].gameManager.game.stage.createBomb(
-          socket.clientId
-        );
+        ].gameManager.game.stage.createBomb(socket.clientId);
       });
 
       //接続が切れたとき
