@@ -136,7 +136,7 @@ export class Player extends Character {
       return null;
     }
 
-    const bomb = new Bomb(this.getPosition.x, this.getPosition.y, this);
+    const bomb = new Bomb(this.getPosition.x, this.getPosition.y, this, this.id);
     this.bombList.pushBack(bomb);
     return bomb;
   }

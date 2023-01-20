@@ -1,11 +1,14 @@
 import { GenericLinkedList } from '../../linkedList/generic/genericLinkedList';
 import RoomManager from '../../manager/roomManager';
 import { ObstacleFactory } from '../factory/obstacle/interface/obstacleFactory.interface';
+import { Bomb } from '../model/bomb';
+import { Explosion } from '../model/explosion';
 import { Npc } from '../model/npc/npc';
 import { GenericObstacle } from '../model/obstacle/generic/genericObstacle';
 import { Player } from '../model/player/player';
 import { Movement } from '../types/movement.type';
 import { MathUtil } from '../util/math.util';
+import { Node } from '../../linkedList/generic/node';
 
 export class Stage {
   readonly STAGE_WIDTH = 1160;
@@ -14,6 +17,8 @@ export class Stage {
   readonly TILE_SPAN_SCALE = 1.0;
   readonly WAIT_FOR_NEW_NPC = 1000 * 10; //１０秒
   public playerList = new GenericLinkedList<Player>(); //プレイヤーのリスト
+  public bombList = new GenericLinkedList<Bomb>(); //ボムのリスト
+  public explosionList = new GenericLinkedList<Explosion>(); //ボムのリスト
   public npcList = new GenericLinkedList<Npc>(); //Npcのリスト
   public obstacleList = new GenericLinkedList<GenericObstacle>(); //障害物のリスト
   public squareCache: Array<Array<GenericObstacle | null>> = new Array(
@@ -213,24 +218,24 @@ export class Stage {
     }
   }
 
-  //爆弾を作成
-  // createBomb(clientId: string) {
-  //   if (clientId === '') return;
-  //   let iterator = this.playerList.getHead();
-  //   while (iterator !== null) {
-  //     if (iterator.data.clientId && iterator.data.clientId === clientId) {
-  //       const bomb = iterator.data.putBomb();
-  //       if (bomb) {
-  //         this.bombList.pushBack(bomb);
-  //       }
-  //     }
-  //   }
-  // }
+  // 爆弾を作成
+  createBomb(clientId: string) {
+    if (clientId === '') return;
+    let iterator = this.playerList.getHead();
+    while (iterator !== null) {
+      if (iterator.data.clientId && iterator.data.clientId === clientId) {
+        const bomb = iterator.data.putBomb();
+        if (bomb) {
+          this.bombList.pushBack(bomb);
+        }
+      }
+    }
+  }
 
-  //爆弾を破棄
-  // destroyBomb(bomb: Bomb) {
-  //   this.bombList.remove(bomb)
-  // }
+  // 爆弾を破棄
+  destroyBomb(bomb: Node<Bomb>) {
+    this.bombList.remove(bomb)
+  }
 
   // オブジェクトの座標値の更新
   updateObjects(
@@ -251,7 +256,17 @@ export class Stage {
     }
 
     //爆弾ごとの処理
-
+    let bombIterator = this.bombList.getHead();
+    while (bombIterator !== null) {
+      bombIterator.data.setRemainTime = deltaTime;
+      if (bombIterator.data.getRemainTime < 0) {
+        //爆発
+        // new Explosion();
+      }
+      this.destroyBomb(bombIterator)
+      bombIterator = bombIterator.next;
+    }
+ 
     //爆風ごとの処理
 
     // // 弾丸ごとの処理(爆弾と爆風のコードで参考にする)

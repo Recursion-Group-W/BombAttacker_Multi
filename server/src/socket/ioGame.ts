@@ -77,11 +77,11 @@ export default class IoGame {
 
         // 爆弾を設置
         //createBombメソッドを後で実装する
-        // this.roomManager.roomMap[
-        //   socket.roomId
-        // ].gameManager.game.stage.createBomb(
-        //   socket.clientId
-        // );
+        this.roomManager.roomMap[
+          socket.roomId
+        ].gameManager.game.stage.createBomb(
+          socket.clientId
+        );
       });
 
       //接続が切れたとき
