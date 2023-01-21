@@ -21,8 +21,10 @@ export default class RoomManager {
   }
 
   //入室
-  async joinRoom(socket: CustomSocket, userName: string) {
+  async joinRoom(socket: CustomSocket, userName: string, userId: string) {
     if (!socket.clientId) return;
+
+    socket.userId = userId;
 
     socket.roomId = this.chooseRoom();
 
@@ -36,12 +38,9 @@ export default class RoomManager {
     // socketを使ってユーザを入室させる
     this.addUser(socket);
 
-    console.log(
-      `ユーザー<clientId: ${socket.clientId}>が入室しました。`
-    );
+    console.log(`ユーザー<clientId: ${socket.clientId}>が入室しました。`);
 
-    let stage =
-      this.roomMap[socket.roomId].gameManager.game.stage;
+    let stage = this.roomMap[socket.roomId].gameManager.game.stage;
 
     // プレイヤーを作成
     stage.createPlayer(socket.clientId, userName);
@@ -49,10 +48,11 @@ export default class RoomManager {
 
   // socketを使ってユーザを入室させる
   addUser(socket: CustomSocket) {
-    if (!(socket.roomId && socket.clientId)) return;
+    if (!(socket.roomId && socket.clientId && socket.userId)) return;
 
     const newUser: User = {
       clientId: socket.clientId,
+      userId: socket.userId,
       roomId: socket.roomId,
       createdAt: Date.now(),
     };
@@ -69,9 +69,7 @@ export default class RoomManager {
 
   //roomIdの対戦ルームを新規作成する
   async createRoom(roomId: string): Promise<void> {
-    console.log(
-      `対戦ルーム<roomId: ${roomId}>が新規作成されました。`
-    );
+    console.log(`対戦ルーム<roomId: ${roomId}>が新規作成されました。`);
 
     //ゲームを作成し、gameManagerにゲームを登録
     let gameManager = new GameManager(roomId, this);
@@ -118,8 +116,7 @@ export default class RoomManager {
     //Roomからクライアントを削除
     this.removeUser(socket.roomId, socket.clientId);
 
-    let stage =
-      this.roomMap[socket.roomId].gameManager.game.stage;
+    let stage = this.roomMap[socket.roomId].gameManager.game.stage;
 
     //ステージからプレイヤーを削除
     stage.destroyPlayer(socket.clientId);

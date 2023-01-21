@@ -1,5 +1,6 @@
 export type User = {
   clientId: string;
+  userId: string;
   roomId: string;
   createdAt: number;
 };
