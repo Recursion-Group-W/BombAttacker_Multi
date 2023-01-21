@@ -1,6 +1,7 @@
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import { MathUtil } from '../../util/math.util';
 import { OverlapUtil } from '../../util/overlap.util';
+import { Bomb } from '../bomb';
 import { Character } from '../character/character';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 import { Player } from '../player/player';
@@ -26,7 +27,8 @@ export class Npc extends Character {
     // obstacleSet: Set<GenericObstacle>,
     obstacleList: GenericLinkedList<GenericObstacle>,
     // playerSet: Set<Player>
-    playerList: GenericLinkedList<Player>
+    playerList: GenericLinkedList<Player>,
+    bombList: GenericLinkedList<Bomb>
   ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
@@ -71,9 +73,21 @@ export class Npc extends Character {
     } else if (this.overlapObstacles(obstacleList)) {
       //障害物に衝突
       collision = true;
-    } else if (this.overlapPlayers(playerList)) {
-      //プレイヤーに衝突
+    } else if (this.overlapBombs(bombList)) {
       collision = true;
+    } else {
+      let playerNode = this.overlapPlayers(playerList);
+      if (playerNode) {
+        //プレイヤーの残機を減らす
+        playerNode.data.damage();
+        
+        console.log(`残機: ${playerNode.data.getLife}`);
+        //プレイヤーに衝突
+        collision = true;
+        this.setPosition(prevPosition.x, prevPosition.y);
+        this.setMoveOpposite(this.direction);
+        return;
+      }
     }
     if (collision) {
       //this.moveByDirection(this.getDirection, deltaTime)を実行する前の位置に戻す
@@ -94,11 +108,11 @@ export class Npc extends Character {
     let iterator = playerList.getHead();
     while (iterator !== null) {
       if (OverlapUtil.overlapRects(this.rectBound, iterator.data.rectBound)) {
-        return true;
+        return iterator;
       }
       iterator = iterator.next;
     }
-    return false;
+    return null;
   }
 
   //ランダムな動きをセット
@@ -171,6 +185,11 @@ export class Npc extends Character {
   //動いているかどうか
   private isMoving(): boolean {
     return this.getVelocity.x + this.getVelocity.y !== 0;
+  }
+
+  private setMoveOpposite(direction: number) {
+    const opposite = this.getOppositeDirection(direction);
+    this.setMoveByDirection(opposite);
   }
 
   //direction(方向)を受け取って、反対方向のdirectionを返すメソッド

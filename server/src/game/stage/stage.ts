@@ -18,7 +18,7 @@ export class Stage {
   readonly WAIT_FOR_NEW_NPC = 1000 * 10; //１０秒
   public playerList = new GenericLinkedList<Player>(); //プレイヤーのリスト
   public bombList = new GenericLinkedList<Bomb>(); //ボムのリスト
-  public explosionList = new GenericLinkedList<Explosion>(); //ボムのリスト
+  public explosionList = new GenericLinkedList<Explosion>(); //爆風のリスト
   public npcList = new GenericLinkedList<Npc>(); //Npcのリスト
   public obstacleList = new GenericLinkedList<GenericObstacle>(); //障害物のリスト
   public squareCache: Array<Array<GenericObstacle | null>> = new Array(
@@ -84,10 +84,6 @@ export class Stage {
           this.TILE_SIZE * 0.5 +
           extra;
 
-        //末尾ノードのidから新しいidを作る
-        // const tail = this.obstacleList.peekBack();
-        // const id = tail ? tail.id + 1 : 0;
-
         let obstacle = null;
 
         if (i % 2 !== 0 && j % 2 !== 0) {
@@ -124,8 +120,6 @@ export class Stage {
         id++;
       }
     }
-    console.log('キャッシュ: ', this.squareCache[0]);
-    console.log('キャッシュの長さ: ', this.squareCache[0].length);
   }
 
   //プレイヤーの作成
@@ -221,20 +215,41 @@ export class Stage {
   // 爆弾を作成
   createBomb(clientId: string) {
     if (clientId === '') return;
+
     let iterator = this.playerList.getHead();
     while (iterator !== null) {
       if (iterator.data.clientId && iterator.data.clientId === clientId) {
-        const bomb = iterator.data.putBomb();
-        if (bomb) {
-          this.bombList.pushBack(bomb);
-        }
+        if (iterator.data.getLife <= 0) return;
+        else break;
       }
     }
+    if (!iterator?.data) return;
+
+    console.log('⚠ 爆弾設置！！！');
+
+    const tail = this.bombList.getTail();
+    // console.log('tail: ', tail);
+    const id = tail ? tail.data.id + 1 : 0;
+
+    const bomb = iterator.data.putBomb(id);
+    // console.log('id: ', bomb?.id);
+    if (bomb) {
+      this.bombList.pushBack(bomb);
+    }
+    console.log(this.bombList);
+    console.log(this.bombList.size());
   }
 
   // 爆弾を破棄
   destroyBomb(bomb: Node<Bomb>) {
-    this.bombList.remove(bomb)
+    let iterator = bomb.data.player.bombList.getHead();
+    while (iterator !== null) {
+      if (iterator.data.id === bomb.data.id) {
+        bomb.data.player.bombList.remove(iterator);
+      }
+      iterator = iterator.next;
+    }
+    this.bombList.remove(bomb);
   }
 
   // オブジェクトの座標値の更新
@@ -246,39 +261,48 @@ export class Stage {
     let playerIterator = this.playerList.getHead();
     while (playerIterator !== null) {
       playerIterator.data.update(deltaTime, this.obstacleList, squareCache);
+      if (playerIterator.data.getLife <= 0) {
+        console.log(
+          `プレイヤー<${playerIterator.data.clientId}>の残機が０になりました。`
+        );
+        //プレイヤーリストから削除
+        this.playerList.remove(playerIterator);
+        this.roomManager.ioNspGame
+          .in(this.roomId)
+          .emit('destroyPlayer', { clientId: playerIterator.data.clientId });
+      }
       playerIterator = playerIterator.next;
     }
     //npcごとの処理
     let npcIterator = this.npcList.getHead();
     while (npcIterator !== null) {
-      npcIterator.data.update(deltaTime, this.obstacleList, this.playerList);
+      npcIterator.data.update(
+        deltaTime,
+        this.obstacleList,
+        this.playerList,
+        this.bombList
+      );
       npcIterator = npcIterator.next;
     }
 
     //爆弾ごとの処理
     let bombIterator = this.bombList.getHead();
     while (bombIterator !== null) {
-      bombIterator.data.setRemainTime = deltaTime;
-      if (bombIterator.data.getRemainTime < 0) {
+      bombIterator.data.reduceRemainTime(deltaTime);
+      if (bombIterator.data.getRemainTime <= 0) {
         //爆発
         // new Explosion();
+        this.destroyBomb(bombIterator);
+
+        //クライアントから削除
+        this.roomManager.ioNspGame.in(this.roomId).emit('destroyBomb', {
+          id: bombIterator.data.id,
+        });
       }
-      this.destroyBomb(bombIterator)
+
       bombIterator = bombIterator.next;
     }
- 
-    //爆風ごとの処理
 
-    // // 弾丸ごとの処理(爆弾と爆風のコードで参考にする)
-    // this.bulletSet.forEach((bullet) => {
-    //   const bDisappear = bullet.update(
-    //     deltaTime,
-    //     this.tankobstacleSet
-    //   );
-    //   if (bDisappear) {
-    //     // 消失
-    //     this.destroyBullet(bullet);
-    //   }
-    // });
+    //爆風ごとの処理
   }
 }

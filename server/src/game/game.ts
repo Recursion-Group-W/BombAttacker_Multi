@@ -44,6 +44,7 @@ export class Game {
         time: deltaTime,
         playerArr: this.stage.playerList.toArray(),
         npcArr: this.stage.npcList.toArray(),
+        bombArr: this.stage.bombList.toArray(),
       });
     }, 1000 / ServerConfig.FRAMERATE); // 単位は[ms]。1000[ms] / FRAMERATE[回]
   }

@@ -55,8 +55,7 @@ export class AnimationUtil {
     direction: number
   ) {
     if (!sprite.anims.isPlaying) sprite.play(animation);
-    else if (sprite.anims.getName() !== animation)
-      sprite.play(animation);
+    else if (sprite.anims.getName() !== animation) sprite.play(animation);
     //左に進むときは右方向の動きを反転させる
     sprite.setFlipX(direction === 3);
   }
@@ -67,10 +66,13 @@ export class AnimationUtil {
     direction: number
   ) {
     if (!sprite.anims.isPlaying) sprite.play(animation);
-    else if (sprite.anims.getName() !== animation)
-      sprite.play(animation);
+    else if (sprite.anims.getName() !== animation) sprite.play(animation);
     //左に進むときは右方向の動きを反転させる
     sprite.setFlipX(direction === 3);
+  }
+  static setBombAnimation(sprite: Phaser.GameObjects.Sprite, animation: string) {
+    if (!sprite.anims.isPlaying) sprite.play(animation);
+    else if (sprite.anims.getName() !== animation) sprite.play(animation);
   }
 
   static createNpcAnim(scene: Scene) {
@@ -121,7 +123,7 @@ export class AnimationUtil {
     });
   }
 
-  static createBumbAnim(scene: Scene) {
+  static createBombAnim(scene: Scene) {
     scene.anims.create({
       key: 'bomb-anim',
       frameRate: 10,
@@ -138,13 +140,10 @@ export class AnimationUtil {
       key: 'explosion-anim',
       frameRate: 20,
       repeat: 0,
-      frames: scene.anims.generateFrameNumbers(
-        'explosion',
-        {
-          start: 0,
-          end: 9,
-        }
-      ),
+      frames: scene.anims.generateFrameNumbers('explosion', {
+        start: 0,
+        end: 9,
+      }),
     });
   }
 }

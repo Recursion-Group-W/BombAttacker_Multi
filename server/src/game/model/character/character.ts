@@ -4,6 +4,8 @@ import { ObjectUtil } from '../../util/object.util';
 import { GameObject } from '../gameObject/gameObject';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
+import { Bomb } from '../bomb';
+import { OverlapUtil } from '../../util/overlap.util';
 
 export class Character extends GameObject {
   static WIDTH = 38.4;
@@ -83,7 +85,8 @@ export class Character extends GameObject {
     this.animation = value;
   }
   damage() {
-    return this.life--;
+    console.log('ダメージを受けました');
+    this.life--;
   }
 
   //初期位置に配置するメソッド
@@ -110,6 +113,18 @@ export class Character extends GameObject {
       this.getPosition.x + this.getVelocity.x * deltaTime,
       this.getPosition.y + this.getVelocity.y * deltaTime
     );
+  }
+
+  // 障害物との干渉チェック
+  overlapBombs(bombList: GenericLinkedList<Bomb>) {
+    let iterator = bombList.getHead();
+    while (iterator !== null) {
+      if (OverlapUtil.overlapRects(this.rectBound, iterator.data.rectBound)) {
+        return iterator;
+      }
+      iterator = iterator.next;
+    }
+    return null;
   }
 
   //アニメーションを設定するメソッド

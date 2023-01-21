@@ -4,6 +4,7 @@ import { ObjectUtil } from '../../util/object.util';
 import { OverlapUtil } from '../../util/overlap.util';
 import { Bomb } from '../bomb';
 import { Character } from '../character/character';
+import { Npc } from '../npc/npc';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
 export class Player extends Character {
@@ -15,8 +16,8 @@ export class Player extends Character {
     left: false,
   };
 
-  private bombList = new GenericLinkedList<Bomb>();
-  private bombCountMax = 1;
+  public bombList = new GenericLinkedList<Bomb>();
+  private bombCountMax = 5;
   private score = 0;
 
   // コンストラクタ
@@ -34,7 +35,7 @@ export class Player extends Character {
     deltaTime: number,
     // obstacleSet: Set<GenericObstacle>
     obstacleList: GenericLinkedList<GenericObstacle>,
-    squareCache: Array<Array<GenericObstacle | null>>
+    squareCache: Array<Array<GenericObstacle | null>>,
   ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
@@ -115,10 +116,14 @@ export class Player extends Character {
       }
     }
     if (collision) {
-      this.setPosition(prevPosition.x + correction.x, prevPosition.y + correction.y);
+      this.setPosition(
+        prevPosition.x + correction.x,
+        prevPosition.y + correction.y
+      );
       this.setVelocity(0, 0);
     }
   }
+  
   toJSON() {
     return Object.assign(super.toJSON(), {
       clientId: this.clientId,
@@ -131,14 +136,14 @@ export class Player extends Character {
   }
 
   // 爆弾を置く
-  putBomb() {
+  putBomb(id: number) {
     if (!this.canPutBomb()) {
       return null;
     }
 
-    const bomb = new Bomb(this.getPosition.x, this.getPosition.y, this, this.id);
+    const bomb = new Bomb(id, this.getPosition.x, this.getPosition.y, this);
     this.bombList.pushBack(bomb);
-    return bomb;
+    return new Bomb(id, this.getPosition.x, this.getPosition.y, this);
   }
 
   // 爆弾を置けるかどうか
