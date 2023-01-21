@@ -260,7 +260,12 @@ export class Stage {
     //プレイヤーごとの処理
     let playerIterator = this.playerList.getHead();
     while (playerIterator !== null) {
-      playerIterator.data.update(deltaTime, this.obstacleList, squareCache);
+      playerIterator.data.update(
+        deltaTime,
+        this.obstacleList,
+        squareCache,
+        this.bombList
+      );
       if (playerIterator.data.getLife <= 0) {
         console.log(
           `プレイヤー<${playerIterator.data.clientId}>の残機が０になりました。`
