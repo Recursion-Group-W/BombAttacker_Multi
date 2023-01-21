@@ -36,6 +36,7 @@ export class Player extends Character {
     // obstacleSet: Set<GenericObstacle>
     obstacleList: GenericLinkedList<GenericObstacle>,
     squareCache: Array<Array<GenericObstacle | null>>,
+    bombList: GenericLinkedList<Bomb>
   ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
@@ -96,15 +97,25 @@ export class Player extends Character {
       x: 0,
       y: 0,
     };
+    // ステージの外に出た場合
     if (
       !OverlapUtil.pointInRect(this.rectField, {
         x: this.getPosition.x,
         y: this.getPosition.y,
       })
     ) {
-      // フィールドの外に出た。
       collision = true;
-    } else {
+    }
+    //爆弾と衝突した場合
+    if (this.overlapBombs(bombList)) {
+      //爆弾を置いたばかりかどうか
+      if (!this.getIsJustPutBomb) {
+        //爆弾と衝突
+        collision = true;
+      }
+    }
+    //障害物と衝突した場合
+    if (this.overlapObstacles(obstacleList)) {
       //衝突した障害物
       let obstacleNode = this.overlapObstacles(obstacleList);
       if (obstacleNode) {
@@ -115,6 +126,7 @@ export class Player extends Character {
         ObjectUtil.calCorrection(squareCache, obstacleNode, this, correction);
       }
     }
+    //衝突した場合は元の位置に戻す
     if (collision) {
       this.setPosition(
         prevPosition.x + correction.x,
@@ -123,7 +135,7 @@ export class Player extends Character {
       this.setVelocity(0, 0);
     }
   }
-  
+
   toJSON() {
     return Object.assign(super.toJSON(), {
       clientId: this.clientId,
@@ -140,6 +152,8 @@ export class Player extends Character {
     if (!this.canPutBomb()) {
       return null;
     }
+
+    this.setIsJustPutBomb = true;
 
     const bomb = new Bomb(id, this.getPosition.x, this.getPosition.y, this);
     this.bombList.pushBack(bomb);
