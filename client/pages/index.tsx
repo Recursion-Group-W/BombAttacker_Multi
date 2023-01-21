@@ -1,23 +1,26 @@
 import * as React from 'react';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Link from '../src/Link';
-import Copyright from '../src/Copyright';
 import Button from '@mui/material/Button';
 import GoogleIcon from '@mui/icons-material/Google';
 import { signInWithPopup, signOut } from 'firebase/auth';
 import { auth, provider } from '../src/firebase';
+import { useRouter } from 'next/router';
+import { Layout } from '../component/Layout';
 
 export default function Home() {
+  const router = useRouter();
+
   const [isAuth, setIsAuth] = React.useState(false);
   const logIn = () => {
     signInWithPopup(auth, provider)
       .then((res) => {
-        console.log(res.user);
+        console.log(res.user.displayName);
         console.log(res.user.uid);
+        localStorage.setItem('userId', res.user.uid);
         localStorage.setItem('isAuth', 'true');
         setIsAuth(true);
+        router.push(`/mypage/${res.user.uid}`);
       })
       .catch((error) => {
         console.log(error.message);
@@ -30,50 +33,37 @@ export default function Home() {
     });
   };
   return (
-    <Container maxWidth='lg'>
-      <Box
-        sx={{
-          my: 4,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Typography
-          variant='h4'
-          component='h1'
-          gutterBottom
+    <Layout title='Title'>
+      <Container maxWidth='lg'>
+        <Box
+          height='100vh'
+          sx={{
+            my: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
         >
-          BombAttacker_Multi
-        </Typography>
+          <Box sx={{ typography: 'h1', fontWeight: 900 }}>
+            BombAttacker_Multi
+          </Box>
 
-        <Box maxWidth='sm' sx={{ py: 2 }}>
-          {!isAuth ? (
-            <Button onClick={logIn} variant='outlined'>
-              <GoogleIcon />
-              Login/Signin
-            </Button>
-          ) : (
-            <Button onClick={logOut} variant='outlined'>
-              <GoogleIcon />
-              Logout
-            </Button>
-          )}
+          <Box maxWidth='sm' sx={{ py: 2 }}>
+            {!isAuth ? (
+              <Button onClick={logIn} variant='outlined' size='large'>
+                <GoogleIcon />
+                Login/Signin
+              </Button>
+            ) : (
+              <Button onClick={logOut} variant='outlined' size='large'>
+                <GoogleIcon />
+                Logout
+              </Button>
+            )}
+          </Box>
         </Box>
-
-        <Box maxWidth='sm'>
-          <Button
-            variant='contained'
-            component={Link}
-            noLinkStyle
-            href={`/lobby/${1}`}
-          >
-            Go to the Lobby
-          </Button>
-        </Box>
-        <Copyright />
-      </Box>
-    </Container>
+      </Container>
+    </Layout>
   );
 }
