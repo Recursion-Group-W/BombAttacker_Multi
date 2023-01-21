@@ -19,6 +19,8 @@ export class Character extends GameObject {
 
   protected velocity = { x: 0, y: 0 };
 
+  private isJustPutBomb = false; //爆弾を置いたばかりかどうか。爆弾とプレイヤーの当たり判定で使用
+
   // 可動域
   protected rectField = ObjectUtil.calRectField(
     Character.WIDTH,
@@ -66,6 +68,13 @@ export class Character extends GameObject {
   }
   get getAnimation() {
     return this.animation;
+  }
+  get getIsJustPutBomb(): boolean {
+    return this.isJustPutBomb;
+  }
+
+  set setIsJustPutBomb(value: boolean) {
+    this.isJustPutBomb = value;
   }
 
   setVelocity(x: number, y: number) {
@@ -115,7 +124,7 @@ export class Character extends GameObject {
     );
   }
 
-  // 障害物との干渉チェック
+  // 爆弾との干渉チェック
   overlapBombs(bombList: GenericLinkedList<Bomb>) {
     let iterator = bombList.getHead();
     while (iterator !== null) {
@@ -124,6 +133,9 @@ export class Character extends GameObject {
       }
       iterator = iterator.next;
     }
+
+    //置いたばかりの爆弾とのoverlapがなくなったので、falseに設定する
+    this.setIsJustPutBomb = false;
     return null;
   }
 
