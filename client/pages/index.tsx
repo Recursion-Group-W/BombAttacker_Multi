@@ -7,7 +7,7 @@ import Copyright from '../src/Copyright';
 import Button from '@mui/material/Button';
 import GoogleIcon from '@mui/icons-material/Google';
 import { signInWithPopup, signOut } from 'firebase/auth';
-import { auth, provider } from '../firebase';
+import { auth, provider } from '../src/firebase';
 
 export default function Home() {
   const [isAuth, setIsAuth] = React.useState(false);
