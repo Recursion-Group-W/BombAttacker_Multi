@@ -14,12 +14,15 @@ export default class IoGame {
       roomManager.generateClientId(socket);
 
       // 入室
-      socket.on('joinRoom', async (req: { userName: string }) => {
-        // console.log(req);
+      socket.on(
+        'joinRoom',
+        async (req: { userName: string; userId: string }) => {
+          // console.log(req);
 
-        //入室する処理
-        await roomManager.joinRoom(socket, req.userName);
-      });
+          //入室する処理
+          await roomManager.joinRoom(socket, req.userName, req.userId);
+        }
+      );
 
       // クライアントから、ゲームの初期状態をリクエストされる
       // (ゲームに参加した際の１度だけ)
