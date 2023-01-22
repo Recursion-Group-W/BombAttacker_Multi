@@ -1,5 +1,5 @@
 import RoomManager from '../../../../manager/roomManager';
-import { FirstPaintStage } from '../../../stage/firstPaintStage';
+import { FirstPaintStage } from '../../../stage/paint/firstPaintStage';
 import { BrickFactory } from '../../obstacle/brick/brickFactory';
 
 export class PaintStageFactory {

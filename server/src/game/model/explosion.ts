@@ -9,7 +9,6 @@ export class Explosion extends GameObject {
   private animation: string = '';
   private remainTime: number = 1;
 
-  // bombの座標は必要なはず？
   constructor(public id: number, x: number, y: number, public player: Player) {
     super(x, y, Explosion.WIDTH, Explosion.HEIGHT, 'explosion');
     this.setAnim();
@@ -38,6 +37,6 @@ export class Explosion extends GameObject {
   }
 
   private reduceRemainTime(time: number) {
-    this.setRemainTime = this.getRemainTime - time;
+    this.remainTime -= time;
   }
 }

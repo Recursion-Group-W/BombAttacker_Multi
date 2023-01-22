@@ -1,6 +1,6 @@
-import RoomManager from '../../manager/roomManager';
-import { FirstStage } from './firstStage';
-import { BrickFactory } from '../factory/obstacle/brick/brickFactory';
+import RoomManager from '../../../manager/roomManager';
+import { FirstStage } from '../generic/genericFirstStage';
+import { BrickFactory } from '../../factory/obstacle/brick/brickFactory';
 
 export class FirstPaintStage extends FirstStage {
   type = 'paint';
@@ -27,6 +27,7 @@ export class FirstPaintStage extends FirstStage {
   update(deltaTime: number) {
     super.update(deltaTime);
   }
+
 
   //次のステージへ移動するメソッド
   // nextStage(){

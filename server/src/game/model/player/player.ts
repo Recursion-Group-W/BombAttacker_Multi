@@ -1,4 +1,5 @@
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
+import RoomManager from '../../../manager/roomManager';
 import { Movement } from '../../types/movement.type';
 import { ObjectUtil } from '../../util/object.util';
 import { OverlapUtil } from '../../util/overlap.util';
@@ -21,6 +22,8 @@ export class Player extends Character {
   private bombCountMax = 5;
   private score = 0;
 
+  private bombStrength = 1;
+
   // コンストラクタ
   constructor(
     public id: number,
@@ -40,8 +43,17 @@ export class Player extends Character {
     obstacleList: GenericLinkedList<GenericObstacle>,
     squareCache: Array<Array<GenericObstacle | null>>,
     bombList: GenericLinkedList<Bomb>,
-    explosionList: GenericLinkedList<Explosion>
+    explosionList: GenericLinkedList<Explosion>,
+    roomManager: RoomManager,
+    roomId: string
   ) {
+    //ダメージを受けて3秒間は次のダメージを受けないように設定しているので、
+    //3秒を過ぎたら０に戻す
+    if (this.getNoDamageTime >= 3) {
+      this.setNoDamageTime = 0;
+    } else if (this.getNoDamageTime > 0) {
+      this.setNoDamageTime = this.getNoDamageTime + deltaTime;
+    }
     // 移動前座標値のバックアップ
     const prevPosition = {
       x: this.getPosition.x,
@@ -49,7 +61,6 @@ export class Player extends Character {
     };
 
     //movementにtrueの値がない（動作がない）場合
-    //移動や衝突判定はせず、アニメーションだけセットする
     if (!Object.values(this.movement).some((value) => value)) {
       this.setVelocity(0, 0);
       //キーが押されていない時
@@ -67,7 +78,6 @@ export class Player extends Character {
           this.animTurnRight();
           break;
       }
-      return;
     }
 
     // movementによって、プレイヤーの向きと位置を更新
@@ -140,12 +150,20 @@ export class Player extends Character {
     }
 
     //爆風との干渉
-    // let explosion = this.overlapExplosions(explosionList);
-    // if (explosion) {
-    //     //残機を減らす
-    //     this.damage();
-
-    // }
+    let explosion = this.overlapExplosions(explosionList);
+    if (explosion) {
+      if (this.getNoDamageTime <= 0) {
+        console.log('爆風を受けました');
+        //残機を減らす
+        this.damage();
+        this.setNoDamageTime = deltaTime;
+        //干渉した爆風を削除
+        explosionList.remove(explosion);
+        roomManager.ioNspGame.in(roomId).emit('destroyExplosion', {
+          id: explosion.data.id,
+        });
+      }
+    }
   }
 
   toJSON() {
@@ -153,6 +171,15 @@ export class Player extends Character {
       clientId: this.clientId,
       score: this.score,
     });
+  }
+
+  //ボムの強さ
+  get getBombStrength(): number {
+    return this.bombStrength;
+  }
+  //ボムの強さアップ
+  increaseBombStrength() {
+    this.bombStrength++;
   }
 
   setMovement(movement: Movement): void {

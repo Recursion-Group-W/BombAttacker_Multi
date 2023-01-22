@@ -1,6 +1,6 @@
 import RoomManager from '../manager/roomManager';
 import { ServerConfig } from './config/serverConfig';
-import { FirstPaintStage } from './stage/firstPaintStage';
+import { FirstPaintStage } from './stage/paint/firstPaintStage';
 
 export class Game {
   time: number = Date.now();
@@ -45,6 +45,7 @@ export class Game {
         playerArr: this.stage.playerList.toArray(),
         npcArr: this.stage.npcList.toArray(),
         bombArr: this.stage.bombList.toArray(),
+        explosionArr: this.stage.explosionList.toArray(),
       });
     }, 1000 / ServerConfig.FRAMERATE); // 単位は[ms]。1000[ms] / FRAMERATE[回]
   }

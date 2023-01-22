@@ -100,6 +100,10 @@ export class Character extends GameObject {
     };
   }
 
+  set setLife(value: number) {
+    this.life = value;
+  }
+
   set setSpeed(value: number) {
     this.speed = value;
   }
@@ -157,18 +161,6 @@ export class Character extends GameObject {
     //置いたばかりの爆弾とのoverlapがなくなったので、falseに設定する
     this.setIsJustPutBomb = false;
 
-    return null;
-  }
-
-  //爆風との干渉チェック
-  overlapExplosions(explosionList: GenericLinkedList<Explosion>) {
-    let iterator = explosionList.getHead();
-    while (iterator !== null) {
-      if (OverlapUtil.overlapRects(this.rectBound, iterator.data.rectBound)) {
-        return iterator;
-      }
-      iterator = iterator.next;
-    }
     return null;
   }
 

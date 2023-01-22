@@ -2,6 +2,7 @@ import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList
 import { Position } from '../../types/position.type';
 import { RectBound } from '../../types/rectBound.type';
 import { OverlapUtil } from '../../util/overlap.util';
+import { Explosion } from '../explosion';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
 export class GameObject {
@@ -58,6 +59,17 @@ export class GameObject {
   // 障害物との干渉チェック
   overlapObstacles(obstacleList: GenericLinkedList<GenericObstacle>) {
     let iterator = obstacleList.getHead();
+    while (iterator !== null) {
+      if (OverlapUtil.overlapRects(this.rectBound, iterator.data.rectBound)) {
+        return iterator;
+      }
+      iterator = iterator.next;
+    }
+    return null;
+  }
+  //爆風との干渉チェック
+  overlapExplosions(explosionList: GenericLinkedList<Explosion>) {
+    let iterator = explosionList.getHead();
     while (iterator !== null) {
       if (OverlapUtil.overlapRects(this.rectBound, iterator.data.rectBound)) {
         return iterator;

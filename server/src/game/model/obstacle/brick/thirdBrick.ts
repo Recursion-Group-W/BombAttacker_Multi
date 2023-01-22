@@ -10,4 +10,8 @@ export class ThirdBrick extends GenericThirdObstacle {
   ) {
     super(id, x, y, spriteKey, endurance);
   }
+  // public damage() {
+  //   this.endurance--;
+  //   this.setSpriteKey = this.BrickMap.green.spriteKey;
+  // }
 }
