@@ -25,11 +25,9 @@ export class Player extends Character {
     public id: number,
     public clientId: string,
     public userName: string,
-    obstacleList: GenericLinkedList<GenericObstacle>,
-    stageWidth: number,
-    stageHeight: number
+    obstacleList: GenericLinkedList<GenericObstacle>
   ) {
-    super(userName, Player.SPRITE_KEY, obstacleList,stageWidth,stageHeight);
+    super(userName, Player.SPRITE_KEY, obstacleList);
   }
 
   // 更新
@@ -101,7 +99,7 @@ export class Player extends Character {
     };
     // ステージの外に出た場合
     if (
-      !OverlapUtil.pointInRect(this.getRectField, {
+      !OverlapUtil.pointInRect(this.rectField, {
         x: this.getPosition.x,
         y: this.getPosition.y,
       })

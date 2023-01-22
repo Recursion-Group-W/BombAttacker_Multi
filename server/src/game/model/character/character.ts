@@ -8,8 +8,8 @@ import { Bomb } from '../bomb';
 import { OverlapUtil } from '../../util/overlap.util';
 
 export class Character extends GameObject {
-  static WIDTH = 31.5;
-  static HEIGHT = 31.5;
+  static WIDTH = 38.4;
+  static HEIGHT = 38.4;
 
   protected direction = 2; // 0:up, 1:right, 2:down, 3:left
   protected speed = 50; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
@@ -22,27 +22,21 @@ export class Character extends GameObject {
   private isJustPutBomb = false; //爆弾を置いたばかりかどうか。爆弾とプレイヤーの当たり判定で使用
 
   // 可動域
-  private rectField: RectBound | null = null;
+  protected rectField = ObjectUtil.calRectField(
+    Character.WIDTH,
+    Character.HEIGHT
+  );
 
   // コンストラクタ
   constructor(
     public userName: string,
     spriteKey: string,
-    obstacleList: GenericLinkedList<GenericObstacle>,
-    stageWidth: number,
-    stageHeight: number
+    obstacleList: GenericLinkedList<GenericObstacle>
   ) {
     super(0.0, 0.0, Character.WIDTH, Character.HEIGHT, spriteKey);
 
-    //可動域を設定
-    this.rectField = ObjectUtil.calRectField(
-      Character.WIDTH,
-      Character.HEIGHT,
-      stageWidth,
-      stageHeight
-    );
     //初期位置に配置
-    this.setInitialPosition(obstacleList, stageWidth, stageHeight);
+    this.setInitialPosition(obstacleList);
   }
 
   toJSON() {
@@ -69,7 +63,7 @@ export class Character extends GameObject {
   get getInitLife(): number {
     return this.initLife;
   }
-  get getRectField(): RectBound | null {
+  get getRect(): RectBound {
     return this.rectField;
   }
   get getAnimation() {
@@ -105,25 +99,20 @@ export class Character extends GameObject {
   }
 
   //初期位置に配置するメソッド
-  setInitialPosition(
-    obstacleList: GenericLinkedList<GenericObstacle>,
-    stageWidth: number,
-    stageHeight: number
-  ) {
-    if (!this.getRectField) return;
+  setInitialPosition(obstacleList: GenericLinkedList<GenericObstacle>) {
     // 初期位置
     this.setPosition(
-      Math.random() * (stageWidth - this.getWidth),
-      Math.random() * (stageHeight - this.getHeight)
+      Math.random() * (CommonConfig.STAGE_WIDTH - this.getWidth),
+      Math.random() * (CommonConfig.STAGE_HEIGHT - this.getHeight)
     );
 
     // 障害物にぶつからない初期位置の算出
     do {
       this.setPosition(
-        this.getRectField.left +
-          Math.random() * (this.getRectField.right - this.getRectField.left),
-        this.getRectField.bottom +
-          Math.random() * (this.getRectField.top - this.getRectField.bottom)
+        this.rectField.left +
+          Math.random() * (this.rectField.right - this.rectField.left),
+        this.rectField.bottom +
+          Math.random() * (this.rectField.top - this.rectField.bottom)
       );
     } while (this.overlapObstacles(obstacleList));
   }

@@ -3,8 +3,8 @@ import { Obstacle } from '../interface/obstacle.interface';
 
 //将来の拡張に対応するためのGenericクラス
 export class GenericObstacle extends GameObject implements Obstacle {
-  static WIDTH = 32;
-  static HEIGHT = 32;
+  static WIDTH = 40;
+  static HEIGHT = 40;
 
   protected endurance = 0;
 

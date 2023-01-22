@@ -12,11 +12,9 @@ export class Npc extends Character {
   constructor(
     public id: number,
     // obstacleSet: Set<GenericObstacle>
-    obstacleList: GenericLinkedList<GenericObstacle>,
-    stageWidth: number,
-    stageHeight: number
+    obstacleList: GenericLinkedList<GenericObstacle>
   ) {
-    super('npc', Npc.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
+    super('npc', Npc.SPRITE_KEY, obstacleList);
     this.setSpriteKey = 'npc';
 
     //初めに進む向きと速度をランダムにセット
@@ -65,7 +63,7 @@ export class Npc extends Character {
     //衝突判定
     let collision = false;
     if (
-      !OverlapUtil.pointInRect(this.getRectField, {
+      !OverlapUtil.pointInRect(this.rectField, {
         x: this.getPosition.x,
         y: this.getPosition.y,
       })
@@ -82,7 +80,7 @@ export class Npc extends Character {
       if (playerNode) {
         //プレイヤーの残機を減らす
         playerNode.data.damage();
-
+        
         console.log(`残機: ${playerNode.data.getLife}`);
         //プレイヤーに衝突
         collision = true;
