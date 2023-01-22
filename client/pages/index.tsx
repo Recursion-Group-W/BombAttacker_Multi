@@ -4,9 +4,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import GoogleIcon from '@mui/icons-material/Google';
 import { signInWithPopup, signOut } from 'firebase/auth';
-import { auth, provider } from '../src/firebase';
+import { auth, provider, db } from '../src/firebase';
 import { useRouter } from 'next/router';
 import { Layout } from '../component/Layout';
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function Home() {
   const router = useRouter();
@@ -15,17 +16,29 @@ export default function Home() {
   const logIn = () => {
     signInWithPopup(auth, provider)
       .then((res) => {
+        setDoc(doc(db, "users", "info"), {
+          name: res.user.displayName,
+          state: "CA",
+          country: "USA",
+          uid: res.user.uid,
+        })
+        // const cityRef = doc(db, 'cities', 'info');
+        // setDoc(cityRef, { ui: res.user },{ merge: true }),{
+        //   name: "noname",
+        //   ui: res.user,
+        //   uid: res.user.uid
+        // };
+        .catch((error) => {
+          console.log(error.message);
+        })
         console.log(res.user.displayName);
         console.log(res.user.uid);
         localStorage.setItem('userId', res.user.uid);
         localStorage.setItem('isAuth', 'true');
         setIsAuth(true);
         router.push(`/mypage/${res.user.uid}`);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-  };
+  });
+}
   const logOut = () => {
     signOut(auth).then(() => {
       localStorage.clear();
