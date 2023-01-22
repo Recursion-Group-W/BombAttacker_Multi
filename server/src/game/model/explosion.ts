@@ -2,8 +2,8 @@ import { GameObject } from './gameObject/gameObject';
 import { Player } from './player/player';
 import { Bomb } from './bomb';
 export class Explosion extends GameObject {
-  static WIDTH = 38.4;
-  static HEIGHT = 38.4;
+  static WIDTH = 31.5;
+  static HEIGHT = 31.5;
   objects: { [key: string]: { [id: string]: any } } = {
     playerMap: {},
     npcMap: {},

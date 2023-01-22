@@ -14,7 +14,7 @@ export class SyncUtil {
           let sprite = scene.add
             .sprite(player.x, player.y, player.spriteKey)
             .setOrigin(0.5)
-            .setScale(1.2);
+            .setScale(1.0);
           scene.objects.playerMap[player.clientId] = {
             sprite: sprite,
             sync: null,
@@ -33,7 +33,7 @@ export class SyncUtil {
           let sprite = scene.add
             .sprite(npc.x, npc.y, npc.spriteKey)
             .setOrigin(0.5)
-            .setScale(1.2);
+            .setScale(1.0);
           scene.objects.npcMap[npc.id] = {
             sprite: sprite,
             sync: null,
@@ -51,7 +51,7 @@ export class SyncUtil {
           let sprite = scene.add
             .sprite(obstacle.x, obstacle.y, obstacle.spriteKey)
             .setOrigin(0.5)
-            .setScale(1.25);
+            .setScale(1.0);
           scene.objects.obstacleMap[obstacle.id] = {
             sprite: sprite,
             sync: null,
@@ -70,7 +70,7 @@ export class SyncUtil {
           let sprite = scene.add
             .sprite(bomb.x, bomb.y, bomb.spriteKey)
             .setOrigin(0.5)
-            .setScale(1.25);
+            .setScale(1.0);
           scene.objects.bombMap[bomb.id] = {
             sprite: sprite,
             sync: null,

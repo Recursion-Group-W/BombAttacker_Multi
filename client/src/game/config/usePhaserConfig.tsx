@@ -11,8 +11,8 @@ export const usePhaserConfig = () => {
     type: Phaser.AUTO,
     scale: {
       parent: 'phaser-game',
-      width: 1160,
-      height: 1160,
+      width: 800,
+      height: 800,
     },
     physics: {
       default: 'arcade',
