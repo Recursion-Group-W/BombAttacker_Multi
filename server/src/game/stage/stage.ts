@@ -11,9 +11,9 @@ import { MathUtil } from '../util/math.util';
 import { Node } from '../../linkedList/generic/node';
 
 export class Stage {
-  readonly STAGE_WIDTH = 1160;
-  readonly STAGE_HEIGHT = 1160;
-  readonly TILE_SIZE = 40;
+  readonly STAGE_WIDTH = 800;
+  readonly STAGE_HEIGHT = 800;
+  readonly TILE_SIZE = 32;
   readonly TILE_SPAN_SCALE = 1.0;
   readonly WAIT_FOR_NEW_NPC = 1000 * 10; //１０秒
   public playerList = new GenericLinkedList<Player>(); //プレイヤーのリスト
@@ -126,7 +126,14 @@ export class Stage {
   createPlayer(clientId: string, userName: string) {
     const tail = this.playerList.getTail();
     const id = tail ? tail.data.id + 1 : 0;
-    const player = new Player(id, clientId, userName, this.obstacleList);
+    const player = new Player(
+      id,
+      clientId,
+      userName,
+      this.obstacleList,
+      this.STAGE_WIDTH,
+      this.STAGE_HEIGHT
+    );
     console.log('プレイヤーが作成されました。');
 
     this.playerList.pushBack(player);
@@ -185,7 +192,7 @@ export class Stage {
   ) {
     const tail = npcList.getTail();
     const id = tail ? tail.data.id + 1 : 0;
-    const npc = new Npc(id, obstacleList);
+    const npc = new Npc(id, obstacleList, this.STAGE_WIDTH, this.STAGE_HEIGHT);
 
     npcList.pushBack(npc);
     return npc;

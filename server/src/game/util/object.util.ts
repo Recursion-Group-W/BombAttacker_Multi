@@ -6,12 +6,17 @@ import { Player } from '../model/player/player';
 import { OverlapUtil } from './overlap.util';
 
 export class ObjectUtil {
-  static calRectField(width: number, height: number): RectBound {
+  static calRectField(
+    width: number,
+    height: number,
+    stageWidth: number,
+    stageHeight: number
+  ): RectBound {
     return {
       left: 0 + width * 0.5,
       bottom: 0 + height * 0.5,
-      right: CommonConfig.STAGE_WIDTH - width * 0.5,
-      top: CommonConfig.STAGE_HEIGHT - height * 0.5,
+      right: stageWidth - width * 0.5,
+      top: stageHeight - height * 0.5,
     };
   }
 
