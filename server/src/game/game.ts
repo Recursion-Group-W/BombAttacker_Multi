@@ -32,7 +32,7 @@ export class Game {
       // 処理時間計測用
       // const hrtime = process.hrtime(); // ナノ秒単位で取得
 
-      // ゲームワールドの更新
+      // ゲームステージの更新
       this.stage.update(deltaTime);
 
       // const hrtimeDiff = process.hrtime(hrtime);

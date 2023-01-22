@@ -4,6 +4,7 @@ import { ObjectUtil } from '../../util/object.util';
 import { OverlapUtil } from '../../util/overlap.util';
 import { Bomb } from '../bomb';
 import { Character } from '../character/character';
+import { Explosion } from '../explosion';
 import { Npc } from '../npc/npc';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
@@ -29,7 +30,7 @@ export class Player extends Character {
     stageWidth: number,
     stageHeight: number
   ) {
-    super(userName, Player.SPRITE_KEY, obstacleList,stageWidth,stageHeight);
+    super(userName, Player.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
   }
 
   // 更新
@@ -38,7 +39,8 @@ export class Player extends Character {
     // obstacleSet: Set<GenericObstacle>
     obstacleList: GenericLinkedList<GenericObstacle>,
     squareCache: Array<Array<GenericObstacle | null>>,
-    bombList: GenericLinkedList<Bomb>
+    bombList: GenericLinkedList<Bomb>,
+    explosionList: GenericLinkedList<Explosion>
   ) {
     // 移動前座標値のバックアップ
     const prevPosition = {
@@ -136,6 +138,14 @@ export class Player extends Character {
       );
       this.setVelocity(0, 0);
     }
+
+    //爆風との干渉
+    // let explosion = this.overlapExplosions(explosionList);
+    // if (explosion) {
+    //     //残機を減らす
+    //     this.damage();
+
+    // }
   }
 
   toJSON() {

@@ -259,7 +259,12 @@ export class Stage {
     this.bombList.remove(bomb);
   }
 
-  // オブジェクトの座標値の更新
+  //爆風を破棄
+  destroyExplosion(explosion: Node<Explosion>) {
+    this.explosionList.remove(explosion);
+  }
+
+  // オブジェクトの更新
   updateObjects(
     deltaTime: number,
     squareCache: Array<Array<GenericObstacle | null>>
@@ -271,7 +276,8 @@ export class Stage {
         deltaTime,
         this.obstacleList,
         squareCache,
-        this.bombList
+        this.bombList,
+        this.explosionList
       );
       if (playerIterator.data.getLife <= 0) {
         console.log(
@@ -300,21 +306,45 @@ export class Stage {
     //爆弾ごとの処理
     let bombIterator = this.bombList.getHead();
     while (bombIterator !== null) {
-      bombIterator.data.reduceRemainTime(deltaTime);
+      bombIterator.data.update(deltaTime);
+      //爆発
       if (bombIterator.data.getRemainTime <= 0) {
-        //爆発
-        // new Explosion();
         this.destroyBomb(bombIterator);
 
         //クライアントから削除
         this.roomManager.ioNspGame.in(this.roomId).emit('destroyBomb', {
           id: bombIterator.data.id,
         });
+
+        //爆風を作成
+        const tail = this.explosionList.getTail();
+        const id = tail ? tail.data.id + 1 : 0;
+
+        const explosion = new Explosion(
+          id,
+          bombIterator.data.getPosition.x,
+          bombIterator.data.getPosition.y,
+          bombIterator.data.player
+        );
+        //爆風のリストに追加
+        this.explosionList.pushBack(explosion);
       }
 
       bombIterator = bombIterator.next;
     }
 
     //爆風ごとの処理
+    let explosionIterator = this.explosionList.getHead();
+    while (explosionIterator !== null) {
+      explosionIterator.data.update(deltaTime);
+      if (explosionIterator.data.getRemainTime <= 0) {
+        this.destroyExplosion(explosionIterator);
+
+        //クライアントから削除
+        this.roomManager.ioNspGame.in(this.roomId).emit('destroyExplosion', {
+          id: explosionIterator.data.id,
+        });
+      }
+    }
   }
 }

@@ -6,6 +6,7 @@ import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import { Bomb } from '../bomb';
 import { OverlapUtil } from '../../util/overlap.util';
+import { Explosion } from '../explosion';
 
 export class Character extends GameObject {
   static WIDTH = 31.5;
@@ -20,6 +21,8 @@ export class Character extends GameObject {
   protected velocity = { x: 0, y: 0 };
 
   private isJustPutBomb = false; //爆弾を置いたばかりかどうか。爆弾とプレイヤーの当たり判定で使用
+
+  private noDamageTime = 0;
 
   // 可動域
   private rectField: RectBound | null = null;
@@ -77,6 +80,13 @@ export class Character extends GameObject {
   }
   get getIsJustPutBomb(): boolean {
     return this.isJustPutBomb;
+  }
+  get getNoDamageTime() {
+    return this.noDamageTime;
+  }
+
+  set setNoDamageTime(value: number) {
+    this.noDamageTime = value;
   }
 
   set setIsJustPutBomb(value: boolean) {
@@ -144,9 +154,21 @@ export class Character extends GameObject {
       }
       iterator = iterator.next;
     }
-
     //置いたばかりの爆弾とのoverlapがなくなったので、falseに設定する
     this.setIsJustPutBomb = false;
+
+    return null;
+  }
+
+  //爆風との干渉チェック
+  overlapExplosions(explosionList: GenericLinkedList<Explosion>) {
+    let iterator = explosionList.getHead();
+    while (iterator !== null) {
+      if (OverlapUtil.overlapRects(this.rectBound, iterator.data.rectBound)) {
+        return iterator;
+      }
+      iterator = iterator.next;
+    }
     return null;
   }
 

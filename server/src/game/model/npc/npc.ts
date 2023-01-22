@@ -26,9 +26,7 @@ export class Npc extends Character {
   // 更新
   update(
     deltaTime: number,
-    // obstacleSet: Set<GenericObstacle>,
     obstacleList: GenericLinkedList<GenericObstacle>,
-    // playerSet: Set<Player>
     playerList: GenericLinkedList<Player>,
     bombList: GenericLinkedList<Bomb>
   ) {
