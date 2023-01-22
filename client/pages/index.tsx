@@ -16,11 +16,12 @@ export default function Home() {
   const logIn = () => {
     signInWithPopup(auth, provider)
       .then((res) => {
-        setDoc(doc(db, "users", "info"), {
+        setDoc(doc(db, "test", res.user.uid), {
           name: res.user.displayName,
           state: "CA",
           country: "USA",
           uid: res.user.uid,
+          BestScore: 0,
         })
         // const cityRef = doc(db, 'cities', 'info');
         // setDoc(cityRef, { ui: res.user },{ merge: true }),{
