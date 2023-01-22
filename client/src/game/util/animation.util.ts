@@ -149,7 +149,7 @@ export class AnimationUtil {
   static createExplosionAnim(scene: Scene) {
     scene.anims.create({
       key: 'explosion-anim',
-      frameRate: 20,
+      frameRate: 10,
       repeat: 0,
       frames: scene.anims.generateFrameNumbers('explosion', {
         start: 0,
