@@ -1,7 +1,12 @@
 import { Box, Button, Grid, Paper, styled, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState, FC } from 'react';
+import { io } from 'socket.io-client';
 import { Layout } from '../../component/Layout';
+import { NODE_URL } from '../../env';
+import Copyright from '../../src/Copyright';
+import { CustomSocket } from '../../src/socket/interface/customSocket.interface';
+import { useSocketStore } from '../../src/store/useSocketStore';
 import Link from '../../src/Link';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -17,13 +22,45 @@ const Mypage = () => {
   const { id } = router.query;
   const [UserName, setUserName] = useState('')
 
-  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-    setUserName(e.target.value)
-  }
+  // const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+  //   setUserName(e.target.value)
+  // }
   
   const handleClick = () => {
     // ログインAPIにPOSTする処理
   }
+
+  const updateSocketState = useSocketStore((state) => state.updateSocketState);
+
+  const url = NODE_URL;
+  const socket: CustomSocket = io(`${url}/game`);
+  updateSocketState({ socket: socket });
+
+  socket.on('connect', () => {
+    console.log('サーバーとソケット接続しました。');
+  });
+  socket.on('clientId', (clientId: string) => {
+    console.log(`Your clientId is ${clientId}`);
+    socket.clientId = clientId;
+  });
+
+  const joinRoom = async () => {
+    socket.emit('joinRoom', {
+      userName: 'user1',
+      userId: localStorage.getItem('userId'),
+    });
+  };
+  socket.on('roomId', (roomId: string) => {
+    router.push(`/room/${roomId}`);
+  });
+
+  useEffect(() => {
+    const { id } = router.query;
+    console.log('userID: ', id);
+  }, [router.query]);
+
+  const [loading, setLoading] = useState(true);
+
   return (
     <Layout title='Mypage'>
       <Box
@@ -38,7 +75,7 @@ const Mypage = () => {
         <Typography variant='h4' component='h1' gutterBottom>
                       表示名
         </Typography>
-        <input onChange={handleChangeName} value={UserName} />
+        {/* <input onChange={handleChangeName} value={UserName} /> */}
         <div>
         <Button color='success' variant='contained' onClick={handleClick}>決定</Button>
         </div>
@@ -78,11 +115,9 @@ const Mypage = () => {
                 <Box maxWidth='sm'>
                   <Button
                     variant='contained'
-                    component={Link}
-                    noLinkStyle
                     color='success'
                     size='large'
-                    href={`/lobby/${id}`}
+                    onClick={() => joinRoom()}
                   >
                     <Typography variant='h4' component='h1' gutterBottom>
                       ロビー
