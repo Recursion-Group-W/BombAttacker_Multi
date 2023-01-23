@@ -8,27 +8,39 @@ import { auth, provider, db } from '../src/firebase';
 import { useRouter } from 'next/router';
 import { Layout } from '../component/Layout';
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { useEffect, useState, FC } from 'react';
 
 export default function Home() {
   const router = useRouter();
 
   const [isAuth, setIsAuth] = React.useState(false);
+  const [UserName, setUserName] = useState('')
+
+  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+    setUserName(e.target.value)
+  }
+  
+  const handleClick = () => {
+    // ログインAPIにPOSTする処理
+  }
+
+  function makeUserName(UserName:string, displayName:string | null){
+    if (displayName != null){
+      if (UserName === "") return displayName.substr(0,4)
+      else return UserName
+    }
+    else return
+  }
   const logIn = () => {
     signInWithPopup(auth, provider)
       .then((res) => {
         setDoc(doc(db, "test", res.user.uid), {
-          name: res.user.displayName,
+          name: makeUserName(UserName, res.user.displayName),
           state: "CA",
           country: "USA",
           uid: res.user.uid,
           BestScore: 0,
         })
-        // const cityRef = doc(db, 'cities', 'info');
-        // setDoc(cityRef, { ui: res.user },{ merge: true }),{
-        //   name: "noname",
-        //   ui: res.user,
-        //   uid: res.user.uid
-        // };
         .catch((error) => {
           console.log(error.message);
         })
@@ -62,7 +74,26 @@ export default function Home() {
           <Box sx={{ typography: 'h1', fontWeight: 900 }}>
             BombAttacker_Multi
           </Box>
-
+          <Box
+          sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Box sx={{ typography: 'h3', fontWeight: 900 }}>
+          表示名
+        </Box>
+        <input onChange={handleChangeName} defaultValue="NoName" value={UserName} />
+        <div>
+        <Button 
+        variant='outlined'
+        size='large'
+        onClick={handleClick}>
+          決定
+          </Button>
+        </div>
+      </Box>
           <Box maxWidth='sm' sx={{ py: 2 }}>
             {!isAuth ? (
               <Button onClick={logIn} variant='outlined' size='large'>

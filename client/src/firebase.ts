@@ -14,8 +14,6 @@ const app = initializeApp(firebaseConfig)
 initializeFirestore(app, {
   ignoreUndefinedProperties: true,
 })
-const firestore = getFirestore(app)
-// const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
