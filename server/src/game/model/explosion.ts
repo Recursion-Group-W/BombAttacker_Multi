@@ -1,63 +1,42 @@
+import { GenericLinkedList } from '../../linkedList/generic/genericLinkedList';
 import { GameObject } from './gameObject/gameObject';
+import { Npc } from './npc/npc';
+import { GenericObstacle } from './obstacle/generic/genericObstacle';
 import { Player } from './player/player';
-import { Bomb } from './bomb';
 export class Explosion extends GameObject {
   static WIDTH = 31.5;
   static HEIGHT = 31.5;
-  objects: { [key: string]: { [id: string]: any } } = {
-    playerMap: {},
-    npcMap: {},
-    obstacleMap: {},
-    bombMap: {},
-    explosionMap: {} 
-  };
-  // private explosion = this.objects.explosionMap.create(
-  //   this.player.getPosition.x,
-  //   this.player.getPosition.y,
-  //   'explode'
-  // );
+  private animation: string = '';
+  private remainTime: number = 1;
 
-  // bombの座標は必要なはず？
-  constructor(x: number, y: number, private bomb: Bomb, private player: Player) {
+  constructor(public id: number, x: number, y: number, public player: Player) {
     super(x, y, Explosion.WIDTH, Explosion.HEIGHT, 'explosion');
+    this.setAnim();
   }
-  
-  updata(){
-    let explosion: any;
-    explosion = this.objects.explosionMap.create(
-      this.player.getPosition.x,
-      this.player.getPosition.y,
-      'explosion'
-    );
-    explosion.create(
-      this.bomb.getPosition.x + 32,
-      this.bomb.getPosition.y,
-      'explosion'
-    );
-    explosion.create(
-      this.bomb.getPosition.x,
-      this.bomb.getPosition.y + 32,
-      'explosion'
-    );
-    explosion.create(
-      this.bomb.getPosition.x - 32,
-      this.bomb.getPosition.y,
-      'explosion'
-    );
-    explosion.create(
-      this.bomb.getPosition.x,
-      this.bomb.getPosition.y - 32,
-      'explosion'
-    );
-    explosion.playAnimation('explosion-anim');
+  public toJSON() {
+    return Object.assign(super.toJSON(), {
+      id: this.id,
+      animation: this.animation,
+    });
   }
-  // this.explosion = this.objects.explosionMap.create(
-  //   this.player.getPosition.x,
-  //   this.player.getPosition.y,
-  //   'explode'
-  // );
-  // アニメーションを追加
-  // protected animExplosion() {
-  //   this.animation = `${this.spriteKey}-anim`;
-  // }
+
+  // アニメーションをセット
+  private setAnim() {
+    this.animation = `${this.spriteKey}-anim`;
+  }
+  public update(deltaTime: number) {
+    this.reduceRemainTime(deltaTime);
+  }
+
+  public get getRemainTime(): number {
+    return this.remainTime;
+  }
+
+  public set setRemainTime(time: number) {
+    this.remainTime = time;
+  }
+
+  private reduceRemainTime(time: number) {
+    this.remainTime -= time;
+  }
 }

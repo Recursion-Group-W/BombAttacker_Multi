@@ -6,16 +6,20 @@ export class Bomb extends GameObject {
   static readonly WIDTH = 31.5;
   static readonly HEIGHT = 31.5;
   private remainTime: number = 5;
-  private animation: string = 'bomb-anim';
+  private animation: string = '';
   constructor(public id: number, x: number, y: number, public player: Player) {
     super(x, y, Bomb.WIDTH, Bomb.HEIGHT, 'bomb');
+    this.setAnim();
   }
 
-  toJSON() {
+  public toJSON() {
     return Object.assign(super.toJSON(), {
       id: this.id,
       animation: this.animation,
     });
+  }
+  public update(deltaTime: number) {
+    this.reduceRemainTime(deltaTime);
   }
 
   public get getRemainTime(): number {
@@ -26,22 +30,12 @@ export class Bomb extends GameObject {
     this.remainTime = time;
   }
 
-  public reduceRemainTime(time: number) {
+  private reduceRemainTime(time: number) {
     this.setRemainTime = this.getRemainTime - time;
   }
 
-  update(deltaTime: number) {
-    this.remainTime -= deltaTime;
-    if (this.remainTime <= 0) {
-      //爆発
-      // new Explosion();
-    }
-  }
-  // }
-
-  // }
-  // アニメーションを追加
-  protected animBomb() {
+  // アニメーションをセット
+  private setAnim() {
     this.animation = `${this.spriteKey}-anim`;
   }
 }

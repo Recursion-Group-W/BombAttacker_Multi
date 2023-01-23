@@ -35,6 +35,7 @@ export class PreloadScene extends Scene {
     AnimationUtil.createPlayerAnim(this);
     AnimationUtil.createNpcAnim(this);
     AnimationUtil.createBombAnim(this);
+    AnimationUtil.createExplosionAnim(this);
   }
 
   update() {

@@ -1,8 +1,10 @@
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
+import RoomManager from '../../../manager/roomManager';
 import { MathUtil } from '../../util/math.util';
 import { OverlapUtil } from '../../util/overlap.util';
 import { Bomb } from '../bomb';
 import { Character } from '../character/character';
+import { Explosion } from '../explosion';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 import { Player } from '../player/player';
 
@@ -19,6 +21,9 @@ export class Npc extends Character {
     super('npc', Npc.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
     this.setSpriteKey = 'npc';
 
+    this.setSpeed = 30;
+    this.setLife = 1;
+
     //初めに進む向きと速度をランダムにセット
     this.setMoveRamdom();
   }
@@ -26,12 +31,21 @@ export class Npc extends Character {
   // 更新
   update(
     deltaTime: number,
-    // obstacleSet: Set<GenericObstacle>,
     obstacleList: GenericLinkedList<GenericObstacle>,
-    // playerSet: Set<Player>
     playerList: GenericLinkedList<Player>,
-    bombList: GenericLinkedList<Bomb>
+    bombList: GenericLinkedList<Bomb>,
+    explosionList: GenericLinkedList<Explosion>,
+    roomManager: RoomManager,
+    roomId: string
   ) {
+    //ダメージを受けて3秒間は次のダメージを受けないように設定しているので、
+    //1.5秒を過ぎたら０に戻す
+    if (this.getNoDamageTime >= 3) {
+      this.setNoDamageTime = 0;
+    } else if (this.getNoDamageTime > 0) {
+      this.setNoDamageTime = this.getNoDamageTime + deltaTime;
+    }
+
     // 移動前座標値のバックアップ
     const prevPosition = {
       x: this.getPosition.x,
@@ -98,6 +112,21 @@ export class Npc extends Character {
       //向きを変える
       //方向をランダムに選択
       this.setMoveRamdom();
+    }
+    //爆風との干渉
+    let explosion = this.overlapExplosions(explosionList);
+    if (explosion) {
+      if (this.getNoDamageTime <= 0) {
+        console.log('爆風を受けました');
+        //残機を減らす
+        this.damage();
+        this.setNoDamageTime = deltaTime;
+        //干渉した爆風を削除
+        explosionList.remove(explosion);
+        roomManager.ioNspGame.in(roomId).emit('destroyExplosion', {
+          id: explosion.data.id,
+        });
+      }
     }
   }
   toJSON() {

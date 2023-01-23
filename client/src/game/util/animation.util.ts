@@ -70,7 +70,18 @@ export class AnimationUtil {
     //左に進むときは右方向の動きを反転させる
     sprite.setFlipX(direction === 3);
   }
-  static setBombAnimation(sprite: Phaser.GameObjects.Sprite, animation: string) {
+  static setBombAnimation(
+    sprite: Phaser.GameObjects.Sprite,
+    animation: string
+  ) {
+    if (!sprite.anims.isPlaying) sprite.play(animation);
+    else if (sprite.anims.getName() !== animation) sprite.play(animation);
+  }
+
+  static setExplosionAnimation(
+    sprite: Phaser.GameObjects.Sprite,
+    animation: string
+  ) {
     if (!sprite.anims.isPlaying) sprite.play(animation);
     else if (sprite.anims.getName() !== animation) sprite.play(animation);
   }
@@ -138,7 +149,7 @@ export class AnimationUtil {
   static createExplosionAnim(scene: Scene) {
     scene.anims.create({
       key: 'explosion-anim',
-      frameRate: 20,
+      frameRate: 10,
       repeat: 0,
       frames: scene.anims.generateFrameNumbers('explosion', {
         start: 0,

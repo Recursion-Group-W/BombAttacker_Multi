@@ -1,4 +1,5 @@
 import { BombDto } from '../dto/bomb.dto';
+import { ExplosionDto } from '../dto/explosion.dto';
 import { NpcDto } from '../dto/npc.dto';
 import { ObstacleDto } from '../dto/obstacle.dto';
 import { PlayerDto } from '../dto/player.dto';
@@ -81,6 +82,25 @@ export class SyncUtil {
     }
   }
 
+  static setExplosion(explosionArr: ExplosionDto[], scene: CustomScene) {
+    if (explosionArr && explosionArr.length > 0) {
+      explosionArr.map((explosion) => {
+        if (!scene.objects.explosionMap[explosion.id]) {
+          let sprite = scene.add
+            .sprite(explosion.x, explosion.y, explosion.spriteKey)
+            .setOrigin(0.5)
+            .setScale(1.0);
+          // .play(explosion.animation);
+          scene.objects.explosionMap[explosion.id] = {
+            sprite: sprite,
+            sync: null,
+          };
+        }
+        scene.objects.explosionMap[explosion.id]['sync'] = explosion;
+      });
+    }
+  }
+
   static destroyPlayer(clientId: string, scene: CustomScene) {
     let player = scene.objects.playerMap[clientId];
     if (!player) return;
@@ -88,6 +108,15 @@ export class SyncUtil {
     player.sync = null;
 
     delete scene.objects.playerMap[clientId];
+  }
+
+  static destroyNpc(id: number, scene: CustomScene) {
+    let npc = scene.objects.npcMap[id];
+    if (!npc) return;
+    npc.sprite.destroy();
+    npc.sync = null;
+
+    delete scene.objects.npcMap[id];
   }
 
   static destroyBomb(id: number, scene: CustomScene) {
@@ -99,11 +128,47 @@ export class SyncUtil {
     delete scene.objects.bombMap[id];
   }
 
+  static destroyExplosion(id: number, scene: CustomScene) {
+    let explosion = scene.objects.explosionMap[id];
+    if (!explosion) return;
+    explosion.sprite.destroy();
+    explosion.sync = null;
+
+    delete scene.objects.explosionMap[id];
+  }
+
+  static destroyObstacle(id: number, scene: CustomScene) {
+    let obstacle = scene.objects.obstacleMap[id];
+    if (!obstacle) return;
+    obstacle.sprite.destroy();
+    obstacle.sync = null;
+
+    delete scene.objects.obstacleMap[id];
+  }
+
+  static updateObstacle(id: number, spriteKey: string, scene: CustomScene) {
+    let obstacle = scene.objects.obstacleMap[id];
+    if (!obstacle) return;
+    obstacle.sprite.setTexture(spriteKey);
+  }
+
   static updateBomb(scene: CustomScene) {
     if (Object.keys(scene.objects.bombMap).length > 0) {
       Object.values(scene.objects.bombMap).forEach((bomb) => {
         if (!bomb.sync) return;
         AnimationUtil.setBombAnimation(bomb.sprite, bomb.sync.animation);
+      });
+    }
+  }
+
+  static updateExplosion(scene: CustomScene) {
+    if (Object.keys(scene.objects.explosionMap).length > 0) {
+      Object.values(scene.objects.explosionMap).forEach((explosion) => {
+        if (!explosion.sync) return;
+        AnimationUtil.setExplosionAnimation(
+          explosion.sprite,
+          explosion.sync.animation
+        );
       });
     }
   }
