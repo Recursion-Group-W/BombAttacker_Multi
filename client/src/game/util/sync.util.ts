@@ -8,6 +8,8 @@ import { CustomScene } from '../scene/parent/customScene';
 import { AnimationUtil } from './animation.util';
 
 export class SyncUtil {
+  static CHARACTER_WIDTH = 32;
+  static CHARACTER_HEIGHT = 32;
   static setPlayer(playerArr: PlayerDto[], scene: CustomScene) {
     if (playerArr && playerArr.length > 0) {
       playerArr.forEach((player) => {
@@ -17,8 +19,13 @@ export class SyncUtil {
             .sprite(player.x, player.y, player.spriteKey)
             .setOrigin(0.5)
             .setScale(1.0);
+
+          const lifeGauge = SyncUtil.createLifeGauge(player, scene);
+
           scene.objects.playerMap[player.clientId] = {
             sprite: sprite,
+            leftGauge: lifeGauge.leftGauge,
+            rightGauge: lifeGauge.rightGauge,
             sync: null,
           };
         }
@@ -26,6 +33,32 @@ export class SyncUtil {
         scene.objects.playerMap[player.clientId]['sync'] = player;
       });
     }
+  }
+
+  //ライフゲージを作るメソッド
+  static createLifeGauge(character: PlayerDto | NpcDto, scene: CustomScene) {
+    const cellWidth = SyncUtil.CHARACTER_WIDTH / character.initLife;
+    const sx = character.x - cellWidth * character.initLife * 0.5;
+    const sy = character.y - SyncUtil.CHARACTER_HEIGHT;
+
+    let color = 0x00ff00;
+    if (character.life <= character.initLife / 3) {
+      color = 0x0000ff;
+    }
+    const leftGauge = scene.add
+      .graphics()
+      .fillStyle(color)
+      .fillRect(sx, sy, cellWidth * character.life, 10);
+    const rightGauge = scene.add
+      .graphics()
+      .fillStyle(0x998877)
+      .fillRect(
+        sx + cellWidth * character.life,
+        sy,
+        cellWidth * (character.initLife - character.life),
+        10
+      );
+    return { leftGauge, rightGauge };
   }
 
   static setNpc(npcArr: NpcDto[], scene: CustomScene) {
@@ -36,8 +69,13 @@ export class SyncUtil {
             .sprite(npc.x, npc.y, npc.spriteKey)
             .setOrigin(0.5)
             .setScale(1.0);
+
+          const lifeGauge = SyncUtil.createLifeGauge(npc, scene);
+
           scene.objects.npcMap[npc.id] = {
             sprite: sprite,
+            leftGauge: lifeGauge.leftGauge,
+            rightGauge: lifeGauge.rightGauge,
             sync: null,
           };
         }
@@ -124,6 +162,8 @@ export class SyncUtil {
     let player = scene.objects.playerMap[clientId];
     if (!player) return;
     player.sprite.destroy();
+    player.leftGauge.destroy();
+    player.rightGauge.destroy();
     player.sync = null;
 
     delete scene.objects.playerMap[clientId];
@@ -133,6 +173,8 @@ export class SyncUtil {
     let npc = scene.objects.npcMap[id];
     if (!npc) return;
     npc.sprite.destroy();
+    npc.leftGauge.destroy();
+    npc.rightGauge.destroy();
     npc.sync = null;
 
     delete scene.objects.npcMap[id];
@@ -234,6 +276,14 @@ export class SyncUtil {
         player.sprite.x = player.sync.x;
         player.sprite.y = player.sync.y;
 
+        player.leftGauge.destroy();
+        player.rightGauge.destroy();
+
+        const lifeGauge = SyncUtil.createLifeGauge(player.sync, scene);
+
+        player.leftGauge = lifeGauge.leftGauge;
+        player.rightGauge = lifeGauge.rightGauge;
+
         //アニメーションを更新
         AnimationUtil.setPlayerAnimation(
           player.sprite,
@@ -251,6 +301,14 @@ export class SyncUtil {
 
         npc.sprite.x = npc.sync.x;
         npc.sprite.y = npc.sync.y;
+
+        npc.leftGauge.destroy();
+        npc.rightGauge.destroy();
+
+        const lifeGauge = SyncUtil.createLifeGauge(npc.sync, scene);
+
+        npc.leftGauge = lifeGauge.leftGauge;
+        npc.rightGauge = lifeGauge.rightGauge;
 
         AnimationUtil.setNpcAnimation(
           npc.sprite,
