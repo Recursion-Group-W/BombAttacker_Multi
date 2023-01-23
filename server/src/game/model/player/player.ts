@@ -35,6 +35,8 @@ export class Player extends Character {
     stageHeight: number
   ) {
     super(Player.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
+    this.setLife = 3;
+    this.setInitLife = 3;
   }
 
   // 更新

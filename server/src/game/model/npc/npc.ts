@@ -23,6 +23,7 @@ export class Npc extends Character {
 
     this.setSpeed = 30;
     this.setLife = 1;
+    this.setInitLife = 1
 
     //初めに進む向きと速度をランダムにセット
     this.setMoveRamdom();
