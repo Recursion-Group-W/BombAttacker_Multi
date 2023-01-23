@@ -48,17 +48,6 @@ const Mypage = () => {
             justifyContent='center'
             alignItems='center'
           >
-            <Grid item xs></Grid>
-          </Grid>
-          <Grid
-            container
-            direction='column'
-            item
-            xs={4}
-            spacing={12}
-            justifyContent='center'
-            alignItems='center'
-          >
             <Grid item xs={4}>
               <Item>
                 <Box maxWidth='sm'>
@@ -113,6 +102,17 @@ const Mypage = () => {
                 </Box>
               </Item>
             </Grid>
+          </Grid>
+          <Grid
+            container
+            direction='column'
+            item
+            xs={4}
+            spacing={12}
+            justifyContent='center'
+            alignItems='center'
+          >
+            <Grid item xs></Grid>
           </Grid>
         </Grid>
       </Box>
