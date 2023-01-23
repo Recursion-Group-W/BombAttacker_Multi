@@ -1,9 +1,12 @@
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
+import RoomManager from '../../../manager/roomManager';
 import { Movement } from '../../types/movement.type';
 import { ObjectUtil } from '../../util/object.util';
 import { OverlapUtil } from '../../util/overlap.util';
 import { Bomb } from '../bomb';
 import { Character } from '../character/character';
+import { Explosion } from '../explosion';
+import { GenericItem } from '../item/genericItem';
 import { Npc } from '../npc/npc';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
@@ -17,8 +20,10 @@ export class Player extends Character {
   };
 
   public bombList = new GenericLinkedList<Bomb>();
-  private bombCountMax = 5;
+  private bombCountMax = 1;
   private score = 0;
+
+  private bombStrength = 1;
 
   // コンストラクタ
   constructor(
@@ -29,17 +34,27 @@ export class Player extends Character {
     stageWidth: number,
     stageHeight: number
   ) {
-    super(userName, Player.SPRITE_KEY, obstacleList,stageWidth,stageHeight);
+    super(Player.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
   }
 
   // 更新
   update(
     deltaTime: number,
-    // obstacleSet: Set<GenericObstacle>
     obstacleList: GenericLinkedList<GenericObstacle>,
     squareCache: Array<Array<GenericObstacle | null>>,
-    bombList: GenericLinkedList<Bomb>
+    bombList: GenericLinkedList<Bomb>,
+    explosionList: GenericLinkedList<Explosion>,
+    itemList: GenericLinkedList<GenericItem>,
+    roomManager: RoomManager,
+    roomId: string
   ) {
+    //ダメージを受けて3秒間は次のダメージを受けないように設定しているので、
+    //3秒を過ぎたら０に戻す
+    if (this.getNoDamageTime >= 3) {
+      this.setNoDamageTime = 0;
+    } else if (this.getNoDamageTime > 0) {
+      this.setNoDamageTime = this.getNoDamageTime + deltaTime;
+    }
     // 移動前座標値のバックアップ
     const prevPosition = {
       x: this.getPosition.x,
@@ -47,7 +62,6 @@ export class Player extends Character {
     };
 
     //movementにtrueの値がない（動作がない）場合
-    //移動や衝突判定はせず、アニメーションだけセットする
     if (!Object.values(this.movement).some((value) => value)) {
       this.setVelocity(0, 0);
       //キーが押されていない時
@@ -65,7 +79,6 @@ export class Player extends Character {
           this.animTurnRight();
           break;
       }
-      return;
     }
 
     // movementによって、プレイヤーの向きと位置を更新
@@ -136,13 +149,70 @@ export class Player extends Character {
       );
       this.setVelocity(0, 0);
     }
+
+    //爆風との干渉
+    let explosion = this.overlapExplosions(explosionList);
+    if (explosion) {
+      if (this.getNoDamageTime <= 0) {
+        console.log('爆風を受けました');
+        //残機を減らす
+        this.damage();
+        this.setNoDamageTime = deltaTime;
+        //干渉した爆風を削除
+        explosionList.remove(explosion);
+        roomManager.ioNspGame.in(roomId).emit('destroyExplosion', {
+          id: explosion.data.id,
+        });
+      }
+    }
+
+    //アイテムとの干渉
+    let item = this.overlapItems(itemList);
+    if (item) {
+      //アイテム効果発動
+      item.data.effect(this);
+      itemList.remove(item);
+      roomManager.ioNspGame.in(roomId).emit('destroyItem', {
+        id: item.data.id,
+      });
+    }
+  }
+
+  //アイテムとの干渉チェック
+  overlapItems(itemList: GenericLinkedList<GenericItem>) {
+    let iterator = itemList.getHead();
+    while (iterator !== null) {
+      if (OverlapUtil.overlapRects(this.rectBound, iterator.data.rectBound)) {
+        return iterator;
+      }
+      iterator = iterator.next;
+    }
+    return null;
   }
 
   toJSON() {
     return Object.assign(super.toJSON(), {
       clientId: this.clientId,
+      userName: this.userName,
       score: this.score,
     });
+  }
+
+  //ボムの強さ
+  get getBombStrength(): number {
+    return this.bombStrength;
+  }
+
+  get getBombCountMax(): number {
+    return this.bombCountMax;
+  }
+
+  set setBombCountMax(value: number) {
+    this.bombCountMax = value;
+  }
+
+  set setBombStrength(value: number) {
+    this.bombStrength = value;
   }
 
   setMovement(movement: Movement): void {

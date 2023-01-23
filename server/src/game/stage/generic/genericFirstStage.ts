@@ -1,8 +1,7 @@
-import RoomManager from '../../manager/roomManager';
-import { GenericObstacle } from '../model/obstacle/generic/genericObstacle';
-import { Stage } from './stage';
+import RoomManager from '../../../manager/roomManager';
+import { GenericStage } from '../generic/genericStage';
 
-export class FirstStage extends Stage {
+export class FirstStage extends GenericStage {
   
   readonly NPC_COUNT = 10;
 

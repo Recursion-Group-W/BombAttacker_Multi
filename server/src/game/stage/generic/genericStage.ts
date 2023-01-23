@@ -1,16 +1,18 @@
-import { GenericLinkedList } from '../../linkedList/generic/genericLinkedList';
-import RoomManager from '../../manager/roomManager';
-import { ObstacleFactory } from '../factory/obstacle/interface/obstacleFactory.interface';
-import { Bomb } from '../model/bomb';
-import { Explosion } from '../model/explosion';
-import { Npc } from '../model/npc/npc';
-import { GenericObstacle } from '../model/obstacle/generic/genericObstacle';
-import { Player } from '../model/player/player';
-import { Movement } from '../types/movement.type';
-import { MathUtil } from '../util/math.util';
-import { Node } from '../../linkedList/generic/node';
+import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
+import RoomManager from '../../../manager/roomManager';
+import { ObstacleFactory } from '../../factory/obstacle/interface/obstacleFactory.interface';
+import { Bomb } from '../../model/bomb';
+import { Explosion } from '../../model/explosion';
+import { Npc } from '../../model/npc/npc';
+import { GenericObstacle } from '../../model/obstacle/generic/genericObstacle';
+import { Player } from '../../model/player/player';
+import { Movement } from '../../types/movement.type';
+import { MathUtil } from '../../util/math.util';
+import { Node } from '../../../linkedList/generic/node';
+import { GenericItem } from '../../model/item/genericItem';
+import { ItemFactory } from '../../factory/item/itemFactory';
 
-export class Stage {
+export class GenericStage {
   readonly STAGE_WIDTH = 800;
   readonly STAGE_HEIGHT = 800;
   readonly TILE_SIZE = 32;
@@ -19,6 +21,7 @@ export class Stage {
   public playerList = new GenericLinkedList<Player>(); //プレイヤーのリスト
   public bombList = new GenericLinkedList<Bomb>(); //ボムのリスト
   public explosionList = new GenericLinkedList<Explosion>(); //爆風のリスト
+  explosionId: number = 0;
   public npcList = new GenericLinkedList<Npc>(); //Npcのリスト
   public obstacleList = new GenericLinkedList<GenericObstacle>(); //障害物のリスト
   public squareCache: Array<Array<GenericObstacle | null>> = new Array(
@@ -28,6 +31,10 @@ export class Stage {
   // public squareCache: Array<Array<GenericObstacle | null>> = new Array(
   //   Math.floor(this.STAGE_WIDTH / this.TILE_SIZE)
   // ).fill(new Array(Math.floor(this.STAGE_HEIGHT / this.TILE_SIZE)).fill(null)); //ステージマスのキャッシュ(29 * 29 の２次元配列)
+
+  public itemList = new GenericLinkedList<GenericItem>();
+  itemId: number = 0;
+  public itemFactory = new ItemFactory();
 
   constructor(
     public level: number,
@@ -114,6 +121,37 @@ export class Stage {
         }
 
         if (obstacle) {
+          //障害物にアイテムを持たせる
+          const willHaveItem = MathUtil.getRandomInt(0, 4);
+          if (willHaveItem <= 2) {
+            const kindOfItem = MathUtil.getRandomInt(0, 2);
+
+            switch (kindOfItem) {
+              case 0:
+                obstacle.item = this.itemFactory.createSpeedUpItem(
+                  this.itemId,
+                  obstacle.getPosition.x,
+                  obstacle.getPosition.y
+                );
+                break;
+              case 1:
+                obstacle.item = this.itemFactory.createFireUpItem(
+                  this.itemId,
+                  obstacle.getPosition.x,
+                  obstacle.getPosition.y
+                );
+                break;
+              case 2:
+                obstacle.item = this.itemFactory.createBombUpItem(
+                  this.itemId,
+                  obstacle.getPosition.x,
+                  obstacle.getPosition.y
+                );
+                break;
+            }
+
+            this.itemId++;
+          }
           this.obstacleList.pushBack(obstacle);
         }
         this.squareCache[i][j] = obstacle;
@@ -219,6 +257,66 @@ export class Stage {
     }
   }
 
+  createExplosion(bomb: Bomb) {
+    const player = bomb.player;
+    //爆風を作成
+    const tail = this.explosionList.getTail();
+    let id = tail ? tail.data.id + 1 : 0;
+
+    //真ん中
+    const center = new Explosion(
+      this.explosionId,
+      bomb.getPosition.x,
+      bomb.getPosition.y,
+      player
+    );
+    //爆風のリストに追加
+    this.explosionList.pushBack(center);
+    id++;
+    this.explosionId++;
+
+    //周辺
+    for (let i = 0; i < player.getBombStrength; i++) {
+      const top = new Explosion(
+        this.explosionId,
+        bomb.getPosition.x,
+        bomb.getPosition.y - (i + 1) * bomb.getHeight,
+        player
+      );
+      this.explosionList.pushBack(top);
+      id++;
+      this.explosionId++;
+      const right = new Explosion(
+        this.explosionId,
+        bomb.getPosition.x + (i + 1) * bomb.getWidth,
+        bomb.getPosition.y,
+        player
+      );
+      this.explosionList.pushBack(right);
+      id++;
+      this.explosionId++;
+      const bottom = new Explosion(
+        this.explosionId,
+        bomb.getPosition.x,
+        bomb.getPosition.y + (i + 1) * bomb.getHeight,
+        player
+      );
+      this.explosionList.pushBack(bottom);
+      id++;
+      this.explosionId++;
+      const left = new Explosion(
+        this.explosionId,
+        bomb.getPosition.x - (i + 1) * bomb.getWidth,
+        bomb.getPosition.y,
+        player
+      );
+      this.explosionList.pushBack(left);
+      id++;
+      this.explosionId++;
+    }
+    console.log(this.explosionList);
+  }
+
   // 爆弾を作成
   createBomb(clientId: string) {
     if (clientId === '') return;
@@ -259,8 +357,7 @@ export class Stage {
     this.bombList.remove(bomb);
   }
 
-  // オブジェクトの座標値の更新
-  updateObjects(
+  updatePlayers(
     deltaTime: number,
     squareCache: Array<Array<GenericObstacle | null>>
   ) {
@@ -271,7 +368,11 @@ export class Stage {
         deltaTime,
         this.obstacleList,
         squareCache,
-        this.bombList
+        this.bombList,
+        this.explosionList,
+        this.itemList,
+        this.roomManager,
+        this.roomId
       );
       if (playerIterator.data.getLife <= 0) {
         console.log(
@@ -285,6 +386,8 @@ export class Stage {
       }
       playerIterator = playerIterator.next;
     }
+  }
+  updateNpcs(deltaTime: number) {
     //npcごとの処理
     let npcIterator = this.npcList.getHead();
     while (npcIterator !== null) {
@@ -292,29 +395,125 @@ export class Stage {
         deltaTime,
         this.obstacleList,
         this.playerList,
-        this.bombList
+        this.bombList,
+        this.explosionList,
+        this.roomManager,
+        this.roomId
       );
+      if (npcIterator.data.getLife <= 0) {
+        this.npcList.remove(npcIterator);
+        this.roomManager.ioNspGame
+          .in(this.roomId)
+          .emit('destroyNpc', { id: npcIterator.data.id });
+      }
       npcIterator = npcIterator.next;
     }
-
+  }
+  updateBombs(deltaTime: number) {
     //爆弾ごとの処理
     let bombIterator = this.bombList.getHead();
     while (bombIterator !== null) {
-      bombIterator.data.reduceRemainTime(deltaTime);
+      bombIterator.data.update(deltaTime);
+      //爆発
       if (bombIterator.data.getRemainTime <= 0) {
-        //爆発
-        // new Explosion();
         this.destroyBomb(bombIterator);
 
         //クライアントから削除
         this.roomManager.ioNspGame.in(this.roomId).emit('destroyBomb', {
           id: bombIterator.data.id,
         });
+
+        //爆風を作成
+        this.createExplosion(bombIterator.data);
       }
 
       bombIterator = bombIterator.next;
     }
+  }
+  updateExplosions(deltaTime: number) {
+    //爆風ごとの処理
+    let explosionIterator = this.explosionList.getHead();
+    while (explosionIterator !== null) {
+      explosionIterator.data.update(deltaTime);
+      if (explosionIterator.data.getRemainTime <= 0) {
+        this.explosionList.remove(explosionIterator);
+
+        //クライアントから削除
+        this.roomManager.ioNspGame.in(this.roomId).emit('destroyExplosion', {
+          id: explosionIterator.data.id,
+        });
+      }
+      explosionIterator = explosionIterator.next;
+    }
+  }
+
+  updateObstacles(squareCache: Array<Array<GenericObstacle | null>>) {
+    //障害物ごとの処理
+    let obstacleIterator = this.obstacleList.getHead();
+    while (obstacleIterator !== null) {
+      const obstacle = obstacleIterator.data;
+      obstacle.update(this.explosionList, this.roomManager, this.roomId);
+
+      if (obstacle.getEndurance <= 0) {
+        if (obstacle.item) {
+          this.itemList.pushBack(obstacle.item);
+        }
+        //削除
+        this.obstacleList.remove(obstacleIterator);
+        //キャッシュから削除
+        const iX = Math.floor(obstacle.id / squareCache.length);
+        const iY = obstacle.id % squareCache[iX].length;
+        squareCache[iX][iY] = null;
+
+        //クライアントから削除
+        this.roomManager.ioNspGame
+          .in(this.roomId)
+          .emit('destroyObstacle', { id: obstacle.id });
+      } else {
+        let spriteKey = '';
+        switch (obstacle.getEndurance) {
+          case 3:
+            spriteKey = obstacle.BrickMap.blue.spriteKey;
+            break;
+          case 2:
+            spriteKey = obstacle.BrickMap.green.spriteKey;
+            break;
+          case 1:
+            spriteKey = obstacle.BrickMap.orange.spriteKey;
+            break;
+        }
+        if (spriteKey !== '') {
+          //テクスチャを変更
+          this.roomManager.ioNspGame
+            .in(this.roomId)
+            .emit('updateObstacle', { id: obstacle.id, spriteKey: spriteKey });
+        }
+      }
+
+      obstacleIterator = obstacleIterator.next;
+    }
+  }
+
+  updateItems() {}
+
+  // オブジェクトの更新
+  updateObjects(
+    deltaTime: number,
+    squareCache: Array<Array<GenericObstacle | null>>
+  ) {
+    //プレイヤーごとの処理
+    this.updatePlayers(deltaTime, squareCache);
+
+    //npcごとの処理
+    this.updateNpcs(deltaTime);
+
+    //障害物ごとの処理
+    this.updateObstacles(squareCache);
+
+    //爆弾ごとの処理
+    this.updateBombs(deltaTime);
 
     //爆風ごとの処理
+    this.updateExplosions(deltaTime);
   }
 }

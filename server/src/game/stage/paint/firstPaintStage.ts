@@ -1,6 +1,7 @@
-import RoomManager from '../../manager/roomManager';
-import { FirstStage } from './firstStage';
-import { BrickFactory } from '../factory/obstacle/brick/brickFactory';
+import RoomManager from '../../../manager/roomManager';
+import { FirstStage } from '../generic/genericFirstStage';
+import { BrickFactory } from '../../factory/obstacle/brick/brickFactory';
+import { ItemFactory } from '../../factory/item/itemFactory';
 
 export class FirstPaintStage extends FirstStage {
   type = 'paint';
@@ -14,7 +15,7 @@ export class FirstPaintStage extends FirstStage {
     this.createObstacles(
       this.STAGE_WIDTH,
       this.STAGE_HEIGHT,
-      this.obstacleFactory
+      this.obstacleFactory,
     );
     // console.log(this.squareCache[5].length);
 

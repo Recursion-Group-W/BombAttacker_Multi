@@ -1,6 +1,6 @@
 import { Game } from '../game/game';
 import { Player } from '../game/model/player/player';
-import { FirstPaintStage } from '../game/stage/firstPaintStage';
+import { FirstPaintStage } from '../game/stage/paint/firstPaintStage';
 import { GenericLinkedList } from '../linkedList/generic/genericLinkedList';
 import RoomManager from './roomManager';
 import { StageManager } from './stageManager';

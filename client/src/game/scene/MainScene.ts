@@ -1,4 +1,6 @@
 import { BombDto } from '../dto/bomb.dto';
+import { ExplosionDto } from '../dto/explosion.dto';
+import { ItemDto } from '../dto/item.dto';
 import { NpcDto } from '../dto/npc.dto';
 import { ObstacleDto } from '../dto/obstacle.dto';
 import { PlayerDto } from '../dto/player.dto';
@@ -32,11 +34,15 @@ export class MainScene extends CustomScene {
         npcArr: NpcDto[];
         obstacleArr: ObstacleDto[];
         bombArr: BombDto[];
+        explosionArr: ExplosionDto[];
+        itemArr: ItemDto[];
       }) => {
         SyncUtil.setPlayer(res.playerArr, this);
         SyncUtil.setNpc(res.npcArr, this);
         SyncUtil.setObstacle(res.obstacleArr, this);
         SyncUtil.setBomb(res.bombArr, this);
+        SyncUtil.setExplosion(res.explosionArr, this);
+        SyncUtil.setItem(res.itemArr, this);
       }
     );
 
@@ -47,12 +53,32 @@ export class MainScene extends CustomScene {
     this.socket.on('destroyPlayer', (res: { clientId: string }) => {
       SyncUtil.destroyPlayer(res.clientId, this);
     });
+
+    this.socket.on('destroyNpc', (res: { id: number }) => {
+      SyncUtil.destroyNpc(res.id, this);
+    });
+    this.socket.on('destroyExplosion', (res: { id: number }) => {
+      SyncUtil.destroyExplosion(res.id, this);
+    });
+    this.socket.on('destroyObstacle', (res: { id: number }) => {
+      SyncUtil.destroyObstacle(res.id, this);
+    });
+    this.socket.on('destroyItem', (res: { id: number }) => {
+      SyncUtil.destroyItem(res.id, this);
+    });
+    this.socket.on(
+      'updateObstacle',
+      (res: { id: number; spriteKey: string }) => {
+        SyncUtil.updateObstacle(res.id, res.spriteKey, this);
+      }
+    );
   }
   update(): void {
     //syncのデータを基に、spriteの座標とアニメーションを更新
     SyncUtil.updatePlayer(this);
     SyncUtil.updateNpc(this);
     SyncUtil.updateBomb(this);
+    SyncUtil.updateExplosion(this);
 
     this.cursor?.update();
   }

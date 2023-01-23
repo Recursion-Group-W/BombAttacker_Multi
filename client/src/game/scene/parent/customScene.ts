@@ -10,5 +10,7 @@ export class CustomScene extends Scene {
     npcMap: {},
     obstacleMap: {},
     bombMap: {},
+    explosionMap: {},
+    itemMap: {},
   };
 }

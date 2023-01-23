@@ -1,6 +1,6 @@
-import { FourthObstacle } from "../generic/genericFourthObstacle";
+import { GenericFourthObstacle } from "../generic/genericFourthObstacle";
 
-export class FourthBrick extends FourthObstacle {
+export class FourthBrick extends GenericFourthObstacle {
     constructor(
       id: number,
       x: number,
@@ -10,4 +10,8 @@ export class FourthBrick extends FourthObstacle {
     ) {
       super(id, x, y, spriteKey, endurance);
     }
+    // public damage() {
+    //   this.endurance--;
+    //   this.setSpriteKey = this.BrickMap.blue.spriteKey;
+    // }
   }

@@ -10,4 +10,8 @@ export class SecondBrick extends GenericSecondObstacle {
   ) {
     super(id, x, y, spriteKey, endurance);
   }
+  // public damage() {
+  //   this.endurance--;
+  //   this.setSpriteKey = this.BrickMap.orange.spriteKey;
+  // }
 }

@@ -13,11 +13,15 @@ export class PreloadScene extends Scene {
     this.load.image('grayBrick', '/assets/gray_brick.png');
     this.load.image('greenBrick', '/assets/green_brick.png');
 
-    this.load.spritesheet('player', '/assets/player_spritesheet_fixed.png', {
+    this.load.image('yellowBean', '/assets/bean_yellow.png');
+    this.load.image('orangeBean', '/assets/bean_orange.png');
+    this.load.image('blueBean', '/assets/bean_blue.png');
+
+    this.load.spritesheet('player', '/assets/brave-spritesheet.png', {
       frameWidth: 32,
       frameHeight: 32,
     });
-    this.load.spritesheet('npc', '/assets/enemy_spritesheet_fixed.png', {
+    this.load.spritesheet('npc', '/assets/npc-spritesheet.png', {
       frameWidth: 32,
       frameHeight: 32,
     });
@@ -29,12 +33,29 @@ export class PreloadScene extends Scene {
       frameWidth: 32,
       frameHeight: 32,
     });
+
+    this.load.spritesheet('yellowEffect', '/assets/effect-yellow.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
+    this.load.spritesheet('orangeEffect', '/assets/effect-orange.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
+    this.load.spritesheet('blueEffect', '/assets/effect-blue.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
   }
   create() {
     //アニメーションを作成
     AnimationUtil.createPlayerAnim(this);
     AnimationUtil.createNpcAnim(this);
     AnimationUtil.createBombAnim(this);
+    AnimationUtil.createExplosionAnim(this);
+    AnimationUtil.createYellowEffect(this);
+    AnimationUtil.createOrangeEffect(this);
+    AnimationUtil.createBlueEffect(this);
   }
 
   update() {
