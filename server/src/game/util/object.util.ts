@@ -30,7 +30,7 @@ export class ObjectUtil {
     //ぶつかった障害物
     const obstacle = obstacleNode.data;
 
-    const scale = 3 / 5;
+    const scale = 4 / 8;
     //補正を行うかどうかの判定で使用する(ずれが2/5であれば補正する)
     const requireX = ((obstacle.getWidth + player.getWidth) / 2) * scale;
     const requireY = ((obstacle.getHeight + player.getHeight) / 2) * scale;

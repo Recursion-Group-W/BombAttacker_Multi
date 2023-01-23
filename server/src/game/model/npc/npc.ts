@@ -18,7 +18,7 @@ export class Npc extends Character {
     stageWidth: number,
     stageHeight: number
   ) {
-    super('npc', Npc.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
+    super( Npc.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
     this.setSpriteKey = 'npc';
 
     this.setSpeed = 30;

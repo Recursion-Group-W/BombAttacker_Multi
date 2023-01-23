@@ -4,8 +4,8 @@ import { Npc } from './npc/npc';
 import { GenericObstacle } from './obstacle/generic/genericObstacle';
 import { Player } from './player/player';
 export class Explosion extends GameObject {
-  static WIDTH = 31.5;
-  static HEIGHT = 31.5;
+  static WIDTH = 29.5;
+  static HEIGHT = 29.5;
   private animation: string = '';
   private remainTime: number = 1;
 

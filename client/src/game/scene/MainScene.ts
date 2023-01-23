@@ -1,5 +1,6 @@
 import { BombDto } from '../dto/bomb.dto';
 import { ExplosionDto } from '../dto/explosion.dto';
+import { ItemDto } from '../dto/item.dto';
 import { NpcDto } from '../dto/npc.dto';
 import { ObstacleDto } from '../dto/obstacle.dto';
 import { PlayerDto } from '../dto/player.dto';
@@ -34,12 +35,14 @@ export class MainScene extends CustomScene {
         obstacleArr: ObstacleDto[];
         bombArr: BombDto[];
         explosionArr: ExplosionDto[];
+        itemArr: ItemDto[];
       }) => {
         SyncUtil.setPlayer(res.playerArr, this);
         SyncUtil.setNpc(res.npcArr, this);
         SyncUtil.setObstacle(res.obstacleArr, this);
         SyncUtil.setBomb(res.bombArr, this);
         SyncUtil.setExplosion(res.explosionArr, this);
+        SyncUtil.setItem(res.itemArr, this);
       }
     );
 
@@ -59,6 +62,9 @@ export class MainScene extends CustomScene {
     });
     this.socket.on('destroyObstacle', (res: { id: number }) => {
       SyncUtil.destroyObstacle(res.id, this);
+    });
+    this.socket.on('destroyItem', (res: { id: number }) => {
+      SyncUtil.destroyItem(res.id, this);
     });
     this.socket.on(
       'updateObstacle',

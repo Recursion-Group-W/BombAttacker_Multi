@@ -1,5 +1,6 @@
 import { BombDto } from '../dto/bomb.dto';
 import { ExplosionDto } from '../dto/explosion.dto';
+import { ItemDto } from '../dto/item.dto';
 import { NpcDto } from '../dto/npc.dto';
 import { ObstacleDto } from '../dto/obstacle.dto';
 import { PlayerDto } from '../dto/player.dto';
@@ -59,6 +60,24 @@ export class SyncUtil {
           };
         }
         scene.objects.obstacleMap[obstacle.id]['sync'] = obstacle;
+      });
+    }
+  }
+
+  static setItem(itemArr: ItemDto[], scene: CustomScene) {
+    if (itemArr && itemArr.length > 0) {
+      itemArr.map((item) => {
+        if (!scene.objects.itemMap[item.id]) {
+          let sprite = scene.add
+            .sprite(item.x, item.y, item.spriteKey)
+            .setOrigin(0.5)
+            .setScale(0.23);
+          scene.objects.itemMap[item.id] = {
+            sprite: sprite,
+            sync: null,
+          };
+        }
+        scene.objects.itemMap[item.id]['sync'] = item;
       });
     }
   }
@@ -144,6 +163,39 @@ export class SyncUtil {
     obstacle.sync = null;
 
     delete scene.objects.obstacleMap[id];
+  }
+
+  static destroyItem(id: number, scene: CustomScene) {
+    let item = scene.objects.itemMap[id];
+    if (!item) return;
+    item.sprite.destroy();
+
+    if (item.sync) {
+      let effectKey = '';
+      switch (item.sync.spriteKey) {
+        case 'yellowBean':
+          effectKey = 'yellowEffect';
+          break;
+        case 'orangeBean':
+          effectKey = 'orangeEffect';
+          break;
+        case 'blueBean':
+          effectKey = 'blueEffect';
+          break;
+      }
+      let effect = scene.add
+        .sprite(item.sync.x, item.sync.y, '')
+        .setOrigin(0.5)
+        .setScale(1.0)
+        .play(`${effectKey}-anim`);
+      setTimeout(() => {
+        effect.destroy();
+      }, 600);
+    }
+
+    item.sync = null;
+
+    delete scene.objects.itemMap[id];
   }
 
   static updateObstacle(id: number, spriteKey: string, scene: CustomScene) {

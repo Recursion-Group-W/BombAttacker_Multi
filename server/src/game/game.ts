@@ -46,6 +46,7 @@ export class Game {
         npcArr: this.stage.npcList.toArray(),
         bombArr: this.stage.bombList.toArray(),
         explosionArr: this.stage.explosionList.toArray(),
+        itemArr: this.stage.itemList.toArray(),
       });
     }, 1000 / ServerConfig.FRAMERATE); // 単位は[ms]。1000[ms] / FRAMERATE[回]
   }
