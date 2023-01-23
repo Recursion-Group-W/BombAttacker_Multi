@@ -9,6 +9,14 @@ import { CustomSocket } from '../../src/socket/interface/customSocket.interface'
 import { useSocketStore } from '../../src/store/useSocketStore';
 import Link from '../../src/Link';
 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
+
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
   ...theme.typography.body2,
@@ -17,18 +25,35 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction='up' ref={ref} {...props} />;
+});
+
 const Mypage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [UserName, setUserName] = useState('')
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   // const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
   //   setUserName(e.target.value)
   // }
-  
+
   const handleClick = () => {
     // ログインAPIにPOSTする処理
-  }
+  };
 
   const updateSocketState = useSocketStore((state) => state.updateSocketState);
 
@@ -73,11 +98,13 @@ const Mypage = () => {
         }}
       >
         <Typography variant='h4' component='h1' gutterBottom>
-                      表示名
+          表示名
         </Typography>
         {/* <input onChange={handleChangeName} value={UserName} /> */}
         <div>
-        <Button color='success' variant='contained' onClick={handleClick}>決定</Button>
+          <Button color='success' variant='contained' onClick={handleClick}>
+            決定
+          </Button>
         </div>
       </Box>
       <Box
@@ -117,10 +144,10 @@ const Mypage = () => {
                     variant='contained'
                     color='success'
                     size='large'
-                    onClick={() => joinRoom()}
+                    onClick={handleClickOpen}
                   >
                     <Typography variant='h4' component='h1' gutterBottom>
-                      ロビー
+                      ロビーを作る
                     </Typography>
                   </Button>
                 </Box>
@@ -162,6 +189,26 @@ const Mypage = () => {
                 </Box>
               </Item>
             </Grid>
+
+            <Dialog
+              open={open}
+              TransitionComponent={Transition}
+              keepMounted
+              aria-describedby='alert-dialog-slide-description'
+            >
+              <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id='alert-dialog-slide-description'>
+                  text
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Disconnected</Button>
+                <Button variant='contained' onClick={() => joinRoom()}>
+                  Start
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Grid>
           <Grid
             container
