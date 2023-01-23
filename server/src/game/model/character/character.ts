@@ -50,6 +50,7 @@ export class Character extends GameObject {
   toJSON() {
     return Object.assign(super.toJSON(), {
       life: this.life,
+      initLife: this.initLife,
       direction: this.direction,
       animation: this.animation,
     });
@@ -100,6 +101,9 @@ export class Character extends GameObject {
 
   set setLife(value: number) {
     this.life = value;
+  }
+  set setInitLife(value: number) {
+    this.initLife = value;
   }
 
   set setSpeed(value: number) {
