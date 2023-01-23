@@ -12,12 +12,16 @@ export type Objects = {
   playerMap: {
     [clientId: string]: {
       sprite: Phaser.GameObjects.Sprite;
+      leftGauge: Phaser.GameObjects.Graphics;
+      rightGauge: Phaser.GameObjects.Graphics;
       sync: PlayerDto | null;
     };
   };
   npcMap: {
     [id: string]: {
       sprite: Phaser.GameObjects.Sprite;
+      leftGauge: Phaser.GameObjects.Graphics;
+      rightGauge: Phaser.GameObjects.Graphics;
       sync: NpcDto | null;
     };
   };
