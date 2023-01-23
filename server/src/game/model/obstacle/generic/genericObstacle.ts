@@ -2,6 +2,7 @@ import { GenericLinkedList } from '../../../../linkedList/generic/genericLinkedL
 import RoomManager from '../../../../manager/roomManager';
 import { Explosion } from '../../explosion';
 import { GameObject } from '../../gameObject/gameObject';
+import { GenericItem } from '../../item/genericItem';
 import { Obstacle } from '../interface/obstacle.interface';
 
 //将来の拡張に対応するためのGenericクラス
@@ -10,6 +11,8 @@ export class GenericObstacle extends GameObject implements Obstacle {
   static HEIGHT = 32;
 
   protected endurance = 0;
+
+  item: GenericItem | null = null;
 
   readonly BrickMap = {
     orange: {

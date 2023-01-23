@@ -3,8 +3,8 @@ import { GameObject } from './gameObject/gameObject';
 import { Player } from './player/player';
 
 export class Bomb extends GameObject {
-  static readonly WIDTH = 31.5;
-  static readonly HEIGHT = 31.5;
+  static readonly WIDTH = 29.5;
+  static readonly HEIGHT = 29.5;
   private remainTime: number = 5;
   private animation: string = '';
   constructor(public id: number, x: number, y: number, public player: Player) {

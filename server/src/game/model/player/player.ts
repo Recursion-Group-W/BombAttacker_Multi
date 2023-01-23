@@ -6,6 +6,7 @@ import { OverlapUtil } from '../../util/overlap.util';
 import { Bomb } from '../bomb';
 import { Character } from '../character/character';
 import { Explosion } from '../explosion';
+import { GenericItem } from '../item/genericItem';
 import { Npc } from '../npc/npc';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
@@ -19,7 +20,7 @@ export class Player extends Character {
   };
 
   public bombList = new GenericLinkedList<Bomb>();
-  private bombCountMax = 5;
+  private bombCountMax = 1;
   private score = 0;
 
   private bombStrength = 1;
@@ -33,17 +34,17 @@ export class Player extends Character {
     stageWidth: number,
     stageHeight: number
   ) {
-    super(userName, Player.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
+    super(Player.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
   }
 
   // 更新
   update(
     deltaTime: number,
-    // obstacleSet: Set<GenericObstacle>
     obstacleList: GenericLinkedList<GenericObstacle>,
     squareCache: Array<Array<GenericObstacle | null>>,
     bombList: GenericLinkedList<Bomb>,
     explosionList: GenericLinkedList<Explosion>,
+    itemList: GenericLinkedList<GenericItem>,
     roomManager: RoomManager,
     roomId: string
   ) {
@@ -164,11 +165,35 @@ export class Player extends Character {
         });
       }
     }
+
+    //アイテムとの干渉
+    let item = this.overlapItems(itemList);
+    if (item) {
+      //アイテム効果発動
+      item.data.effect(this);
+      itemList.remove(item);
+      roomManager.ioNspGame.in(roomId).emit('destroyItem', {
+        id: item.data.id,
+      });
+    }
+  }
+
+  //アイテムとの干渉チェック
+  overlapItems(itemList: GenericLinkedList<GenericItem>) {
+    let iterator = itemList.getHead();
+    while (iterator !== null) {
+      if (OverlapUtil.overlapRects(this.rectBound, iterator.data.rectBound)) {
+        return iterator;
+      }
+      iterator = iterator.next;
+    }
+    return null;
   }
 
   toJSON() {
     return Object.assign(super.toJSON(), {
       clientId: this.clientId,
+      userName: this.userName,
       score: this.score,
     });
   }
@@ -177,9 +202,17 @@ export class Player extends Character {
   get getBombStrength(): number {
     return this.bombStrength;
   }
-  //ボムの強さアップ
-  increaseBombStrength() {
-    this.bombStrength++;
+
+  get getBombCountMax(): number {
+    return this.bombCountMax;
+  }
+
+  set setBombCountMax(value: number) {
+    this.bombCountMax = value;
+  }
+
+  set setBombStrength(value: number) {
+    this.bombStrength = value;
   }
 
   setMovement(movement: Movement): void {

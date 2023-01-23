@@ -29,7 +29,6 @@ export class Character extends GameObject {
 
   // コンストラクタ
   constructor(
-    public userName: string,
     spriteKey: string,
     obstacleList: GenericLinkedList<GenericObstacle>,
     stageWidth: number,
@@ -50,7 +49,6 @@ export class Character extends GameObject {
 
   toJSON() {
     return Object.assign(super.toJSON(), {
-      userName: this.userName,
       life: this.life,
       direction: this.direction,
       animation: this.animation,

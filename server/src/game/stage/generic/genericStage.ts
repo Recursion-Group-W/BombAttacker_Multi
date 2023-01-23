@@ -9,6 +9,8 @@ import { Player } from '../../model/player/player';
 import { Movement } from '../../types/movement.type';
 import { MathUtil } from '../../util/math.util';
 import { Node } from '../../../linkedList/generic/node';
+import { GenericItem } from '../../model/item/genericItem';
+import { ItemFactory } from '../../factory/item/itemFactory';
 
 export class GenericStage {
   readonly STAGE_WIDTH = 800;
@@ -29,6 +31,10 @@ export class GenericStage {
   // public squareCache: Array<Array<GenericObstacle | null>> = new Array(
   //   Math.floor(this.STAGE_WIDTH / this.TILE_SIZE)
   // ).fill(new Array(Math.floor(this.STAGE_HEIGHT / this.TILE_SIZE)).fill(null)); //ステージマスのキャッシュ(29 * 29 の２次元配列)
+
+  public itemList = new GenericLinkedList<GenericItem>();
+  itemId: number = 0;
+  public itemFactory = new ItemFactory();
 
   constructor(
     public level: number,
@@ -115,6 +121,37 @@ export class GenericStage {
         }
 
         if (obstacle) {
+          //障害物にアイテムを持たせる
+          const willHaveItem = MathUtil.getRandomInt(0, 4);
+          if (willHaveItem <= 2) {
+            const kindOfItem = MathUtil.getRandomInt(0, 2);
+
+            switch (kindOfItem) {
+              case 0:
+                obstacle.item = this.itemFactory.createSpeedUpItem(
+                  this.itemId,
+                  obstacle.getPosition.x,
+                  obstacle.getPosition.y
+                );
+                break;
+              case 1:
+                obstacle.item = this.itemFactory.createFireUpItem(
+                  this.itemId,
+                  obstacle.getPosition.x,
+                  obstacle.getPosition.y
+                );
+                break;
+              case 2:
+                obstacle.item = this.itemFactory.createBombUpItem(
+                  this.itemId,
+                  obstacle.getPosition.x,
+                  obstacle.getPosition.y
+                );
+                break;
+            }
+
+            this.itemId++;
+          }
           this.obstacleList.pushBack(obstacle);
         }
         this.squareCache[i][j] = obstacle;
@@ -333,6 +370,7 @@ export class GenericStage {
         squareCache,
         this.bombList,
         this.explosionList,
+        this.itemList,
         this.roomManager,
         this.roomId
       );
@@ -417,6 +455,9 @@ export class GenericStage {
       obstacle.update(this.explosionList, this.roomManager, this.roomId);
 
       if (obstacle.getEndurance <= 0) {
+        if (obstacle.item) {
+          this.itemList.pushBack(obstacle.item);
+        }
         //削除
         this.obstacleList.remove(obstacleIterator);
         //キャッシュから削除
@@ -452,6 +493,8 @@ export class GenericStage {
       obstacleIterator = obstacleIterator.next;
     }
   }
+
+  updateItems() {}
 
   // オブジェクトの更新
   updateObjects(
