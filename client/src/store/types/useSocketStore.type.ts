@@ -4,7 +4,7 @@ export type SocketState = {
   socket: CustomSocket | null;
 };
 
-//useGameStoreが持つ状態とメソッドの型
+//useSocketStoreが持つ状態とメソッドの型
 export type SocketStore = {
   socketState: SocketState;
   resetSocketState: () => void;
