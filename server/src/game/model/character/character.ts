@@ -9,8 +9,8 @@ import { OverlapUtil } from '../../util/overlap.util';
 import { Explosion } from '../explosion';
 
 export class Character extends GameObject {
-  static WIDTH = 31.5;
-  static HEIGHT = 31.5;
+  static WIDTH = 29;
+  static HEIGHT = 29;
 
   protected direction = 2; // 0:up, 1:right, 2:down, 3:left
   protected speed = 50; // 速度[m/s]。1frameあたり5進む => 1/30[s] で5進む => 1[s]で150進む。
