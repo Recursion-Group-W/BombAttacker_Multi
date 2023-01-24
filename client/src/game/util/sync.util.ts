@@ -57,7 +57,7 @@ export class SyncUtil {
 
     let color = 0x00ff00;
     if (character.life <= character.initLife / 3) {
-      color = 0x0000ff;
+      color = 0xff0000;
     }
     const leftGauge = scene.add
       .graphics()
