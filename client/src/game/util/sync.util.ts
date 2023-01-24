@@ -22,8 +22,11 @@ export class SyncUtil {
 
           const lifeGauge = SyncUtil.createLifeGauge(player, scene);
 
+          const nameText = SyncUtil.createNameText(player, scene);
+
           scene.objects.playerMap[player.clientId] = {
             sprite: sprite,
+            nameText: nameText,
             leftGauge: lifeGauge.leftGauge,
             rightGauge: lifeGauge.rightGauge,
             sync: null,
@@ -33,6 +36,17 @@ export class SyncUtil {
         scene.objects.playerMap[player.clientId]['sync'] = player;
       });
     }
+  }
+
+  static createNameText(player: PlayerDto, scene: CustomScene) {
+    return scene.add
+      .text(
+        player.x,
+        player.y - SyncUtil.CHARACTER_HEIGHT * 1.5,
+        player.userName
+      )
+      .setTint(0x333333)
+      .setOrigin(0.5);
   }
 
   //ライフゲージを作るメソッド
@@ -162,6 +176,7 @@ export class SyncUtil {
     let player = scene.objects.playerMap[clientId];
     if (!player) return;
     player.sprite.destroy();
+    player.nameText.destroy();
     player.leftGauge.destroy();
     player.rightGauge.destroy();
     player.sync = null;
@@ -276,8 +291,14 @@ export class SyncUtil {
         player.sprite.x = player.sync.x;
         player.sprite.y = player.sync.y;
 
+        player.nameText.destroy();
+
         player.leftGauge.destroy();
         player.rightGauge.destroy();
+
+        const nameText = SyncUtil.createNameText(player.sync, scene);
+
+        player.nameText = nameText;
 
         const lifeGauge = SyncUtil.createLifeGauge(player.sync, scene);
 

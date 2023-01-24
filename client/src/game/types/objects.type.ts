@@ -12,6 +12,7 @@ export type Objects = {
   playerMap: {
     [clientId: string]: {
       sprite: Phaser.GameObjects.Sprite;
+      nameText: Phaser.GameObjects.Text;
       leftGauge: Phaser.GameObjects.Graphics;
       rightGauge: Phaser.GameObjects.Graphics;
       sync: PlayerDto | null;
