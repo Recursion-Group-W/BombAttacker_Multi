@@ -13,6 +13,7 @@ export class SpeedUpItem extends GenericItem {
   public effect(player: Player): void {
     console.log('スピードアップ！');
     if (player.getSpeed >= 150) return;
+    player.items.speedUp++;
     player.setSpeed = player.getSpeed + 10;
   }
 }
