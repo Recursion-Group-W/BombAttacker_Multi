@@ -8,6 +8,10 @@ import Copyright from '../../src/Copyright';
 import { CustomSocket } from '../../src/socket/interface/customSocket.interface';
 import { useSocketStore } from '../../src/store/useSocketStore';
 import Link from '../../src/Link';
+// パス
+import { db } from '../../src/firebase';
+import { doc, updateDoc } from "firebase/firestore";
+
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -38,6 +42,7 @@ const Mypage = () => {
   const router = useRouter();
   const { id } = router.query;
   const [open, setOpen] = React.useState(false);
+  const [UserName, setUserName] = useState('')
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -47,12 +52,34 @@ const Mypage = () => {
     setOpen(false);
   };
 
-  // const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-  //   setUserName(e.target.value)
-  // }
+  function parsingURLtoGetUserID(URL:string):string{
+    const slash = "/";
+    const reversedURL = URL.split("").reverse().join("");
+    let UserID = "";
+    let i = 0;
+    while (reversedURL[i] != slash){
+      UserID += reversedURL[i]
+      i++
+    }
+
+    return UserID.split("").reverse().join("");
+  } 
+
+  function getBestScore(){
+
+  }
+  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+    setUserName(e.target.value)
+  }
 
   const handleClick = () => {
-    // ログインAPIにPOSTする処理
+    const uid = localStorage.getItem("userId")!.toString()
+    updateDoc(doc(db, "users", uid), {
+      name:UserName != "" ? UserName : "NoName"
+    })
+    .catch((error) => {
+      console.log(error.message);
+    })
   };
 
   const updateSocketState = useSocketStore((state) => state.updateSocketState);
@@ -100,7 +127,7 @@ const Mypage = () => {
         <Typography variant='h4' component='h1' gutterBottom>
           表示名
         </Typography>
-        {/* <input onChange={handleChangeName} value={UserName} /> */}
+        <input onChange={handleChangeName} value={UserName} placeholder="NoName"/>
         <div>
           <Button color='success' variant='contained' onClick={handleClick}>
             決定
