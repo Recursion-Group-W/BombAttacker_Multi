@@ -16,9 +16,9 @@ export default function Home() {
   const [isAuth, setIsAuth] = React.useState(false);
   const [UserName, setUserName] = useState('')
 
-  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-    setUserName(e.target.value)
-  }
+  // const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+  //   setUserName(e.target.value)
+  // }
   
   const handleClick = () => {
     // ログインAPIにPOSTする処理
@@ -84,7 +84,7 @@ export default function Home() {
         <Box sx={{ typography: 'h3', fontWeight: 900 }}>
           表示名
         </Box>
-        <input onChange={handleChangeName} defaultValue="NoName" value={UserName} />
+        {/* <input onChange={handleChangeName} defaultValue="NoName" value={UserName} /> */}
         <div>
         <Button 
         variant='outlined'
