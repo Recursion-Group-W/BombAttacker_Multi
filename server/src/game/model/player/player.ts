@@ -39,11 +39,13 @@ export class Player extends Character {
     public id: number,
     public socket: CustomSocket,
     public userName: string,
+    x: number,
+    y: number,
     obstacleList: GenericLinkedList<GenericObstacle>,
     stageWidth: number,
     stageHeight: number
   ) {
-    super(Player.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
+    super(x, y, Player.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
 
     this.clientId = socket.clientId!;
     this.setLife = 3;

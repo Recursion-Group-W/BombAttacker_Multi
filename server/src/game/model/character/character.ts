@@ -25,16 +25,18 @@ export class Character extends GameObject {
   private noDamageTime = 0;
 
   // 可動域
-  private rectField: RectBound | null = null;
+  protected rectField: RectBound | null = null;
 
   // コンストラクタ
   constructor(
+    x: number,
+    y: number,
     spriteKey: string,
     obstacleList: GenericLinkedList<GenericObstacle>,
     stageWidth: number,
     stageHeight: number
   ) {
-    super(0.0, 0.0, Character.WIDTH, Character.HEIGHT, spriteKey);
+    super(x, y, Character.WIDTH, Character.HEIGHT, spriteKey);
 
     //可動域を設定
     this.rectField = ObjectUtil.calRectField(
@@ -43,8 +45,8 @@ export class Character extends GameObject {
       stageWidth,
       stageHeight
     );
-    //初期位置に配置
-    this.setInitialPosition(obstacleList, stageWidth, stageHeight);
+    // //初期位置に配置
+    // this.setInitialPosition(obstacleList, stageWidth, stageHeight);
   }
 
   toJSON() {
@@ -126,11 +128,14 @@ export class Character extends GameObject {
     stageWidth: number,
     stageHeight: number
   ) {
+    const tileSize = 32;
     if (!this.getRectField) return;
     // 初期位置
     this.setPosition(
-      Math.random() * (stageWidth - this.getWidth),
-      Math.random() * (stageHeight - this.getHeight)
+      Math.random() * (stageWidth - this.getWidth - tileSize * 1.5) +
+        tileSize * 1.5,
+      Math.random() * (stageHeight - this.getHeight - tileSize * 1.5) +
+        tileSize * 1.5
     );
 
     // 障害物にぶつからない初期位置の算出
