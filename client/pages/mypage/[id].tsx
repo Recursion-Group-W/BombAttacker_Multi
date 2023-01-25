@@ -1,8 +1,23 @@
 import { Box, Button, Grid, Paper, styled, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState, FC, ChangeEvent } from 'react';
+
+import React, { useEffect, useState, FC } from 'react';
+import { io } from 'socket.io-client';
+
 import { Layout } from '../../component/Layout';
+import { NODE_URL } from '../../env';
+import Copyright from '../../src/Copyright';
+import { CustomSocket } from '../../src/socket/interface/customSocket.interface';
+import { useSocketStore } from '../../src/store/useSocketStore';
 import Link from '../../src/Link';
+
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -12,9 +27,19 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction='up' ref={ref} {...props} />;
+});
+
 const Mypage = () => {
   const router = useRouter();
   const { id } = router.query;
+
   const [UserName, setUserName] = useState('');
 
   const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
@@ -24,6 +49,48 @@ const Mypage = () => {
   const handleClick = () => {
     // ログインAPIにPOSTする処理
   };
+  
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const updateSocketState = useSocketStore((state) => state.updateSocketState);
+
+  const url = NODE_URL;
+  const socket: CustomSocket = io(`${url}/game`);
+  updateSocketState({ socket: socket });
+
+  socket.on('connect', () => {
+    console.log('サーバーとソケット接続しました。');
+  });
+  socket.on('clientId', (clientId: string) => {
+    console.log(`Your clientId is ${clientId}`);
+    socket.clientId = clientId;
+  });
+
+  const joinRoom = async () => {
+    socket.emit('joinRoom', {
+      userName: 'user1',
+      userId: localStorage.getItem('userId'),
+    });
+  };
+  socket.on('roomId', (roomId: string) => {
+    router.push(`/room/${roomId}`);
+  });
+
+  useEffect(() => {
+    const { id } = router.query;
+    console.log('userID: ', id);
+  }, [router.query]);
+
+  const [loading, setLoading] = useState(true);
+
   return (
     <Layout title='Mypage'>
       <Box
@@ -38,7 +105,7 @@ const Mypage = () => {
         <Typography variant='h4' component='h1' gutterBottom>
           表示名
         </Typography>
-        <input onChange={handleChangeName} value={UserName} />
+        {/* <input onChange={handleChangeName} value={UserName} /> */}
         <div>
           <Button color='success' variant='contained' onClick={handleClick}>
             決定
@@ -75,30 +142,17 @@ const Mypage = () => {
             justifyContent='center'
             alignItems='center'
           >
-            <Grid item xs></Grid>
-          </Grid>
-          <Grid
-            container
-            direction='column'
-            item
-            xs={4}
-            spacing={12}
-            justifyContent='center'
-            alignItems='center'
-          >
             <Grid item xs={4}>
               <Item>
                 <Box maxWidth='sm'>
                   <Button
                     variant='contained'
-                    component={Link}
-                    noLinkStyle
                     color='success'
                     size='large'
-                    href={`/lobby/${id}`}
+                    onClick={handleClickOpen}
                   >
                     <Typography variant='h4' component='h1' gutterBottom>
-                      ロビー
+                      ロビーを作る
                     </Typography>
                   </Button>
                 </Box>
@@ -140,6 +194,37 @@ const Mypage = () => {
                 </Box>
               </Item>
             </Grid>
+
+            <Dialog
+              open={open}
+              TransitionComponent={Transition}
+              keepMounted
+              aria-describedby='alert-dialog-slide-description'
+            >
+              <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id='alert-dialog-slide-description'>
+                  text
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Disconnected</Button>
+                <Button variant='contained' onClick={() => joinRoom()}>
+                  Start
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Grid>
+          <Grid
+            container
+            direction='column'
+            item
+            xs={4}
+            spacing={12}
+            justifyContent='center'
+            alignItems='center'
+          >
+            <Grid item xs></Grid>
           </Grid>
         </Grid>
       </Box>
