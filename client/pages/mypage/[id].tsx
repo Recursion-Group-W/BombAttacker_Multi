@@ -10,6 +10,10 @@ import Copyright from '../../src/Copyright';
 import { CustomSocket } from '../../src/socket/interface/customSocket.interface';
 import { useSocketStore } from '../../src/store/useSocketStore';
 import Link from '../../src/Link';
+// パス
+import { db } from '../../src/firebase';
+import { doc, updateDoc } from "firebase/firestore";
+
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -51,6 +55,7 @@ const Mypage = () => {
   };
   
   const [open, setOpen] = React.useState(false);
+  const [UserName, setUserName] = useState('')
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -58,6 +63,20 @@ const Mypage = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+    setUserName(e.target.value)
+  }
+
+  const handleClick = () => {
+    const uid = localStorage.getItem("userId")!.toString()
+    updateDoc(doc(db, "users", uid), {
+      name:UserName != "" ? UserName : "NoName"
+    })
+    .catch((error) => {
+      console.log(error.message);
+    })
   };
 
   const updateSocketState = useSocketStore((state) => state.updateSocketState);
@@ -105,7 +124,7 @@ const Mypage = () => {
         <Typography variant='h4' component='h1' gutterBottom>
           表示名
         </Typography>
-        {/* <input onChange={handleChangeName} value={UserName} /> */}
+        <input onChange={handleChangeName} value={UserName} placeholder="NoName"/>
         <div>
           <Button color='success' variant='contained' onClick={handleClick}>
             決定

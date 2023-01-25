@@ -8,39 +8,20 @@ import { auth, provider, db } from '../src/firebase';
 import { useRouter } from 'next/router';
 import { Layout } from '../component/Layout';
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { useEffect, useState, FC } from 'react';
 
 export default function Home() {
   const router = useRouter();
 
   const [isAuth, setIsAuth] = React.useState(false);
-  const [UserName, setUserName] = useState('')
 
-
-  // const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-  //   setUserName(e.target.value)
-  // }
-  
-  const handleClick = () => {
-    // ログインAPIにPOSTする処理
-  }
-
-  function makeUserName(UserName:string, displayName:string | null){
-    if (displayName != null){
-      if (UserName === "") return displayName.substr(0,4)
-      else return UserName
-    }
-    else return
-  }
   const logIn = () => {
     signInWithPopup(auth, provider)
       .then((res) => {
-        setDoc(doc(db, "test", res.user.uid), {
-          name: makeUserName(UserName, res.user.displayName),
-          state: "CA",
-          country: "USA",
+        setDoc(doc(db, "users", res.user.uid), {
+          name: "NoName",
           uid: res.user.uid,
           BestScore: 0,
+          Scores: []
         })
         .catch((error) => {
           console.log(error.message);
@@ -82,18 +63,6 @@ export default function Home() {
           alignItems: 'center',
         }}
       >
-        <Box sx={{ typography: 'h3', fontWeight: 900 }}>
-          表示名
-        </Box>
-        {/* <input onChange={handleChangeName} defaultValue="NoName" value={UserName} /> */}
-        <div>
-        <Button 
-        variant='outlined'
-        size='large'
-        onClick={handleClick}>
-          決定
-          </Button>
-        </div>
       </Box>
           <Box maxWidth='sm' sx={{ py: 2 }}>
             {!isAuth ? (
