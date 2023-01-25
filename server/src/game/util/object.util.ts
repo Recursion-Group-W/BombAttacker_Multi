@@ -29,14 +29,18 @@ export class ObjectUtil {
   ) {
     //ぶつかった障害物
     const obstacle = obstacleNode.data;
+    console.log('obstacle: ', obstacle);
 
     const scale = 4 / 8;
     //補正を行うかどうかの判定で使用する(ずれが2/5であれば補正する)
     const requireX = ((obstacle.getWidth + player.getWidth) / 2) * scale;
     const requireY = ((obstacle.getHeight + player.getHeight) / 2) * scale;
     //マスのキャッシュ(squareCache)から、ぶつかった障害物をO(1)で探すためのインデックス
-    const iX = Math.floor(obstacle.id / squareCache.length);
-    const iY = obstacle.id % squareCache[iX].length;
+    const iX = Math.floor(obstacle.getPosition.x / obstacle.getWidth);
+    const iY = Math.floor(obstacle.getPosition.y / obstacle.getHeight);
+    // const iX = Math.floor(obstacle.id / squareCache.length);
+    // const iY = obstacle.id % squareCache[iX].length;
+
     //障害物とプレイヤーの座標の差
     let diffX = player.getPosition.x - obstacle.getPosition.x;
     let diffY = player.getPosition.y - obstacle.getPosition.y;
@@ -49,7 +53,10 @@ export class ObjectUtil {
         if (diffX <= diffY) {
           if (diffX >= requireX) {
             let nextObstacle = squareCache[iX + 1][iY];
-            if (!nextObstacle) {
+            console.log('ix: ', iX, ', iY : ', iY);
+            console.log('ix+1: ', iX + 1, ', iY : ', iY);
+            console.log('next', nextObstacle);
+            if (nextObstacle == null) {
               correction.x = (obstacle.getWidth + player.getWidth) / 2 - diffX;
             }
           }
@@ -57,7 +64,7 @@ export class ObjectUtil {
           if (diffY >= requireY) {
             //隣の障害物
             let nextObstacle = squareCache[iX][iY - 1];
-            if (!nextObstacle) {
+            if (nextObstacle == null) {
               correction.y =
                 -1 * (obstacle.getHeight / 2 + player.getHeight / 2 - diffY);
             }
@@ -69,7 +76,7 @@ export class ObjectUtil {
         if (diffX >= diffY) {
           if (diffY >= requireY) {
             let nextObstacle = squareCache[iX][iY + 1];
-            if (!nextObstacle) {
+            if (nextObstacle == null) {
               correction.y =
                 obstacle.getHeight / 2 + player.getHeight / 2 - diffY;
             }
@@ -77,7 +84,7 @@ export class ObjectUtil {
         } else {
           if (diffX >= requireX) {
             let nextObstacle = squareCache[iX + 1][iY];
-            if (!nextObstacle) {
+            if (nextObstacle == null) {
               correction.x = (obstacle.getWidth + player.getWidth) / 2 - diffX;
             }
           }
@@ -92,7 +99,7 @@ export class ObjectUtil {
         if (diffX <= diffY) {
           if (diffX >= requireX) {
             let nextObstacle = squareCache[iX - 1][iY];
-            if (!nextObstacle) {
+            if (nextObstacle == null) {
               correction.x =
                 -1 * ((obstacle.getWidth + player.getWidth) / 2 - diffX);
             }
@@ -100,7 +107,7 @@ export class ObjectUtil {
         } else {
           if (diffY >= requireY) {
             let nextObstacle = squareCache[iX][iY + 1];
-            if (!nextObstacle) {
+            if (nextObstacle == null) {
               correction.y =
                 obstacle.getHeight / 2 + player.getHeight / 2 - diffY;
             }
@@ -113,7 +120,7 @@ export class ObjectUtil {
         if (diffX >= diffY) {
           if (diffY >= requireY) {
             let nextObstacle = squareCache[iX][iY - 1];
-            if (!nextObstacle) {
+            if (nextObstacle == null) {
               correction.y =
                 -1 * (obstacle.getHeight / 2 + player.getHeight / 2 - diffY);
             }
@@ -121,7 +128,7 @@ export class ObjectUtil {
         } else {
           if (diffX >= requireX) {
             let nextObstacle = squareCache[iX - 1][iY];
-            if (!nextObstacle) {
+            if (nextObstacle == null) {
               correction.x =
                 -1 * ((obstacle.getWidth + player.getWidth) / 2 - diffX);
             }

@@ -1,6 +1,7 @@
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import RoomManager from '../../../manager/roomManager';
 import { MathUtil } from '../../util/math.util';
+import { ObjectUtil } from '../../util/object.util';
 import { OverlapUtil } from '../../util/overlap.util';
 import { Bomb } from '../bomb';
 import { Character } from '../character/character';
@@ -18,12 +19,15 @@ export class Npc extends Character {
     stageWidth: number,
     stageHeight: number
   ) {
-    super(Npc.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
+    super(0, 0, Npc.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
     this.setSpriteKey = 'npc';
 
     this.setSpeed = 30;
     this.setLife = 1;
     this.setInitLife = 1;
+
+    //初期位置に配置
+    this.setInitialPosition(obstacleList, stageWidth, stageHeight);
 
     //初めに進む向きと速度をランダムにセット
     this.setMoveRamdom();

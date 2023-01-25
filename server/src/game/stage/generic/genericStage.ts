@@ -14,7 +14,7 @@ import { ItemFactory } from '../../factory/item/itemFactory';
 import { CustomSocket } from '../../../socket/interface/customSocket.interface';
 
 export class GenericStage {
-  readonly STAGE_WIDTH = 800;
+  readonly STAGE_WIDTH = 1056;
   readonly STAGE_HEIGHT = 800;
   readonly TILE_SIZE = 32;
   readonly TILE_SPAN_SCALE = 1.0;
@@ -94,6 +94,45 @@ export class GenericStage {
 
         let obstacle = null;
 
+        if (
+          i === 0 ||
+          i ===
+            Math.floor(stageWidth / this.TILE_SIZE / this.TILE_SPAN_SCALE) - 1
+        ) {
+          if (
+            (j >= 0 && j <= 1) ||
+            (j >= 10 && j <= 12) ||
+            (j >=
+              Math.floor(stageHeight / this.TILE_SIZE / this.TILE_SPAN_SCALE) -
+                2 &&
+              j <=
+                Math.floor(
+                  stageHeight / this.TILE_SIZE / this.TILE_SPAN_SCALE
+                ) -
+                  1)
+          ) {
+            this.squareCache[i][j] = obstacle;
+            id++;
+            continue;
+          }
+        } else if (
+          i === 1 ||
+          (i >= 15 && j <= 17) ||
+          i ===
+            Math.floor(stageWidth / this.TILE_SIZE / this.TILE_SPAN_SCALE) - 2
+        ) {
+          if (
+            j === 0 ||
+            j ===
+              Math.floor(stageHeight / this.TILE_SIZE / this.TILE_SPAN_SCALE) -
+                1
+          ) {
+            this.squareCache[i][j] = obstacle;
+            id++;
+            continue;
+          }
+        }
+
         if (i % 2 !== 0 && j % 2 !== 0) {
           //耐久力の高い障害物を置く
           obstacle = obstacleFactory.createFourthObstacle(id, x, y);
@@ -165,10 +204,41 @@ export class GenericStage {
   createPlayer(socket: CustomSocket, userName: string) {
     const tail = this.playerList.getTail();
     const id = tail ? tail.data.id + 1 : 0;
+
+    let x = this.TILE_SIZE / 2;
+    let y = this.TILE_SIZE / 2;
+    switch (id) {
+      case 1:
+        x = this.STAGE_WIDTH - this.TILE_SIZE / 2;
+        y = this.STAGE_HEIGHT - this.TILE_SIZE / 2;
+        break;
+      case 2:
+        x = this.STAGE_WIDTH - this.TILE_SIZE / 2;
+        break;
+      case 3:
+        y = this.STAGE_HEIGHT - this.TILE_SIZE / 2;
+        break;
+      case 4:
+        x = this.STAGE_WIDTH / 2;
+        break;
+      case 5:
+        x = this.STAGE_WIDTH / 2;
+        y = this.STAGE_HEIGHT - this.TILE_SIZE / 2;
+        break;
+      case 6:
+        y = this.STAGE_HEIGHT / 2;
+        break;
+      case 7:
+        x = this.STAGE_WIDTH - this.TILE_SIZE / 2;
+        y = this.STAGE_HEIGHT / 2;
+        break;
+    }
     const player = new Player(
       id,
       socket,
       userName,
+      x,
+      y,
       this.obstacleList,
       this.STAGE_WIDTH,
       this.STAGE_HEIGHT
