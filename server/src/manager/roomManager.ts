@@ -43,7 +43,7 @@ export default class RoomManager {
     let stage = this.roomMap[socket.roomId].gameManager.game.stage;
 
     // プレイヤーを作成
-    stage.createPlayer(socket.clientId, userName);
+    stage.createPlayer(socket, userName);
   }
 
   // socketを使ってユーザを入室させる

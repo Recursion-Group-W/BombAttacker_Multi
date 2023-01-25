@@ -13,6 +13,7 @@ export class FireUpItem extends GenericItem {
   public effect(player: Player): void {
     console.log('ファイヤーアップ！');
     if (player.getBombStrength >= 10) return;
+    player.items.fireUp++;
     player.setBombStrength = player.getBombStrength + 1;
   }
 }

@@ -11,6 +11,7 @@ import { MathUtil } from '../../util/math.util';
 import { Node } from '../../../linkedList/generic/node';
 import { GenericItem } from '../../model/item/genericItem';
 import { ItemFactory } from '../../factory/item/itemFactory';
+import { CustomSocket } from '../../../socket/interface/customSocket.interface';
 
 export class GenericStage {
   readonly STAGE_WIDTH = 800;
@@ -161,12 +162,12 @@ export class GenericStage {
   }
 
   //プレイヤーの作成
-  createPlayer(clientId: string, userName: string) {
+  createPlayer(socket: CustomSocket, userName: string) {
     const tail = this.playerList.getTail();
     const id = tail ? tail.data.id + 1 : 0;
     const player = new Player(
       id,
-      clientId,
+      socket,
       userName,
       this.obstacleList,
       this.STAGE_WIDTH,

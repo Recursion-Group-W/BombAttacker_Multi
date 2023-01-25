@@ -30,6 +30,7 @@ export class MainScene extends CustomScene {
     this.socket.on(
       'syncGame',
       (res: {
+        time: number;
         playerArr: PlayerDto[];
         npcArr: NpcDto[];
         obstacleArr: ObstacleDto[];
@@ -37,6 +38,8 @@ export class MainScene extends CustomScene {
         explosionArr: ExplosionDto[];
         itemArr: ItemDto[];
       }) => {
+        this.game.events.emit('updateTimeState', { time: res.time });
+
         SyncUtil.setPlayer(res.playerArr, this);
         SyncUtil.setNpc(res.npcArr, this);
         SyncUtil.setObstacle(res.obstacleArr, this);

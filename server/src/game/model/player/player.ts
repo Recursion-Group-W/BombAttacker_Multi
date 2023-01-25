@@ -1,5 +1,6 @@
 import { GenericLinkedList } from '../../../linkedList/generic/genericLinkedList';
 import RoomManager from '../../../manager/roomManager';
+import { CustomSocket } from '../../../socket/interface/customSocket.interface';
 import { Movement } from '../../types/movement.type';
 import { ObjectUtil } from '../../util/object.util';
 import { OverlapUtil } from '../../util/overlap.util';
@@ -19,6 +20,14 @@ export class Player extends Character {
     left: false,
   };
 
+  items = {
+    bombUp: 0,
+    fireUp: 0,
+    speedUp: 0,
+  };
+
+  public clientId = '';
+
   public bombList = new GenericLinkedList<Bomb>();
   private bombCountMax = 1;
   private score = 0;
@@ -28,13 +37,17 @@ export class Player extends Character {
   // コンストラクタ
   constructor(
     public id: number,
-    public clientId: string,
+    public socket: CustomSocket,
     public userName: string,
     obstacleList: GenericLinkedList<GenericObstacle>,
     stageWidth: number,
     stageHeight: number
   ) {
     super(Player.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
+
+    this.clientId = socket.clientId!;
+    this.setLife = 3;
+    this.setInitLife = 3;
   }
 
   // 更新
@@ -172,9 +185,14 @@ export class Player extends Character {
       //アイテム効果発動
       item.data.effect(this);
       itemList.remove(item);
+      //クライアントからアイテムを削除
       roomManager.ioNspGame.in(roomId).emit('destroyItem', {
         id: item.data.id,
       });
+      //持っているアイテムの状態を送信
+      roomManager.ioNspGame
+        .to(this.socket.id)
+        .emit('itemState', { items: this.items });
     }
   }
 
@@ -192,9 +210,10 @@ export class Player extends Character {
 
   toJSON() {
     return Object.assign(super.toJSON(), {
-      clientId: this.clientId,
+      clientId: this.socket.clientId,
       userName: this.userName,
       score: this.score,
+      items: this.items,
     });
   }
 

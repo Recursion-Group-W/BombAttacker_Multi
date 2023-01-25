@@ -18,11 +18,12 @@ export class Npc extends Character {
     stageWidth: number,
     stageHeight: number
   ) {
-    super( Npc.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
+    super(Npc.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
     this.setSpriteKey = 'npc';
 
     this.setSpeed = 30;
     this.setLife = 1;
+    this.setInitLife = 1;
 
     //初めに進む向きと速度をランダムにセット
     this.setMoveRamdom();
@@ -39,7 +40,7 @@ export class Npc extends Character {
     roomId: string
   ) {
     //ダメージを受けて3秒間は次のダメージを受けないように設定しているので、
-    //1.5秒を過ぎたら０に戻す
+    //3秒を過ぎたら０に戻す
     if (this.getNoDamageTime >= 3) {
       this.setNoDamageTime = 0;
     } else if (this.getNoDamageTime > 0) {
@@ -94,10 +95,15 @@ export class Npc extends Character {
     } else {
       let playerNode = this.overlapPlayers(playerList);
       if (playerNode) {
-        //プレイヤーの残機を減らす
-        playerNode.data.damage();
+        if (playerNode.data.getNoDamageTime <= 0) {
+          //プレイヤーの残機を減らす
+          playerNode.data.damage();
 
-        console.log(`残機: ${playerNode.data.getLife}`);
+          console.log(`残機: ${playerNode.data.getLife}`);
+
+          playerNode.data.setNoDamageTime = deltaTime;
+        }
+
         //プレイヤーに衝突
         collision = true;
         this.setPosition(prevPosition.x, prevPosition.y);

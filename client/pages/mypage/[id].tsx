@@ -1,7 +1,9 @@
 import { Box, Button, Grid, Paper, styled, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
+
 import React, { useEffect, useState, FC } from 'react';
 import { io } from 'socket.io-client';
+
 import { Layout } from '../../component/Layout';
 import { NODE_URL } from '../../env';
 import Copyright from '../../src/Copyright';
@@ -41,6 +43,17 @@ const Transition = React.forwardRef(function Transition(
 const Mypage = () => {
   const router = useRouter();
   const { id } = router.query;
+
+  const [UserName, setUserName] = useState('');
+
+  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+    setUserName(e.target.value);
+  };
+
+  const handleClick = () => {
+    // ログインAPIにPOSTする処理
+  };
+  
   const [open, setOpen] = React.useState(false);
   const [UserName, setUserName] = useState('')
 
@@ -52,22 +65,6 @@ const Mypage = () => {
     setOpen(false);
   };
 
-  function parsingURLtoGetUserID(URL:string):string{
-    const slash = "/";
-    const reversedURL = URL.split("").reverse().join("");
-    let UserID = "";
-    let i = 0;
-    while (reversedURL[i] != slash){
-      UserID += reversedURL[i]
-      i++
-    }
-
-    return UserID.split("").reverse().join("");
-  } 
-
-  function getBestScore(){
-
-  }
   const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value)
   }

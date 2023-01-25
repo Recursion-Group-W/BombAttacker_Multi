@@ -3,6 +3,7 @@ import { ServerConfig } from './config/serverConfig';
 import { FirstPaintStage } from './stage/paint/firstPaintStage';
 
 export class Game {
+  startTime: number = Date.now();
   time: number = Date.now();
   roomId: string;
   roomManager: RoomManager;
@@ -39,9 +40,11 @@ export class Game {
       // const nanoSecDiff =
       //   hrtimeDiff[0] * 1e9 + hrtimeDiff[1];
 
+      const time = (currTime - this.startTime) * 0.001;
+
       // //ルーム内のユーザーにデータを送信
       this.roomManager.ioNspGame.in(this.roomId).emit('syncGame', {
-        time: deltaTime,
+        time: time,
         playerArr: this.stage.playerList.toArray(),
         npcArr: this.stage.npcList.toArray(),
         bombArr: this.stage.bombList.toArray(),
