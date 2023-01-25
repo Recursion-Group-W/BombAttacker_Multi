@@ -13,6 +13,7 @@ export class BombUpItem extends GenericItem {
   public effect(player: Player): void {
     console.log('ボムアップ！');
     if (player.getBombCountMax >= 10) return;
+    player.items.bombUp++;
     player.setBombCountMax = player.getBombCountMax + 1;
   }
 }
