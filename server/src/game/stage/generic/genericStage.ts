@@ -14,7 +14,7 @@ import { ItemFactory } from '../../factory/item/itemFactory';
 import { CustomSocket } from '../../../socket/interface/customSocket.interface';
 
 export class GenericStage {
-  readonly STAGE_WIDTH = 800;
+  readonly STAGE_WIDTH = 1056;
   readonly STAGE_HEIGHT = 800;
   readonly TILE_SIZE = 32;
   readonly TILE_SPAN_SCALE = 1.0;
