@@ -306,10 +306,10 @@ export class GenericStage {
     while (iterator !== null) {
       if (iterator.data.clientId === clientId) {
         //プレイヤーリストから削除
-        this.playerList.remove(iterator);
+        // this.playerList.remove(iterator);
 
         //削除したプレイヤーのクライアントに"dead"イベントを送信
-        this.roomManager.ioNspGame.to(iterator.data.clientId).emit('dead');
+        this.roomManager.ioNspGame.to(iterator.data.socket.id).emit('dead');
 
         //clientIdのプレイヤーSpriteを破棄するようにクライアントに指示する
         this.roomManager.ioNspGame
