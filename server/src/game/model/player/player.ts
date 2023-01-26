@@ -179,6 +179,14 @@ export class Player extends Character {
 
         //攻撃したプレイヤーのスコアを更新
         explosion.data.player.attackPlayer();
+        roomManager.ioNspGame
+          .to(explosion.data.player.socket.id)
+          .emit('attack', {
+            score: {
+              attackPlayer: explosion.data.player.attackPlayerCount,
+              attackNpc: explosion.data.player.attackNpcCount,
+            },
+          });
 
         //干渉した爆風を削除
         explosionList.remove(explosion);
