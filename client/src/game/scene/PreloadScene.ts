@@ -46,6 +46,10 @@ export class PreloadScene extends Scene {
       frameWidth: 32,
       frameHeight: 32,
     });
+    this.load.spritesheet('appear', '/assets/appear.png', {
+      frameWidth: 32,
+      frameHeight: 56,
+    });
   }
   create() {
     //アニメーションを作成
@@ -56,6 +60,7 @@ export class PreloadScene extends Scene {
     AnimationUtil.createYellowEffect(this);
     AnimationUtil.createOrangeEffect(this);
     AnimationUtil.createBlueEffect(this);
+    AnimationUtil.createAppearEffect(this);
   }
 
   update() {

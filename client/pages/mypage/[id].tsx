@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Paper, styled, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 
-import React, { useEffect, useState, FC } from 'react';
+import React, { useEffect, useState, FC, ChangeEvent } from 'react';
 import { io } from 'socket.io-client';
 
 import { Layout } from '../../component/Layout';
