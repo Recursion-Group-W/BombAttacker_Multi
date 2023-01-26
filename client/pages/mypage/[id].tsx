@@ -21,6 +21,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
+import { TwitterShareButton } from 'react-share';
+import TwitterIcon from 'react-share/lib/TwitterIcon';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -169,6 +171,13 @@ const Mypage = () => {
                 <DialogContentText id='alert-dialog-slide-description'>
                   ロビー：{roomId}
                 </DialogContentText>
+                <TwitterShareButton
+                  url={'http://localhost:3000/room/' + roomId}
+                  title={'BombAttackerでマルチ対戦の相手を探しています。'}
+                  hashtags={['BombAttacker', 'multi_play']}
+                >
+                  <TwitterIcon size={32} round />
+                </TwitterShareButton>
               </DialogContent>
               <DialogActions>
                 <Button onClick={closeDialog}>Disconnected</Button>
