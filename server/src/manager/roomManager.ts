@@ -114,7 +114,7 @@ export default class RoomManager {
   leaveRoom(socket: CustomSocket) {
     if (!(socket.roomId && socket.clientId)) return;
     //Roomからクライアントを削除
-    this.removeUser(socket.roomId, socket.clientId);
+    this.removeUser(socket.roomId, socket);
 
     let stage = this.roomMap[socket.roomId].gameManager.game.stage;
 
@@ -123,14 +123,15 @@ export default class RoomManager {
   }
 
   //roomとroomMapからクライアントを削除
-  removeUser(roomId: string, clientId: string) {
+  removeUser(roomId: string, socket: CustomSocket) {
     //roomからクライアントを退室させる
-    this.ioNspGame.sockets.get(clientId)?.leave(roomId);
+    this.ioNspGame.sockets.get(socket.id)?.leave(roomId);
 
-    //roomMapからクライアントを削除
-    if (this.userExist(roomId, clientId)) {
-      delete this.roomMap[roomId].users[clientId];
-    }
+    if (socket.clientId)
+      if (this.userExist(roomId, socket.clientId)) {
+        //roomMapからクライアントを削除
+        delete this.roomMap[roomId].users[socket.clientId];
+      }
   }
 
   //対戦ルームに特定のクライアントが存在するかどうか

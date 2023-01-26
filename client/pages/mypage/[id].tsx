@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Paper, styled, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 
-import React, { useEffect, useState, FC } from 'react';
+import React, { useEffect, useState, FC, ChangeEvent } from 'react';
 import { io } from 'socket.io-client';
 
 import { Layout } from '../../component/Layout';
@@ -46,16 +46,9 @@ const Mypage = () => {
 
   const [UserName, setUserName] = useState('');
 
-  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-    setUserName(e.target.value);
-  };
 
-  const handleClick = () => {
-    // ログインAPIにPOSTする処理
-  };
   
   const [open, setOpen] = React.useState(false);
-  const [UserName, setUserName] = useState('')
 
   const handleClickOpen = () => {
     setOpen(true);
