@@ -12,8 +12,7 @@ import { useSocketStore } from '../../src/store/useSocketStore';
 import Link from '../../src/Link';
 // パス
 import { db } from '../../src/firebase';
-import { doc, updateDoc } from "firebase/firestore";
-
+import { doc, updateDoc } from 'firebase/firestore';
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -49,7 +48,7 @@ const Mypage = () => {
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
   };
-  
+
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -61,13 +60,12 @@ const Mypage = () => {
   };
 
   const handleClick = () => {
-    const uid = localStorage.getItem("userId")!.toString()
-    updateDoc(doc(db, "users", uid), {
-      name:UserName != "" ? UserName : "NoName"
-    })
-    .catch((error) => {
+    const uid = localStorage.getItem('userId')!.toString();
+    updateDoc(doc(db, 'users', uid), {
+      name: UserName != '' ? UserName : 'NoName',
+    }).catch((error) => {
       console.log(error.message);
-    })
+    });
   };
 
   const updateSocketState = useSocketStore((state) => state.updateSocketState);
@@ -104,107 +102,59 @@ const Mypage = () => {
   return (
     <Layout title='Mypage'>
       <Box
-        // height='20vh'
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          // justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Typography variant='h4' component='h1' gutterBottom>
-          表示名
-        </Typography>
-        <input onChange={handleChangeName} value={UserName} placeholder="NoName"/>
-        <div>
-          <Button color='success' variant='contained' onClick={handleClick}>
-            決定
-          </Button>
-        </div>
-      </Box>
-      <Box
         height='100vh'
         sx={{
           display: 'flex',
-          flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
         }}
       >
-        <Grid container spacing={1}>
-          <Grid
-            container
-            direction='column'
-            item
-            xs={4}
-            spacing={12}
-            justifyContent='center'
-            alignItems='center'
-          >
-            <Grid item xs></Grid>
+        <Grid
+          container
+          spacing={1}
+          xs={8}
+        >
+          <Grid item xs={6}>
+            <Item>
+              <Box maxWidth='sm' p={2}>
+                <Typography variant='h4' component='h1' gutterBottom>
+                  表示名
+                </Typography>
+                <input
+                  onChange={handleChangeName}
+                  value={UserName}
+                  placeholder='NoName'
+                />
+                <div>
+                  <Button
+                    variant='contained'
+                    color='success'
+                    size='large'
+                    onClick={handleClick}
+                  >
+                  <Typography variant='h4' component='h1' gutterBottom>
+                    決定
+                  </Typography>
+                  </Button>
+                </div>
+              </Box>
+            </Item>
           </Grid>
-          <Grid
-            container
-            direction='column'
-            item
-            xs={4}
-            spacing={12}
-            justifyContent='center'
-            alignItems='center'
-          >
-            <Grid item xs={4}>
-              <Item>
-                <Box maxWidth='sm'>
-                  <Button
-                    variant='contained'
-                    color='success'
-                    size='large'
-                    onClick={handleClickOpen}
-                  >
-                    <Typography variant='h4' component='h1' gutterBottom>
-                      ロビーを作る
-                    </Typography>
-                  </Button>
-                </Box>
-              </Item>
-            </Grid>
-            <Grid item xs={4}>
-              <Item>
-                <Box maxWidth='sm'>
-                  <Button
-                    variant='contained'
-                    component={Link}
-                    noLinkStyle
-                    color='success'
-                    size='large'
-                    href={`/score/${id}`}
-                  >
-                    <Typography variant='h4' component='h1' gutterBottom>
-                      スコア
-                    </Typography>
-                  </Button>
-                </Box>
-              </Item>
-            </Grid>
-            <Grid item xs={4}>
-              <Item>
-                <Box maxWidth='sm'>
-                  <Button
-                    variant='contained'
-                    component={Link}
-                    noLinkStyle
-                    color='success'
-                    size='large'
-                    href={`/ranking`}
-                  >
-                    <Typography variant='h4' component='h1' gutterBottom>
-                      ランキング
-                    </Typography>
-                  </Button>
-                </Box>
-              </Item>
-            </Grid>
-
+          <Grid item xs={6}>
+            <Item>
+              <Box maxWidth='sm' p={2}>
+                <Button
+                  variant='contained'
+                  color='success'
+                  size='large'
+                  onClick={handleClickOpen}
+                >
+                  <Typography variant='h4' component='h1' gutterBottom>
+                    ロビーを作る
+                  </Typography>
+                </Button>
+              </Box>
+            </Item>
             <Dialog
               open={open}
               TransitionComponent={Transition}
@@ -225,16 +175,41 @@ const Mypage = () => {
               </DialogActions>
             </Dialog>
           </Grid>
-          <Grid
-            container
-            direction='column'
-            item
-            xs={4}
-            spacing={12}
-            justifyContent='center'
-            alignItems='center'
-          >
-            <Grid item xs></Grid>
+          <Grid item xs={6}>
+            <Item>
+              <Box maxWidth='sm' p={2}>
+                <Button
+                  variant='contained'
+                  component={Link}
+                  noLinkStyle
+                  color='success'
+                  size='large'
+                  href={`/score/${id}`}
+                >
+                  <Typography variant='h4' component='h1' gutterBottom>
+                    スコア
+                  </Typography>
+                </Button>
+              </Box>
+            </Item>
+          </Grid>
+          <Grid item xs={6}>
+            <Item>
+              <Box maxWidth='sm' p={2}>
+                <Button
+                  variant='contained'
+                  component={Link}
+                  noLinkStyle
+                  color='success'
+                  size='large'
+                  href={`/ranking`}
+                >
+                  <Typography variant='h4' component='h1' gutterBottom>
+                    ランキング
+                  </Typography>
+                </Button>
+              </Box>
+            </Item>
           </Grid>
         </Grid>
       </Box>
