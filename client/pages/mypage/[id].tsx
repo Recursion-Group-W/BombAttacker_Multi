@@ -43,26 +43,30 @@ const Mypage = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const [UserName, setUserName] = useState('');
+  const [userName, setUserName] = useState('NoName');
+  const [open, setOpen] = useState(false);
+  const [roomId, setRoomId] = useState('');
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
   };
 
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
+  const openDialog = async () => {
     setOpen(true);
+    socket.emit('joinRoom', localStorage.getItem('userId'));
+    socket.on('roomId', (roomId: string) => {
+      setRoomId(roomId);
+    });
   };
 
-  const handleClose = () => {
+  const closeDialog = () => {
     setOpen(false);
   };
 
   const handleClick = () => {
     const uid = localStorage.getItem('userId')!.toString();
     updateDoc(doc(db, 'users', uid), {
-      name: UserName != '' ? UserName : 'NoName',
+      name: userName != '' ? userName : 'NoName',
     }).catch((error) => {
       console.log(error.message);
     });
@@ -82,15 +86,15 @@ const Mypage = () => {
     socket.clientId = clientId;
   });
 
-  const joinRoom = async () => {
-    socket.emit('joinRoom', {
-      userName: 'user1',
-      userId: localStorage.getItem('userId'),
-    });
+  const startGame = () => {
+    socket.emit('startGame', userName);
+    router.push('/room/' + roomId);
   };
-  socket.on('roomId', (roomId: string) => {
-    router.push(`/room/${roomId}`);
-  });
+
+  // socket.on('roomId', (roomId: string) => {
+
+  // router.push(`/room/${roomId}`);
+  // });
 
   useEffect(() => {
     const { id } = router.query;
@@ -109,11 +113,7 @@ const Mypage = () => {
           alignItems: 'center',
         }}
       >
-        <Grid
-          container
-          spacing={1}
-          xs={8}
-        >
+        <Grid container spacing={1} xs={8}>
           <Grid item xs={6}>
             <Item>
               <Box maxWidth='sm' p={2}>
@@ -122,7 +122,7 @@ const Mypage = () => {
                 </Typography>
                 <input
                   onChange={handleChangeName}
-                  value={UserName}
+                  value={userName}
                   placeholder='NoName'
                 />
                 <div>
@@ -132,9 +132,9 @@ const Mypage = () => {
                     size='large'
                     onClick={handleClick}
                   >
-                  <Typography variant='h4' component='h1' gutterBottom>
-                    決定
-                  </Typography>
+                    <Typography variant='h4' component='h1' gutterBottom>
+                      決定
+                    </Typography>
                   </Button>
                 </div>
               </Box>
@@ -147,7 +147,7 @@ const Mypage = () => {
                   variant='contained'
                   color='success'
                   size='large'
-                  onClick={handleClickOpen}
+                  onClick={openDialog}
                 >
                   <Typography variant='h4' component='h1' gutterBottom>
                     ロビーを作る
@@ -161,15 +161,18 @@ const Mypage = () => {
               keepMounted
               aria-describedby='alert-dialog-slide-description'
             >
-              <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+              <DialogTitle>{'Waiting...'}</DialogTitle>
               <DialogContent>
                 <DialogContentText id='alert-dialog-slide-description'>
-                  text
+                  表示名：{userName}
+                </DialogContentText>
+                <DialogContentText id='alert-dialog-slide-description'>
+                  ロビー：{roomId}
                 </DialogContentText>
               </DialogContent>
               <DialogActions>
-                <Button onClick={handleClose}>Disconnected</Button>
-                <Button variant='contained' onClick={() => joinRoom()}>
+                <Button onClick={closeDialog}>Disconnected</Button>
+                <Button variant='contained' onClick={() => startGame()}>
                   Start
                 </Button>
               </DialogActions>
