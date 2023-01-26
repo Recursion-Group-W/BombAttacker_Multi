@@ -188,9 +188,9 @@ export class SyncUtil {
     player.nameText.destroy();
     player.leftGauge.destroy();
     player.rightGauge.destroy();
-    // player.sync = null;
+    player.sync = null;
 
-    // delete scene.objects.playerMap[clientId];
+    delete scene.objects.playerMap[clientId];
   }
 
   static destroyNpc(id: number, scene: CustomScene) {

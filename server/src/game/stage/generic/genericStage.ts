@@ -435,6 +435,7 @@ export class GenericStage {
         if (iterator.data.getLife <= 0) return;
         else break;
       }
+      iterator = iterator.next;
     }
     if (!iterator?.data) return;
 
