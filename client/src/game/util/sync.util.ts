@@ -24,6 +24,15 @@ export class SyncUtil {
 
           const nameText = SyncUtil.createNameText(player, scene);
 
+          const appear = scene.add
+            .sprite(player.x, player.y, '')
+            .setOrigin(0.5, 0.7)
+            .setScale(1.0)
+            .play('appear-anim');
+          setTimeout(() => {
+            appear.destroy();
+          }, 1500);
+
           scene.objects.playerMap[player.clientId] = {
             sprite: sprite,
             nameText: nameText,
@@ -42,7 +51,7 @@ export class SyncUtil {
     return scene.add
       .text(
         player.x,
-        player.y - SyncUtil.CHARACTER_HEIGHT * 1.5,
+        player.y - SyncUtil.CHARACTER_HEIGHT * 1.5 + 10,
         player.userName
       )
       .setTint(0x333333)
@@ -286,7 +295,7 @@ export class SyncUtil {
     //syncのデータを基に、spriteの座標とアニメーションを更新
     if (Object.keys(scene.objects.playerMap).length > 0) {
       Object.values(scene.objects.playerMap).forEach((player) => {
-        if (!player.sync) return;
+        if (!player.sync || !player.sprite) return;
         //座標を更新
         player.sprite.x = player.sync.x;
         player.sprite.y = player.sync.y;

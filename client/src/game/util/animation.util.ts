@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { repeat } from 'ramda';
 
 export class AnimationUtil {
   static createPlayerAnim(scene: Scene) {
@@ -162,6 +163,18 @@ export class AnimationUtil {
       frameRate: 10,
       repeat: -1,
       frames: scene.anims.generateFrameNumbers('blueEffect', {
+        start: 0,
+        end: 2,
+      }),
+    });
+  }
+
+  static createAppearEffect(scene: Scene) {
+    scene.anims.create({
+      key: 'appear-anim',
+      frameRate: 10,
+      repeat: -1,
+      frames: scene.anims.generateFrameNumbers('appear', {
         start: 0,
         end: 2,
       }),

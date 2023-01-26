@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
 import { useItemStore } from '../src/store/useItemStore';
+import { useScoreStore } from '../src/store/useScoreStore';
 import { useSocketStore } from '../src/store/useSocketStore';
 import { useTimeStore } from '../src/store/useTimeStore';
 
@@ -11,6 +12,9 @@ const StateDisplay = () => {
 
   const { timeState } = useTimeStore();
   const resetTimeState = useTimeStore((state) => state.resetTimeState);
+
+  const { scoreState } = useScoreStore();
+  const updateScoreState = useScoreStore((state) => state.updateScoreState);
 
   const { socketState } = useSocketStore();
   const socket = socketState.socket;
@@ -29,6 +33,13 @@ const StateDisplay = () => {
       };
     }) => {
       updateItemState(res.items);
+    }
+  );
+
+  socket?.on(
+    'attack',
+    (res: { score: { attackPlayer: number; attackNpc: number } }) => {
+      updateScoreState(res.score);
     }
   );
 
@@ -125,6 +136,45 @@ const StateDisplay = () => {
             ></Image>{' '}
             <Box sx={{ typography: 'h6', fontWeight: 500 }}>
               {itemState.speedUp}
+            </Box>
+          </Box>
+        </Box>
+
+        <Box
+          height={50}
+          width={450}
+          sx={{
+            my: 1,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+          }}
+        >
+          <Box
+            sx={{
+              my: 1,
+              display: 'flex',
+              flexDirection: 'row',
+              // justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Box sx={{ typography: 'h6', fontWeight: 500 }}>
+              attackPlayer : {scoreState.attackPlayer}
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              my: 1,
+              display: 'flex',
+              flexDirection: 'row',
+              // justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Box sx={{ typography: 'h6', fontWeight: 500 }}>
+              attackNpc : {scoreState.attackNpc}
             </Box>
           </Box>
         </Box>
