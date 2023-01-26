@@ -21,7 +21,7 @@ export default class RoomManager {
   }
 
   //入室
-  async joinRoom(socket: CustomSocket, userId: string) {
+  async joinRoom(socket: CustomSocket, userName: string, userId: string) {
     if (!socket.clientId) return;
 
     socket.userId = userId;
@@ -39,14 +39,6 @@ export default class RoomManager {
     this.addUser(socket);
 
     console.log(`ユーザー<clientId: ${socket.clientId}>が入室しました。`);
-  }
-
-  startGame(socket: CustomSocket, userName:string) {
-    console.log('OK')
-    console.log(socket.userId)
-    console.log(socket.roomId)
-    if (typeof socket.userId == 'undefined' || typeof socket.roomId == 'undefined') return;
-
     let stage = this.roomMap[socket.roomId].gameManager.game.stage;
 
     // プレイヤーを作成
