@@ -46,16 +46,11 @@ const Mypage = () => {
 
   const [UserName, setUserName] = useState('');
 
-  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
-  };
-
-  const handleClick = () => {
-    // ログインAPIにPOSTする処理
   };
   
   const [open, setOpen] = React.useState(false);
-  const [UserName, setUserName] = useState('')
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -64,10 +59,6 @@ const Mypage = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-    setUserName(e.target.value)
-  }
 
   const handleClick = () => {
     const uid = localStorage.getItem("userId")!.toString()
