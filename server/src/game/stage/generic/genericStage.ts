@@ -101,7 +101,7 @@ export class GenericStage {
         ) {
           if (
             (j >= 0 && j <= 1) ||
-            (j >= 10 && j <= 12) ||
+            (j >= 11 && j <= 13) ||
             (j >=
               Math.floor(stageHeight / this.TILE_SIZE / this.TILE_SPAN_SCALE) -
                 2 &&
@@ -117,7 +117,7 @@ export class GenericStage {
           }
         } else if (
           i === 1 ||
-          (i >= 15 && j <= 17) ||
+          (i >= 15 && i <= 17) ||
           i ===
             Math.floor(stageWidth / this.TILE_SIZE / this.TILE_SPAN_SCALE) - 2
         ) {
@@ -139,7 +139,44 @@ export class GenericStage {
         } else {
           //耐久力の低い障害物を置く
           // 1/5の確率で置く
-          const willPut = MathUtil.getRandomInt(0, 4);
+          let willPut = MathUtil.getRandomInt(0, 4);
+
+          if (
+            i === 0 ||
+            i ===
+              Math.floor(stageWidth / this.TILE_SIZE / this.TILE_SPAN_SCALE) - 1
+          ) {
+            if (
+              j === 2 ||
+              j === 10 ||
+              j === 14 ||
+              j ===
+                Math.floor(
+                  stageHeight / this.TILE_SIZE / this.TILE_SPAN_SCALE
+                ) -
+                  3
+            ) {
+              willPut = 0;
+            }
+          } else if (
+            i === 2 ||
+            i === 14 ||
+            i === 18 ||
+            i ===
+              Math.floor(stageWidth / this.TILE_SIZE / this.TILE_SPAN_SCALE) - 3
+          ) {
+            if (
+              j === 0 ||
+              j ===
+                Math.floor(
+                  stageHeight / this.TILE_SIZE / this.TILE_SPAN_SCALE
+                ) -
+                  1
+            ) {
+              willPut = 0;
+            }
+          }
+
           if (willPut >= 1) {
             id++;
             continue;
