@@ -295,7 +295,7 @@ export class SyncUtil {
     //syncのデータを基に、spriteの座標とアニメーションを更新
     if (Object.keys(scene.objects.playerMap).length > 0) {
       Object.values(scene.objects.playerMap).forEach((player) => {
-        if (!player.sync) return;
+        if (!player.sync || !player.sprite) return;
         //座標を更新
         player.sprite.x = player.sync.x;
         player.sprite.y = player.sync.y;
