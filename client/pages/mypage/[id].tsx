@@ -1,4 +1,12 @@
-import { Box, Button, Grid, Paper, styled, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Grid,
+  Paper,
+  styled,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { useRouter } from 'next/router';
 
 import React, { useEffect, useState, FC, ChangeEvent } from 'react';
@@ -49,6 +57,7 @@ const Mypage = () => {
   const [userName, setUserName] = useState('NoName');
   const [open, setOpen] = useState(false);
   const [roomId, setRoomId] = useState('');
+  const [waitUsers, setWaitUsers] = useState(1);
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
@@ -84,6 +93,11 @@ const Mypage = () => {
     console.log(`Your clientId is ${clientId}`);
     socket.clientId = clientId;
   });
+
+  if (open) {
+    socket.emit('waitGather', true);
+    socket.on('waitUsers', (num: number) => setWaitUsers(num));
+  }
 
   const startGame = () => {
     socket.emit('joinRoom', {
@@ -157,6 +171,7 @@ const Mypage = () => {
                 open={open}
                 TransitionComponent={Transition}
                 keepMounted
+                fullWidth
                 aria-describedby='alert-dialog-slide-description'
               >
                 <DialogTitle>{'Waiting...'}</DialogTitle>
@@ -165,7 +180,7 @@ const Mypage = () => {
                     表示名：{userName}
                   </DialogContentText>
                   <DialogContentText id='alert-dialog-slide-description'>
-                    ID：{roomId}
+                    参加人数：{waitUsers}
                   </DialogContentText>
                   <TwitterShareButton
                     url={'http://localhost:3000/room/' + roomId}
