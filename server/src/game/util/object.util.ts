@@ -29,7 +29,7 @@ export class ObjectUtil {
   ) {
     //ぶつかった障害物
     const obstacle = obstacleNode.data;
-    console.log('obstacle: ', obstacle);
+    // console.log('obstacle: ', obstacle);
 
     const scale = 4 / 8;
     //補正を行うかどうかの判定で使用する(ずれが2/5であれば補正する)
@@ -53,9 +53,9 @@ export class ObjectUtil {
         if (diffX <= diffY) {
           if (diffX >= requireX) {
             let nextObstacle = squareCache[iX + 1][iY];
-            console.log('ix: ', iX, ', iY : ', iY);
-            console.log('ix+1: ', iX + 1, ', iY : ', iY);
-            console.log('next', nextObstacle);
+            // console.log('ix: ', iX, ', iY : ', iY);
+            // console.log('ix+1: ', iX + 1, ', iY : ', iY);
+            // console.log('next', nextObstacle);
             if (nextObstacle == null) {
               correction.x = (obstacle.getWidth + player.getWidth) / 2 - diffX;
             }

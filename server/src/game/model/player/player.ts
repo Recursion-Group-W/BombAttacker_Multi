@@ -32,6 +32,9 @@ export class Player extends Character {
   private bombCountMax = 1;
   private score = 0;
 
+  attackPlayerCount = 0;
+  attackNpcCount = 0;
+
   private bombStrength = 1;
 
   // コンストラクタ
@@ -173,6 +176,10 @@ export class Player extends Character {
         //残機を減らす
         this.damage();
         this.setNoDamageTime = deltaTime;
+
+        //攻撃したプレイヤーのスコアを更新
+        explosion.data.player.attackPlayer();
+
         //干渉した爆風を削除
         explosionList.remove(explosion);
         roomManager.ioNspGame.in(roomId).emit('destroyExplosion', {
@@ -214,7 +221,8 @@ export class Player extends Character {
     return Object.assign(super.toJSON(), {
       clientId: this.socket.clientId,
       userName: this.userName,
-      score: this.score,
+      attackPlayer: this.attackPlayerCount,
+      attackNpc: this.attackNpcCount,
       items: this.items,
     });
   }
@@ -238,6 +246,13 @@ export class Player extends Character {
 
   setMovement(movement: Movement): void {
     this.movement = movement;
+  }
+
+  attackPlayer() {
+    this.attackPlayerCount++;
+  }
+  attackNpc() {
+    this.attackNpcCount++;
   }
 
   // 爆弾を置く

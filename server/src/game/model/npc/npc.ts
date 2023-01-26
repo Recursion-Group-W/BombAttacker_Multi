@@ -131,6 +131,10 @@ export class Npc extends Character {
         //残機を減らす
         this.damage();
         this.setNoDamageTime = deltaTime;
+
+        //攻撃したプレイヤーのスコアを更新
+        explosion.data.player.attackNpc();
+
         //干渉した爆風を削除
         explosionList.remove(explosion);
         roomManager.ioNspGame.in(roomId).emit('destroyExplosion', {

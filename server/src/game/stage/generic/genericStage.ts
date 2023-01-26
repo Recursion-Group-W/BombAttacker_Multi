@@ -449,8 +449,8 @@ export class GenericStage {
     if (bomb) {
       this.bombList.pushBack(bomb);
     }
-    console.log(this.bombList);
-    console.log(this.bombList.size());
+    // console.log(this.bombList);
+    // console.log(this.bombList.size());
   }
 
   // 爆弾を破棄
