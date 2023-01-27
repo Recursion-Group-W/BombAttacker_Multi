@@ -17,9 +17,7 @@ import  { collection, query, where, getDocs, getFirestore } from "firebase/fires
 import { doc, updateDoc } from "firebase/firestore";
 import { update } from 'ramda';
 
-
-
-export default function gameOverPage() {
+const gameOverPage = () => {
   return (
     <Layout title='Title'>
       <Container maxWidth='lg'>
@@ -53,3 +51,4 @@ export default function gameOverPage() {
   );
 }
 
+export default gameOverPage;
