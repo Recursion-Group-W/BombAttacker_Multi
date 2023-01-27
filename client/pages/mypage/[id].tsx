@@ -187,13 +187,13 @@ const Mypage = () => {
                     表示名：{userName}
                   </DialogContentText>
                   <DialogContentText id='alert-dialog-slide-description'>
-                    ID：{roomId}
-                  </DialogContentText>
-                  <DialogContentText id='alert-dialog-slide-description'>
                     接続人数：{waitUsers.length}
                   </DialogContentText>
                   <TwitterShareButton
-                    url={'http://localhost:3000/room/' + roomId}
+                    url={
+                      'http://localhost:3000/wait/' +
+                      localStorage.getItem('userId')
+                    }
                     title={'BombAttackerでマルチ対戦の相手を探しています。'}
                     hashtags={['BombAttacker', 'multi_play']}
                   >

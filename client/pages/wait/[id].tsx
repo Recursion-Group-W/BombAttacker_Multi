@@ -5,6 +5,7 @@ import {
   Paper,
   Stack,
   styled,
+  TextField,
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/router';
@@ -165,8 +166,22 @@ const WaitGather = () => {
                 fullWidth
                 aria-describedby='alert-dialog-slide-description'
               >
-                <DialogTitle>{'Waiting...'}</DialogTitle>
                 <DialogContent>
+                  <Grid container>
+                    <Grid item xs={5}>
+                      Google
+                    </Grid>
+                    <Grid item xs={2}>
+                      or
+                    </Grid>
+                    <Grid item xs={5}>
+                      <TextField
+                        id='standard-basic'
+                        label='Guest'
+                        variant='standard'
+                      />
+                    </Grid>
+                  </Grid>
                   <DialogContentText id='alert-dialog-slide-description'>
                     表示名：{userName}
                   </DialogContentText>

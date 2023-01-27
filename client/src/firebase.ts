@@ -1,6 +1,6 @@
 import { initializeApp, getApps, FirebaseApp, FirebaseOptions } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore, Firestore, initializeFirestore } from 'firebase/firestore';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getFirestore, Firestore, initializeFirestore, setDoc, doc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBs53kQJAQMjOhndu_tKDHC8-cgrIZxBjk',
@@ -18,4 +18,21 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-export { auth, provider, db };
+const signIn = async () => {
+  await signInWithPopup(auth, provider).then((res) => {
+    setDoc(doc(db, 'users', res.user.uid), {
+      name: 'NoName',
+      uid: res.user.uid,
+      BestScore: 0,
+      Scores: [],
+    }).catch((error) => {
+      console.log(error.message);
+    });
+    console.log(res.user.displayName);
+    console.log(res.user.uid);
+    localStorage.setItem('userId', res.user.uid);
+    localStorage.setItem('isAuth', 'true');
+  });
+}
+
+export { auth, provider, db, signIn};

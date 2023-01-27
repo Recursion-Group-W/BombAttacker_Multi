@@ -13,9 +13,8 @@ export default class IoGame {
       //clientIdを生成して送信する処理
       roomManager.generateClientId(socket);
 
-      socket.on('standby', (host: boolean, uid: string) => {
-        const roomId = roomManager.standby(socket, host, uid);
-        socket.emit('roomId', roomId);
+      socket.on('connectUser', (uid: string) => {
+        socket.emit('updateUser', uid);
       });
 
       socket.on('startGame',async (roomId: string, uid: string) => {
