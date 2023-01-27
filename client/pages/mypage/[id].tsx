@@ -54,7 +54,7 @@ const Mypage = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const [UserName, setUserName] = useState('');
+  const [userName, setUserName] = useState('');
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
@@ -62,10 +62,10 @@ const Mypage = () => {
   
   const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = () => {
+  const handleClickOpen = () => {}
 
-  const [userName, setUserName] = useState('NoName');
-  const [open, setOpen] = useState(false);
+  // const [userName, setUserName] = useState('NoName');
+  // const [open, setOpen] = useState(false);
   const [roomId, setRoomId] = useState('');
   const [waitUsers, setWaitUsers] = useState<string[]>([]);
 
@@ -83,9 +83,9 @@ const Mypage = () => {
   };
 
 
-  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserName(e.target.value)
-  }
+  // const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setUserName(e.target.value)
+  // }
 
   const handleClick = () => {
     const uid = localStorage.getItem('userId')!.toString();
@@ -273,6 +273,7 @@ const Mypage = () => {
       </Container>
     </Layout>
   );
-};
+        }
+
 
 export default Mypage;

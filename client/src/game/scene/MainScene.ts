@@ -18,7 +18,7 @@ const usersRef = collection(db, "users");
 let name = "";
 let score = 0;
 let pageURL = location.href
-const router = useRouter();
+// const router = useRouter();
 
 const GameOver = () =>{
   getDocs(query(usersRef, where("Life", "==", 0))).then(snapshot => {
@@ -28,8 +28,8 @@ const GameOver = () =>{
           score = Doc.data().score;
           console.log(`${Doc.id}: ${Doc.data().name}`);
           // pageURL +=  '/gameOverPage';
-          router.push('/gameOverPage')
-          // window.location.href = '/gameOverPage';  
+          // router.push('/gameOverPage')
+          window.location.href = '/gameOverPage';  
           updateDoc(doc(db, "users", Doc.data().uid), {
             Life: -1
           }) 
@@ -110,7 +110,7 @@ export class MainScene extends CustomScene {
     SyncUtil.updateNpc(this);
     SyncUtil.updateBomb(this);
     SyncUtil.updateExplosion(this);
-    // GameOver()
+    GameOver()
     this.cursor?.update();
   }
 }
