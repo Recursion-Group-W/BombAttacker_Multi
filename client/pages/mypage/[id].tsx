@@ -54,8 +54,11 @@ const Mypage = () => {
   const router = useRouter();
   const { id } = router.query;
 
-
   const [UserName, setUserName] = useState('');
+
+  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserName(e.target.value);
+  };
   
   const [open, setOpen] = React.useState(false);
 
