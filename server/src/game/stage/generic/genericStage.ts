@@ -488,10 +488,12 @@ export class GenericStage {
           `プレイヤー<${playerIterator.data.clientId}>の残機が０になりました。`
         );
         //プレイヤーリストから削除
-        this.playerList.remove(playerIterator);
-        this.roomManager.ioNspGame
-          .in(this.roomId)
-          .emit('destroyPlayer', { clientId: playerIterator.data.clientId });
+        // this.playerList.remove(playerIterator);
+        // this.roomManager.ioNspGame
+        //   .in(this.roomId)
+        //   .emit('destroyPlayer', { clientId: playerIterator.data.clientId });
+
+        this.roomManager.leaveRoom(playerIterator.data.socket);
       }
       playerIterator = playerIterator.next;
     }
