@@ -54,16 +54,21 @@ const Mypage = () => {
   const router = useRouter();
   const { id } = router.query;
 
+
+  const [UserName, setUserName] = useState('');
+  
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+
   const [userName, setUserName] = useState('NoName');
   const [open, setOpen] = useState(false);
   const [roomId, setRoomId] = useState('');
   const [waitUsers, setWaitUsers] = useState<string[]>([]);
 
-  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserName(e.target.value);
-  };
 
   const openDialog = async () => {
+
     setOpen(true);
     socket.emit('standby', true, localStorage.getItem('userId'));
   };
@@ -73,6 +78,11 @@ const Mypage = () => {
     setWaitUsers([]);
     // socket.emit('cancelStandby');
   };
+
+
+  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserName(e.target.value)
+  }
 
   const handleClick = () => {
     const uid = localStorage.getItem('userId')!.toString();

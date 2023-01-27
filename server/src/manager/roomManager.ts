@@ -7,15 +7,12 @@ import { RoomMap } from './types/room.type';
 import { User } from './types/user.type';
 import { GameManager } from './gameManager';
 
+
 export default class RoomManager {
   roomMap: RoomMap = {};
-
   constructor(public ioNspGame: Namespace) {}
-
-  //clientIdをuuidで作成
   generateClientId(socket: CustomSocket) {
     let clientId: string = uuidv4();
-
     socket.clientId = clientId;
     socket.emit('clientId', clientId);
   }
@@ -48,7 +45,7 @@ export default class RoomManager {
   }
 
   //入室
-  async joinRoom(socket: CustomSocket, userName: string, userId: string) {
+  async joinRoom(socket: CustomSocket, userName: string, userId = localStorage.getItem("userId")!.toString()) {
     if (!socket.clientId) return;
 
     socket.userId = userId;
