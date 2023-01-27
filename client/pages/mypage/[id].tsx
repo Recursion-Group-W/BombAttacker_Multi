@@ -45,17 +45,8 @@ const Mypage = () => {
   const { id } = router.query;
 
   const [UserName, setUserName] = useState('');
-
-  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-    setUserName(e.target.value);
-  };
-
-  const handleClick = () => {
-    // ログインAPIにPOSTする処理
-  };
   
   const [open, setOpen] = React.useState(false);
-  const [UserName, setUserName] = useState('')
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -65,7 +56,7 @@ const Mypage = () => {
     setOpen(false);
   };
 
-  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value)
   }
 

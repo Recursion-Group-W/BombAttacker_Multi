@@ -119,6 +119,7 @@ export class Character extends GameObject {
   }
   damage() {
     console.log('ダメージを受けました');
+
     this.life--;
   }
 

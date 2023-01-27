@@ -11,6 +11,10 @@ import { GenericItem } from '../item/genericItem';
 import { Npc } from '../npc/npc';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
+import { db } from '../../../../../client/src/firebase';
+import { doc, updateDoc } from "../../../../../client/node_modules/firebase/firestore";
+//client/node_modules/firebase/firestore/dist/firestore/index"
+
 export class Player extends Character {
   static readonly SPRITE_KEY = 'player';
   private movement: Movement = {
@@ -27,7 +31,7 @@ export class Player extends Character {
   };
 
   public clientId = '';
-
+  public userId = '';
   public bombList = new GenericLinkedList<Bomb>();
   private bombCountMax = 1;
   private score = 0;
@@ -47,6 +51,7 @@ export class Player extends Character {
   ) {
     super(x, y, Player.SPRITE_KEY, obstacleList, stageWidth, stageHeight);
 
+    this.userId = socket.userId!;
     this.clientId = socket.clientId!;
     this.setLife = 3;
     this.setInitLife = 3;
@@ -172,6 +177,10 @@ export class Player extends Character {
         console.log('爆風を受けました');
         //残機を減らす
         this.damage();
+        //fireBaseに残機登録
+        updateDoc(doc(db, "users", this.userId), {
+          Life: this.life
+        })
         this.setNoDamageTime = deltaTime;
         //干渉した爆風を削除
         explosionList.remove(explosion);
