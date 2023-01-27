@@ -29,9 +29,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import { TwitterShareButton } from 'react-share';
-import TwitterIcon from 'react-share/lib/TwitterIcon';
 import { Container } from '@mui/system';
+import TwitterShare from '../../component/TwitterShare';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -189,16 +188,7 @@ const Mypage = () => {
                   <DialogContentText id='alert-dialog-slide-description'>
                     接続人数：{waitUsers.length}
                   </DialogContentText>
-                  <TwitterShareButton
-                    url={
-                      'http://localhost:3000/wait/' +
-                      localStorage.getItem('userId')
-                    }
-                    title={'BombAttackerでマルチ対戦の相手を探しています。'}
-                    hashtags={['BombAttacker', 'multi_play']}
-                  >
-                    <TwitterIcon size={32} round />
-                  </TwitterShareButton>
+                  <TwitterShare />
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={closeDialog}>Disconnected</Button>

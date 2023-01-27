@@ -20,7 +20,7 @@ import { CustomSocket } from '../../src/socket/interface/customSocket.interface'
 import { useSocketStore } from '../../src/store/useSocketStore';
 import Link from '../../src/Link';
 // パス
-import { db } from '../../src/firebase';
+import { db, signIn } from '../../src/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 
 import Dialog from '@mui/material/Dialog';
@@ -33,6 +33,8 @@ import { TransitionProps } from '@mui/material/transitions';
 import { TwitterShareButton } from 'react-share';
 import TwitterIcon from 'react-share/lib/TwitterIcon';
 import { Container } from '@mui/system';
+import GoogleIcon from '@mui/icons-material/Google';
+import TwitterShare from '../../component/TwitterShare';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -55,10 +57,17 @@ const WaitGather = () => {
   const router = useRouter();
   const { id } = router.query;
 
+  const [isAuth, setIsAuth] = React.useState(false);
   const [userName, setUserName] = useState('NoName');
   const [open, setOpen] = useState(true);
   const [roomId, setRoomId] = useState('');
   const [standby, setStandby] = useState(false);
+
+  const logIn = async () => {
+    await signIn();
+    router.push(`/mypage/${localStorage.getItem('userId')}`);
+    setIsAuth(true);
+  };
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
@@ -169,32 +178,44 @@ const WaitGather = () => {
                 <DialogContent>
                   <Grid container>
                     <Grid item xs={5}>
-                      Google
+                      {!isAuth ? (
+                        <Button
+                          fullWidth
+                          onClick={logIn}
+                          variant='outlined'
+                          size='large'
+                        >
+                          <GoogleIcon />
+                          Login/Signin
+                        </Button>
+                      ) : (
+                        <Button
+                          fullWidth
+                          onClick={logOut}
+                          variant='outlined'
+                          size='large'
+                        >
+                          <GoogleIcon />
+                          Logout
+                        </Button>
+                      )}
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={2} textAlign='center'>
                       or
                     </Grid>
                     <Grid item xs={5}>
                       <TextField
-                        id='standard-basic'
-                        label='Guest'
-                        variant='standard'
+                        id='filled-basic'
+                        label='Guest Name'
+                        variant='filled'
+                        defaultValue={userName}
                       />
                     </Grid>
                   </Grid>
                   <DialogContentText id='alert-dialog-slide-description'>
                     表示名：{userName}
                   </DialogContentText>
-                  <DialogContentText id='alert-dialog-slide-description'>
-                    ID：{roomId}
-                  </DialogContentText>
-                  <TwitterShareButton
-                    url={'http://localhost:3000/room/' + roomId}
-                    title={'BombAttackerでマルチ対戦の相手を探しています。'}
-                    hashtags={['BombAttacker', 'multi_play']}
-                  >
-                    <TwitterIcon size={32} round />
-                  </TwitterShareButton>
+                  <TwitterShare />
                 </DialogContent>
                 <DialogActions>
                   {!standby ? (
