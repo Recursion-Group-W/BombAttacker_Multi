@@ -293,7 +293,6 @@ export class GenericStage {
     while (iterator !== null) {
       if (iterator.data.clientId && iterator.data.clientId === clientId) {
         iterator.data.setMovement(movement);
-
         break;
       }
       iterator = iterator.next;

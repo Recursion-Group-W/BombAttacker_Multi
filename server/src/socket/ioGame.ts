@@ -13,6 +13,19 @@ export default class IoGame {
       //clientIdを生成して送信する処理
       roomManager.generateClientId(socket);
 
+      socket.on('standby', (host: boolean, uid: string) => {
+        const roomId = roomManager.standby(socket, host, uid);
+        socket.emit('roomId', roomId);
+      });
+
+      socket.on('startGame',async (roomId: string, uid: string) => {
+        await roomManager.startGame(socket, roomId, uid);
+      });
+
+      socket.on('cancelStandby', () => {
+        socket.emit('cancelGame');
+      });
+
       // 入室
       socket.on(
         'joinRoom',
@@ -33,18 +46,18 @@ export default class IoGame {
         let payload =
           this.roomManager.roomMap[
             socket.roomId
-          ].gameManager.game.getInitialState();
+          ].gameManager!.game.getInitialState();
         //クライアントにゲームのデータを送信
         socket.emit('syncGame', payload);
       });
 
       socket.on('movePlayer', (movement: Movement) => {
         if (!socket.roomId || !socket.clientId) return;
-
+        
         const playerList =
-          this.roomManager.roomMap[socket.roomId].gameManager.game.stage
-            .playerList;
-
+        this.roomManager.roomMap[socket.roomId].gameManager!.game.stage
+        .playerList;
+        
         let iterator = playerList.getHead();
         while (iterator !== null) {
           if (iterator.data.clientId === socket.clientId) {
@@ -53,11 +66,11 @@ export default class IoGame {
           }
           iterator = iterator.next;
         }
-        if (!iterator?.data) return;
-
+        if (!iterator!.data) return;
+        
         this.roomManager.roomMap[
           socket.roomId
-        ].gameManager.game.stage.movePlayer(socket.clientId, movement);
+        ].gameManager!.game.stage.movePlayer(socket.clientId, movement);
       });
 
       //爆弾を設置するリクエストを受け取った時の処理
@@ -67,7 +80,7 @@ export default class IoGame {
         // 爆弾を設置
         this.roomManager.roomMap[
           socket.roomId
-        ].gameManager.game.stage.createBomb(socket.clientId);
+        ].gameManager!.game.stage.createBomb(socket.clientId);
       });
 
       //接続が切れたとき

@@ -38,7 +38,7 @@ export const Layout: FC<Props> = ({ children, title = '' }) => {
         >
           <BottomNavigationAction label='Twitter' icon={<Twitter />} />
           <BottomNavigationAction label='Github' icon={<GitHub />} />
-          <BottomNavigationAction label='?' icon={<ArchiveIcon />} />
+          <BottomNavigationAction label='logout' icon={<ArchiveIcon />} />
         </BottomNavigation>
         <Copyright />
       </Paper>
