@@ -133,9 +133,9 @@ export class Character extends GameObject {
     if (!this.getRectField) return;
     // 初期位置
     this.setPosition(
-      Math.random() * (stageWidth - this.getWidth - tileSize * 1.5) +
+      Math.random() * (stageWidth - this.getWidth - tileSize * 3) +
         tileSize * 1.5,
-      Math.random() * (stageHeight - this.getHeight - tileSize * 1.5) +
+      Math.random() * (stageHeight - this.getHeight - tileSize * 3) +
         tileSize * 1.5
     );
 
@@ -143,9 +143,13 @@ export class Character extends GameObject {
     do {
       this.setPosition(
         this.getRectField.left +
-          Math.random() * (this.getRectField.right - this.getRectField.left),
+          tileSize * 1.5 +
+          Math.random() *
+            (this.getRectField.right - this.getRectField.left - tileSize * 3),
         this.getRectField.bottom +
-          Math.random() * (this.getRectField.top - this.getRectField.bottom)
+          tileSize * 1.5 +
+          Math.random() *
+            (this.getRectField.top - this.getRectField.bottom - tileSize * 3)
       );
     } while (this.overlapObstacles(obstacleList));
   }

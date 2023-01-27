@@ -17,12 +17,38 @@ export default class RoomManager {
     socket.emit('clientId', clientId);
   }
 
+  standby(socket: CustomSocket, host: boolean, uid: string): string {
+    let roomId;
+
+    roomId = uuidv4();
+    this.roomMap[roomId] = {
+      // roomId: roomId,
+      users: {},
+      gameManager: null,
+    };
+    
+    return roomId;
+  }
+  
+  async startGame(socket: CustomSocket, roomId: string, uid : string) {
+    socket.roomId = roomId;
+    socket.userId = uid;
+
+    const gameManager = new GameManager(roomId, this);
+    this.roomMap[roomId].gameManager = gameManager;
+    socket.emit('join', socket.roomId);
+
+    this.addUser(socket);
+    let stage = gameManager.game.stage;
+    // プレイヤーを作成
+    stage.createPlayer(socket, 'userName');
+  }
+
   //入室
   async joinRoom(socket: CustomSocket, userName: string, userId = localStorage.getItem("userId")!.toString()) {
     if (!socket.clientId) return;
 
     socket.userId = userId;
-
     socket.roomId = this.chooseRoom();
 
     // 部屋が存在しなければ、新規作成する
@@ -30,17 +56,18 @@ export default class RoomManager {
     if (!this.roomMap[socket.roomId]) {
       await this.createRoom(socket.roomId);
     }
-    socket.emit('roomId', socket.roomId);
-
+    socket.emit('join', socket.roomId);
+    console.log(`Room<roomId: ${socket.roomId}>を作成しました。`);
     // socketを使ってユーザを入室させる
     this.addUser(socket);
 
     console.log(`ユーザー<clientId: ${socket.clientId}>が入室しました。`);
 
-    let stage = this.roomMap[socket.roomId].gameManager.game.stage;
+    let stage = this.roomMap[socket.roomId].gameManager!.game.stage;
 
     // プレイヤーを作成
     stage.createPlayer(socket, userName);
+    
   }
 
   // socketを使ってユーザを入室させる
@@ -72,7 +99,7 @@ export default class RoomManager {
     let gameManager = new GameManager(roomId, this);
 
     this.roomMap[roomId] = {
-      roomId: roomId,
+      // roomId: roomId,
       users: {},
       gameManager: gameManager,
     };
@@ -96,7 +123,7 @@ export default class RoomManager {
       //対戦ルームが満員でない、かつステージレベルが１の場合に入室できる
       if (
         userCount < ServerConfig.MAX_PLAYERS_PER_ROOM &&
-        room.gameManager.game.stage.level === 1
+        room.gameManager!.game.stage.level === 1
       ) {
         chosenRoom = roomId;
         break;
@@ -111,23 +138,28 @@ export default class RoomManager {
   leaveRoom(socket: CustomSocket) {
     if (!(socket.roomId && socket.clientId)) return;
     //Roomからクライアントを削除
-    this.removeUser(socket.roomId, socket.clientId);
-
-    let stage = this.roomMap[socket.roomId].gameManager.game.stage;
-
+    this.removeUser(socket.roomId, socket);
+    let stage = this.roomMap[socket.roomId].gameManager!.game.stage;
     //ステージからプレイヤーを削除
     stage.destroyPlayer(socket.clientId);
+
+    //部屋に誰もいなくなった場合、部屋を削除
+    let room = this.roomMap[socket.roomId];
+    if (Object.keys(room.users).length <= 0) {
+      this.removeRoom(socket.roomId);
+    }
   }
 
   //roomとroomMapからクライアントを削除
-  removeUser(roomId: string, clientId: string) {
+  removeUser(roomId: string, socket: CustomSocket) {
     //roomからクライアントを退室させる
-    this.ioNspGame.sockets.get(clientId)?.leave(roomId);
+    // this.ioNspGame.sockets.get(socket.id)?.leave(roomId);
 
-    //roomMapからクライアントを削除
-    if (this.userExist(roomId, clientId)) {
-      delete this.roomMap[roomId].users[clientId];
-    }
+    if (socket.clientId)
+      if (this.userExist(roomId, socket.clientId)) {
+        //roomMapからクライアントを削除
+        delete this.roomMap[roomId].users[socket.clientId];
+      }
   }
 
   //対戦ルームに特定のクライアントが存在するかどうか
@@ -142,5 +174,12 @@ export default class RoomManager {
   //roomIdの対戦ルームが存在するかどうか
   roomExist(roomId: string) {
     return this.roomMap && this.roomMap[roomId];
+  }
+
+  //部屋を削除する
+  removeRoom(roomId: string) {
+    if (!this.roomExist(roomId)) return;
+
+    delete this.roomMap[roomId];
   }
 }

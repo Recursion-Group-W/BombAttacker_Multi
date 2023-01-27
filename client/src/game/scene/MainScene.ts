@@ -81,6 +81,7 @@ export class MainScene extends CustomScene {
     });
 
     this.socket.on('destroyPlayer', (res: { clientId: string }) => {
+      console.log(`プレイヤーsprite<clientId: ${res.clientId}>を削除します。`);
       SyncUtil.destroyPlayer(res.clientId, this);
     });
 

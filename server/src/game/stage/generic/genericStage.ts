@@ -101,7 +101,7 @@ export class GenericStage {
         ) {
           if (
             (j >= 0 && j <= 1) ||
-            (j >= 10 && j <= 12) ||
+            (j >= 11 && j <= 13) ||
             (j >=
               Math.floor(stageHeight / this.TILE_SIZE / this.TILE_SPAN_SCALE) -
                 2 &&
@@ -117,7 +117,7 @@ export class GenericStage {
           }
         } else if (
           i === 1 ||
-          (i >= 15 && j <= 17) ||
+          (i >= 15 && i <= 17) ||
           i ===
             Math.floor(stageWidth / this.TILE_SIZE / this.TILE_SPAN_SCALE) - 2
         ) {
@@ -139,7 +139,44 @@ export class GenericStage {
         } else {
           //耐久力の低い障害物を置く
           // 1/5の確率で置く
-          const willPut = MathUtil.getRandomInt(0, 4);
+          let willPut = MathUtil.getRandomInt(0, 4);
+
+          if (
+            i === 0 ||
+            i ===
+              Math.floor(stageWidth / this.TILE_SIZE / this.TILE_SPAN_SCALE) - 1
+          ) {
+            if (
+              j === 2 ||
+              j === 10 ||
+              j === 14 ||
+              j ===
+                Math.floor(
+                  stageHeight / this.TILE_SIZE / this.TILE_SPAN_SCALE
+                ) -
+                  3
+            ) {
+              willPut = 0;
+            }
+          } else if (
+            i === 2 ||
+            i === 14 ||
+            i === 18 ||
+            i ===
+              Math.floor(stageWidth / this.TILE_SIZE / this.TILE_SPAN_SCALE) - 3
+          ) {
+            if (
+              j === 0 ||
+              j ===
+                Math.floor(
+                  stageHeight / this.TILE_SIZE / this.TILE_SPAN_SCALE
+                ) -
+                  1
+            ) {
+              willPut = 0;
+            }
+          }
+
           if (willPut >= 1) {
             id++;
             continue;
@@ -256,7 +293,6 @@ export class GenericStage {
     while (iterator !== null) {
       if (iterator.data.clientId && iterator.data.clientId === clientId) {
         iterator.data.setMovement(movement);
-
         break;
       }
       iterator = iterator.next;
@@ -272,12 +308,12 @@ export class GenericStage {
         this.playerList.remove(iterator);
 
         //削除したプレイヤーのクライアントに"dead"イベントを送信
-        this.roomManager.ioNspGame.to(iterator.data.clientId).emit('dead');
+        this.roomManager.ioNspGame.to(iterator.data.socket.id).emit('dead');
 
         //clientIdのプレイヤーSpriteを破棄するようにクライアントに指示する
         this.roomManager.ioNspGame
           .in(this.roomId)
-          .emit('deadPlayer', { clientId: clientId });
+          .emit('destroyPlayer', { clientId: clientId });
 
         break;
       }
@@ -398,6 +434,7 @@ export class GenericStage {
         if (iterator.data.getLife <= 0) return;
         else break;
       }
+      iterator = iterator.next;
     }
     if (!iterator?.data) return;
 
@@ -412,8 +449,8 @@ export class GenericStage {
     if (bomb) {
       this.bombList.pushBack(bomb);
     }
-    console.log(this.bombList);
-    console.log(this.bombList.size());
+    // console.log(this.bombList);
+    // console.log(this.bombList.size());
   }
 
   // 爆弾を破棄
@@ -450,10 +487,12 @@ export class GenericStage {
           `プレイヤー<${playerIterator.data.clientId}>の残機が０になりました。`
         );
         //プレイヤーリストから削除
-        this.playerList.remove(playerIterator);
-        this.roomManager.ioNspGame
-          .in(this.roomId)
-          .emit('destroyPlayer', { clientId: playerIterator.data.clientId });
+        // this.playerList.remove(playerIterator);
+        // this.roomManager.ioNspGame
+        //   .in(this.roomId)
+        //   .emit('destroyPlayer', { clientId: playerIterator.data.clientId });
+
+        this.roomManager.leaveRoom(playerIterator.data.socket);
       }
       playerIterator = playerIterator.next;
     }

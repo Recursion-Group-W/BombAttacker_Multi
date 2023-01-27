@@ -3,13 +3,13 @@ import {
   Button,
   Grid,
   Paper,
+  Stack,
   styled,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 
-import React, { useEffect, useState, FC, ChangeEvent } from 'react';
+import React, { useEffect, useState, FC } from 'react';
 import { io } from 'socket.io-client';
 
 import { Layout } from '../../component/Layout';
@@ -50,39 +50,22 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction='up' ref={ref} {...props} />;
 });
 
-const Mypage = () => {
+const WaitGather = () => {
   const router = useRouter();
   const { id } = router.query;
 
-
-  const [UserName, setUserName] = useState('');
-  
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-
   const [userName, setUserName] = useState('NoName');
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [roomId, setRoomId] = useState('');
-  const [waitUsers, setWaitUsers] = useState<string[]>([]);
-
-
-  const openDialog = async () => {
-
-    setOpen(true);
-    socket.emit('standby', true, localStorage.getItem('userId'));
-  };
-
-  const closeDialog = () => {
-    setOpen(false);
-    setWaitUsers([]);
-    // socket.emit('cancelStandby');
-  };
-
+  const [standby, setStandby] = useState(false);
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserName(e.target.value)
-  }
+    setUserName(e.target.value);
+  };
+
+  const openDialog = async () => {
+    setOpen(true);
+  };
 
   const handleClick = () => {
     const uid = localStorage.getItem('userId')!.toString();
@@ -106,23 +89,14 @@ const Mypage = () => {
     console.log(`Your clientId is ${clientId}`);
     socket.clientId = clientId;
   });
-  socket.on('cancelGame', () => {
-    alert('ゲームがキャンセルされました');
-  });
-  socket.on('roomId', (roomId: string) => {
-    setRoomId(roomId);
-  });
 
-  const startGame = () => {
-    socket.emit('startGame', roomId, localStorage.getItem('userId'));
+  const readyToGo = () => {
+    setStandby(true);
   };
-  const joinGame = () => {
-    socket.emit('joinRoom', {
-      userName: userName,
-      userId: localStorage.getItem('userId'),
-    });
+  const makeOver = () => {
+    setStandby(false);
   };
-  socket.on('join', (roomId: string) => {
+  socket.on('roomId', (roomId: string) => {
     router.push(`/room/${roomId}`);
   });
 
@@ -132,7 +106,7 @@ const Mypage = () => {
   }, [router.query]);
 
   return (
-    <Layout title='Mypage'>
+    <Layout title='WaitGather'>
       <Container>
         <Box
           height='100vh'
@@ -199,9 +173,6 @@ const Mypage = () => {
                   <DialogContentText id='alert-dialog-slide-description'>
                     ID：{roomId}
                   </DialogContentText>
-                  <DialogContentText id='alert-dialog-slide-description'>
-                    接続人数：{waitUsers.length}
-                  </DialogContentText>
                   <TwitterShareButton
                     url={'http://localhost:3000/room/' + roomId}
                     title={'BombAttackerでマルチ対戦の相手を探しています。'}
@@ -211,10 +182,30 @@ const Mypage = () => {
                   </TwitterShareButton>
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={closeDialog}>Disconnected</Button>
-                  <Button variant='contained' onClick={() => startGame()}>
-                    Start
-                  </Button>
+                  {!standby ? (
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <Button fullWidth>退室する</Button>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Button
+                          variant='contained'
+                          fullWidth
+                          onClick={() => readyToGo()}
+                        >
+                          準備完了
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  ) : (
+                    <Button
+                      variant='contained'
+                      fullWidth
+                      onClick={() => makeOver()}
+                    >
+                      戻る
+                    </Button>
+                  )}
                 </DialogActions>
               </Dialog>
             </Grid>
@@ -254,17 +245,6 @@ const Mypage = () => {
                 </Box>
               </Item>
             </Grid>
-            <Grid item xs={6}>
-              <Item>
-                <Box maxWidth='sm' p={2}>
-                  <Button variant='contained' onClick={() => joinGame()}>
-                    <Typography variant='h4' component='h1' gutterBottom>
-                      join
-                    </Typography>
-                  </Button>
-                </Box>
-              </Item>
-            </Grid>
           </Grid>
         </Box>
       </Container>
@@ -272,4 +252,4 @@ const Mypage = () => {
   );
 };
 
-export default Mypage;
+export default WaitGather;

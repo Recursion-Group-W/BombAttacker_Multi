@@ -42,7 +42,7 @@ export class Game {
 
       const time = (currTime - this.startTime) * 0.001;
 
-      // //ルーム内のユーザーにデータを送信
+      //ルーム内のユーザーにデータを送信
       this.roomManager.ioNspGame.in(this.roomId).emit('syncGame', {
         time: time,
         playerArr: this.stage.playerList.toArray(),
