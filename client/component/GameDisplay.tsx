@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { Box } from '@mui/system';
 import { usePhaserConfig } from '../src/game/config/usePhaserConfig';
 import StateDisplay from './StateDisplay';
-import { useItemStore } from '../src/store/useItemStore';
 import { useTimeStore } from '../src/store/useTimeStore';
 
 const GameDisplay = () => {

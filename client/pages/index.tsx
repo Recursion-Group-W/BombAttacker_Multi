@@ -21,7 +21,8 @@ export default function Home() {
           name: "NoName",
           uid: res.user.uid,
           BestScore: 0,
-          Scores: []
+          Scores: [],
+          Life: 3,
         })
         .catch((error) => {
           console.log(error.message);

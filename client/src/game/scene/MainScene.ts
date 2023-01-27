@@ -7,14 +7,41 @@ import { PlayerDto } from '../dto/player.dto';
 import Cursor from '../model/cursor';
 import { SyncUtil } from '../util/sync.util';
 import { CustomScene } from './parent/customScene';
+// import { isGameOver } from '../../../pages/gameOverPage/[id]';
+import  { collection, query, where, getDocs, getFirestore } from "firebase/firestore";
+import { useRouter } from 'next/router';
 
-export class MainScene extends CustomScene {
+// import { db } from '../../../../client/src/firebase';
+import { doc, updateDoc } from "firebase/firestore";
+const db = getFirestore();
+const usersRef = collection(db, "users");
+let name = "";
+let score = 0;
+let pageURL = location.href
+const router = useRouter();
+
+const GameOver = () =>{
+  getDocs(query(usersRef, where("Life", "==", 0))).then(snapshot => {
+    // const router = useRouter();
+      snapshot.forEach(Doc => {
+          name = Doc.data().name;
+          score = Doc.data().score;
+          console.log(`${Doc.id}: ${Doc.data().name}`);
+          // pageURL +=  '/gameOverPage';
+          router.push('/gameOverPage')
+          // window.location.href = '/gameOverPage';  
+          updateDoc(doc(db, "users", Doc.data().uid), {
+            Life: -1
+          }) 
+      })
+    })
+  }
+export class MainScene extends CustomScene { 
   cursor: Cursor | null = null;
 
   constructor() {
     super({ key: 'MainScene' });
   }
-
   init() {
     this.socket = this.registry.get('socket');
     if (this.socket) {
@@ -54,6 +81,7 @@ export class MainScene extends CustomScene {
     });
 
     this.socket.on('destroyPlayer', (res: { clientId: string }) => {
+      console.log(`プレイヤーsprite<clientId: ${res.clientId}>を削除します。`);
       SyncUtil.destroyPlayer(res.clientId, this);
     });
 
@@ -82,7 +110,7 @@ export class MainScene extends CustomScene {
     SyncUtil.updateNpc(this);
     SyncUtil.updateBomb(this);
     SyncUtil.updateExplosion(this);
-
+    // GameOver()
     this.cursor?.update();
   }
 }
