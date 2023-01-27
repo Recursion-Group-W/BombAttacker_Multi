@@ -57,7 +57,7 @@ const Mypage = () => {
   const [userName, setUserName] = useState('NoName');
   const [open, setOpen] = useState(false);
   const [roomId, setRoomId] = useState('');
-  const [waitUsers, setWaitUsers] = useState(1);
+  const [waitUsers, setWaitUsers] = useState<string[]>([]);
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
@@ -65,10 +65,13 @@ const Mypage = () => {
 
   const openDialog = async () => {
     setOpen(true);
+    socket.emit('standby', true, localStorage.getItem('userId'));
   };
 
   const closeDialog = () => {
     setOpen(false);
+    setWaitUsers([]);
+    // socket.emit('cancelStandby');
   };
 
   const handleClick = () => {
@@ -93,19 +96,23 @@ const Mypage = () => {
     console.log(`Your clientId is ${clientId}`);
     socket.clientId = clientId;
   });
-
-  if (open) {
-    socket.emit('waitGather', true);
-    socket.on('waitUsers', (num: number) => setWaitUsers(num));
-  }
+  socket.on('cancelGame', () => {
+    alert('ゲームがキャンセルされました');
+  });
+  socket.on('roomId', (roomId: string) => {
+    setRoomId(roomId);
+  });
 
   const startGame = () => {
+    socket.emit('startGame', roomId, localStorage.getItem('userId'));
+  };
+  const joinGame = () => {
     socket.emit('joinRoom', {
       userName: userName,
       userId: localStorage.getItem('userId'),
     });
   };
-  socket.on('roomId', (roomId: string) => {
+  socket.on('join', (roomId: string) => {
     router.push(`/room/${roomId}`);
   });
 
@@ -180,7 +187,10 @@ const Mypage = () => {
                     表示名：{userName}
                   </DialogContentText>
                   <DialogContentText id='alert-dialog-slide-description'>
-                    参加人数：{waitUsers}
+                    ID：{roomId}
+                  </DialogContentText>
+                  <DialogContentText id='alert-dialog-slide-description'>
+                    接続人数：{waitUsers.length}
                   </DialogContentText>
                   <TwitterShareButton
                     url={'http://localhost:3000/room/' + roomId}
@@ -229,6 +239,17 @@ const Mypage = () => {
                   >
                     <Typography variant='h4' component='h1' gutterBottom>
                       ランキング
+                    </Typography>
+                  </Button>
+                </Box>
+              </Item>
+            </Grid>
+            <Grid item xs={6}>
+              <Item>
+                <Box maxWidth='sm' p={2}>
+                  <Button variant='contained' onClick={() => joinGame()}>
+                    <Typography variant='h4' component='h1' gutterBottom>
+                      join
                     </Typography>
                   </Button>
                 </Box>

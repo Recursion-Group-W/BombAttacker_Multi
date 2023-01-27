@@ -67,10 +67,6 @@ const WaitGather = () => {
     setOpen(true);
   };
 
-  const closeDialog = () => {
-    setOpen(false);
-  };
-
   const handleClick = () => {
     const uid = localStorage.getItem('userId')!.toString();
     updateDoc(doc(db, 'users', uid), {
