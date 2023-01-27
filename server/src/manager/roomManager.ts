@@ -120,12 +120,18 @@ export default class RoomManager {
 
     //ステージからプレイヤーを削除
     stage.destroyPlayer(socket.clientId);
+
+    //部屋に誰もいなくなった場合、部屋を削除
+    let room = this.roomMap[socket.roomId];
+    if (Object.keys(room.users).length <= 0) {
+      this.removeRoom(socket.roomId);
+    }
   }
 
   //roomとroomMapからクライアントを削除
   removeUser(roomId: string, socket: CustomSocket) {
     //roomからクライアントを退室させる
-    this.ioNspGame.sockets.get(socket.id)?.leave(roomId);
+    // this.ioNspGame.sockets.get(socket.id)?.leave(roomId);
 
     if (socket.clientId)
       if (this.userExist(roomId, socket.clientId)) {
@@ -146,5 +152,12 @@ export default class RoomManager {
   //roomIdの対戦ルームが存在するかどうか
   roomExist(roomId: string) {
     return this.roomMap && this.roomMap[roomId];
+  }
+
+  //部屋を削除する
+  removeRoom(roomId: string) {
+    if (!this.roomExist(roomId)) return;
+
+    delete this.roomMap[roomId];
   }
 }
