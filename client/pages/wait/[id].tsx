@@ -30,11 +30,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import { TwitterShareButton } from 'react-share';
-import TwitterIcon from 'react-share/lib/TwitterIcon';
 import { Container } from '@mui/system';
 import GoogleIcon from '@mui/icons-material/Google';
-import TwitterShare from '../../component/TwitterShare';
+import ShareButtons from '../../component/ShareButtons';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -212,7 +210,7 @@ const WaitGather = () => {
                   <DialogContentText id='alert-dialog-slide-description'>
                     表示名：{userName}
                   </DialogContentText>
-                  <TwitterShare />
+                  <ShareButtons />
                 </DialogContent>
                 <DialogActions>
                   {!standby ? (

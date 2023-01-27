@@ -30,7 +30,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import { Container } from '@mui/system';
-import TwitterShare from '../../component/TwitterShare';
+import ShareButtons from '../../component/ShareButtons';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -188,7 +188,7 @@ const Mypage = () => {
                   <DialogContentText id='alert-dialog-slide-description'>
                     接続人数：{waitUsers.length}
                   </DialogContentText>
-                  <TwitterShare />
+                  <ShareButtons />
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={closeDialog}>Disconnected</Button>
