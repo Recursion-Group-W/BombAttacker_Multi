@@ -1,6 +1,18 @@
-import { initializeApp, getApps, FirebaseApp, FirebaseOptions } from 'firebase/app';
+import { NONAME } from 'dns';
+import {
+  initializeApp,
+  getApps,
+  FirebaseApp,
+  FirebaseOptions,
+} from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { getFirestore, Firestore, initializeFirestore, setDoc, doc } from 'firebase/firestore';
+import {
+  getFirestore,
+  Firestore,
+  initializeFirestore,
+  setDoc,
+  doc,
+} from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBs53kQJAQMjOhndu_tKDHC8-cgrIZxBjk',
@@ -10,10 +22,10 @@ const firebaseConfig = {
   messagingSenderId: '486948311827',
   appId: '1:486948311827:web:8ce6831d2cd03c16b340e6',
 };
-const app = initializeApp(firebaseConfig)
+const app = initializeApp(firebaseConfig);
 initializeFirestore(app, {
   ignoreUndefinedProperties: true,
-})
+});
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
@@ -30,9 +42,11 @@ const signIn = async () => {
     });
     console.log(res.user.displayName);
     console.log(res.user.uid);
+    const displayName = res.user.displayName ? res.user.displayName : 'NoName';
+    localStorage.setItem('userName', displayName);
     localStorage.setItem('userId', res.user.uid);
     localStorage.setItem('isAuth', 'true');
   });
-}
+};
 
-export { auth, provider, db, signIn};
+export { auth, provider, db, signIn };

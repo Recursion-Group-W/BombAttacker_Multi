@@ -65,8 +65,11 @@ const WaitGather = () => {
 
   const logIn = async () => {
     await signIn();
-    router.push(`/mypage/${localStorage.getItem('userId')}`);
     setIsAuth(true);
+    const name = localStorage.getItem('userName');
+    if (name) {
+      setUserName(name);
+    }
   };
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,20 +187,13 @@ const WaitGather = () => {
                           onClick={logIn}
                           variant='outlined'
                           size='large'
+                          disabled={standby}
                         >
                           <GoogleIcon />
                           Login/Signin
                         </Button>
                       ) : (
-                        <Button
-                          fullWidth
-                          onClick={logOut}
-                          variant='outlined'
-                          size='large'
-                        >
-                          <GoogleIcon />
-                          Logout
-                        </Button>
+                        <Grid textAlign='center'>ログイン完了</Grid>
                       )}
                     </Grid>
                     <Grid item xs={2} textAlign='center'>
@@ -206,9 +202,10 @@ const WaitGather = () => {
                     <Grid item xs={5}>
                       <TextField
                         id='filled-basic'
-                        label='Guest Name'
+                        label='Change Name'
                         variant='filled'
-                        defaultValue={userName}
+                        value={userName}
+                        disabled={standby}
                       />
                     </Grid>
                   </Grid>
