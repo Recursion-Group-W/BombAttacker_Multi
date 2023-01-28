@@ -3,44 +3,28 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import GoogleIcon from '@mui/icons-material/Google';
-import { signInWithPopup, signOut } from 'firebase/auth';
-import { auth, provider, db } from '../src/firebase';
+import { signOut } from 'firebase/auth';
+import { auth, signIn } from '../src/firebase';
 import { useRouter } from 'next/router';
 import { Layout } from '../component/Layout';
-import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function Home() {
   const router = useRouter();
 
   const [isAuth, setIsAuth] = React.useState(false);
 
-  const logIn = () => {
-    signInWithPopup(auth, provider)
-      .then((res) => {
-        setDoc(doc(db, "users", res.user.uid), {
-          name: "NoName",
-          uid: res.user.uid,
-          BestScore: 0,
-          Scores: [],
-          Life: 3,
-        })
-        .catch((error) => {
-          console.log(error.message);
-        })
-        console.log(res.user.displayName);
-        console.log(res.user.uid);
-        localStorage.setItem('userId', res.user.uid);
-        localStorage.setItem('isAuth', 'true');
-        setIsAuth(true);
-        router.push(`/mypage/${res.user.uid}`);
-  });
-}
+  const logIn = async () => {
+    await signIn();
+    router.push(`/mypage/${localStorage.getItem('userId')}`);
+    setIsAuth(true);
+  };
   const logOut = () => {
     signOut(auth).then(() => {
       localStorage.clear();
       setIsAuth(false);
     });
   };
+  
   return (
     <Layout title='Title'>
       <Container maxWidth='lg'>
@@ -58,13 +42,12 @@ export default function Home() {
             BombAttacker_Multi
           </Box>
           <Box
-          sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-      </Box>
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          ></Box>
           <Box maxWidth='sm' sx={{ py: 2 }}>
             {!isAuth ? (
               <Button onClick={logIn} variant='outlined' size='large'>

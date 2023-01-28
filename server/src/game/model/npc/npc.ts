@@ -9,9 +9,6 @@ import { Explosion } from '../explosion';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 import { Player } from '../player/player';
 
-import { db } from '../../../../../client/src/firebase';
-import { doc, updateDoc } from "../../../../../client/node_modules/firebase/firestore";
-
 export class Npc extends Character {
   static readonly SPRITE_KEY = 'npc';
   // コンストラクタ
@@ -105,10 +102,7 @@ export class Npc extends Character {
         if (playerNode.data.getNoDamageTime <= 0) {
           //プレイヤーの残機を減らす
           playerNode.data.damage();
-          //fireBaseに残機登録
-          updateDoc(doc(db, "users", playerNode.data.userId), {
-            Life: this.life
-          })
+
           console.log(`残機: ${playerNode.data.getLife}`);
 
           playerNode.data.setNoDamageTime = deltaTime;

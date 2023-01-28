@@ -17,17 +17,8 @@ export default class RoomManager {
     socket.emit('clientId', clientId);
   }
 
-  standby(socket: CustomSocket, host: boolean, uid: string): string {
-    let roomId;
-
-    roomId = uuidv4();
-    this.roomMap[roomId] = {
-      // roomId: roomId,
-      users: {},
-      gameManager: null,
-    };
+  standby(socket: CustomSocket, host: boolean, uid: string) {
     
-    return roomId;
   }
   
   async startGame(socket: CustomSocket, roomId: string, uid : string) {

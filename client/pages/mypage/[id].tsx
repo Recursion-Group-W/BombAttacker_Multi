@@ -29,9 +29,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import { TwitterShareButton } from 'react-share';
-import TwitterIcon from 'react-share/lib/TwitterIcon';
 import { Container } from '@mui/system';
+import ShareButtons from '../../component/ShareButtons';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -55,23 +54,15 @@ const Mypage = () => {
   const { id } = router.query;
 
   const [userName, setUserName] = useState('');
-
+  const [open, setOpen] = React.useState(false);
+  const [roomId, setRoomId] = useState('');
+  const [waitUsers, setWaitUsers] = useState<string[]>([]);
+  
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
   };
-  
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {}
-
-  // const [userName, setUserName] = useState('NoName');
-  // const [open, setOpen] = useState(false);
-  const [roomId, setRoomId] = useState('');
-  const [waitUsers, setWaitUsers] = useState<string[]>([]);
-
 
   const openDialog = async () => {
-
     setOpen(true);
     socket.emit('standby', true, localStorage.getItem('userId'));
   };
@@ -81,11 +72,6 @@ const Mypage = () => {
     setWaitUsers([]);
     // socket.emit('cancelStandby');
   };
-
-
-  // const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setUserName(e.target.value)
-  // }
 
   const handleClick = () => {
     const uid = localStorage.getItem('userId')!.toString();
@@ -200,18 +186,9 @@ const Mypage = () => {
                     表示名：{userName}
                   </DialogContentText>
                   <DialogContentText id='alert-dialog-slide-description'>
-                    ID：{roomId}
-                  </DialogContentText>
-                  <DialogContentText id='alert-dialog-slide-description'>
                     接続人数：{waitUsers.length}
                   </DialogContentText>
-                  <TwitterShareButton
-                    url={'http://localhost:3000/room/' + roomId}
-                    title={'BombAttackerでマルチ対戦の相手を探しています。'}
-                    hashtags={['BombAttacker', 'multi_play']}
-                  >
-                    <TwitterIcon size={32} round />
-                  </TwitterShareButton>
+                  <ShareButtons />
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={closeDialog}>Disconnected</Button>

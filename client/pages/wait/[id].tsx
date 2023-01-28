@@ -5,6 +5,7 @@ import {
   Paper,
   Stack,
   styled,
+  TextField,
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/router';
@@ -19,7 +20,7 @@ import { CustomSocket } from '../../src/socket/interface/customSocket.interface'
 import { useSocketStore } from '../../src/store/useSocketStore';
 import Link from '../../src/Link';
 // パス
-import { db } from '../../src/firebase';
+import { db, signIn } from '../../src/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 
 import Dialog from '@mui/material/Dialog';
@@ -29,9 +30,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import { TwitterShareButton } from 'react-share';
-import TwitterIcon from 'react-share/lib/TwitterIcon';
 import { Container } from '@mui/system';
+import GoogleIcon from '@mui/icons-material/Google';
+import ShareButtons from '../../component/ShareButtons';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -54,10 +55,20 @@ const WaitGather = () => {
   const router = useRouter();
   const { id } = router.query;
 
+  const [isAuth, setIsAuth] = React.useState(false);
   const [userName, setUserName] = useState('NoName');
   const [open, setOpen] = useState(true);
   const [roomId, setRoomId] = useState('');
   const [standby, setStandby] = useState(false);
+
+  const logIn = async () => {
+    await signIn();
+    setIsAuth(true);
+    const name = localStorage.getItem('userName');
+    if (name) {
+      setUserName(name);
+    }
+  };
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
@@ -165,27 +176,47 @@ const WaitGather = () => {
                 fullWidth
                 aria-describedby='alert-dialog-slide-description'
               >
-                <DialogTitle>{'Waiting...'}</DialogTitle>
                 <DialogContent>
+                  <Grid container>
+                    <Grid item xs={5}>
+                      {!isAuth ? (
+                        <Button
+                          fullWidth
+                          onClick={logIn}
+                          variant='outlined'
+                          size='large'
+                          disabled={standby}
+                        >
+                          <GoogleIcon />
+                          Login/Signin
+                        </Button>
+                      ) : (
+                        <Grid textAlign='center'>ログイン完了</Grid>
+                      )}
+                    </Grid>
+                    <Grid item xs={2} textAlign='center'>
+                      or
+                    </Grid>
+                    <Grid item xs={5}>
+                      <TextField
+                        id='filled-basic'
+                        label='Change Name'
+                        variant='filled'
+                        value={userName}
+                        disabled={standby}
+                      />
+                    </Grid>
+                  </Grid>
                   <DialogContentText id='alert-dialog-slide-description'>
                     表示名：{userName}
                   </DialogContentText>
-                  <DialogContentText id='alert-dialog-slide-description'>
-                    ID：{roomId}
-                  </DialogContentText>
-                  <TwitterShareButton
-                    url={'http://localhost:3000/room/' + roomId}
-                    title={'BombAttackerでマルチ対戦の相手を探しています。'}
-                    hashtags={['BombAttacker', 'multi_play']}
-                  >
-                    <TwitterIcon size={32} round />
-                  </TwitterShareButton>
+                  <ShareButtons />
                 </DialogContent>
                 <DialogActions>
                   {!standby ? (
                     <Grid container>
                       <Grid item xs={6}>
-                        <Button fullWidth>退室する</Button>
+                        <Button fullWidth href={NODE_URL}>退室する</Button>
                       </Grid>
                       <Grid item xs={6}>
                         <Button

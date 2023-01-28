@@ -11,10 +11,6 @@ import { GenericItem } from '../item/genericItem';
 import { Npc } from '../npc/npc';
 import { GenericObstacle } from '../obstacle/generic/genericObstacle';
 
-import { db } from '../../../../../client/src/firebase';
-import { doc, updateDoc } from "../../../../../client/node_modules/firebase/firestore";
-//client/node_modules/firebase/firestore/dist/firestore/index"
-
 export class Player extends Character {
   static readonly SPRITE_KEY = 'player';
   private movement: Movement = {
@@ -180,10 +176,6 @@ export class Player extends Character {
         console.log('爆風を受けました');
         //残機を減らす
         this.damage();
-        //fireBaseに残機登録
-        updateDoc(doc(db, "users", this.userId), {
-          Life: this.life
-        })
         roomManager.ioNspGame
         .to(explosion.data.player.socket.id)
         .emit('reduceLife', this.life);
