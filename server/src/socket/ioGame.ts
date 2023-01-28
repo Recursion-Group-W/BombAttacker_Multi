@@ -89,9 +89,13 @@ export default class IoGame {
 
         // console.log(socket.rooms);
 
-        //退室する処理
-        roomManager.leaveRoom(socket);
+  
       });
+
+      //退室する処理
+      socket.on('leaveRoom', () => {
+        roomManager.leaveRoom(socket);
+      })
     });
   }
 }
