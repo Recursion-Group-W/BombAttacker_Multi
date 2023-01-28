@@ -17,6 +17,7 @@ import {
   DialogTitle,
   Slide,
 } from '@mui/material';
+import { updateDoc } from 'firebase/firestore';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -30,6 +31,7 @@ const Transition = React.forwardRef(function Transition(
 const GameDisplay = () => {
   const [game, setGame] = useState<Phaser.Game>();
   const [open, setOpen] = React.useState(false);
+  const [timeUp, setTimeUp] = useState(false);
 
   const updateTimeState = useTimeStore((state) => state.updateTimeState);
 
@@ -66,10 +68,19 @@ const GameDisplay = () => {
 
   const returnMyPage = () => {
     socket?.emit('leaveRoom');
-    setOpen(false);
+    if (open) {
+      setOpen(false);
+    }
+    if (timeUp) {
+      setTimeUp(false);
+    }
   };
   socket?.on('leaveRoomDone', () => {
     router.push(`/mypage/${localStorage.getItem('userId')}`);
+  });
+
+  socket?.on('timeUp', () => {
+    setTimeUp(true);
   });
   useEffect(() => {}, []);
   return (
@@ -94,6 +105,23 @@ const GameDisplay = () => {
           aria-describedby='alert-dialog-slide-description'
         >
           <DialogTitle>{'GAME OVER...'}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
+            <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
+            <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={returnMyPage}>マイページへ戻る</Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={timeUp}
+          TransitionComponent={Transition}
+          keepMounted
+          fullWidth
+          aria-describedby='alert-dialog-slide-description'
+        >
+          <DialogTitle>{'TimeUP'}</DialogTitle>
           <DialogContent>
             <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
             <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
