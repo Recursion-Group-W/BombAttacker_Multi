@@ -7,7 +7,6 @@ import { PlayerDto } from '../dto/player.dto';
 import Cursor from '../model/cursor';
 import { SyncUtil } from '../util/sync.util';
 import { CustomScene } from './parent/customScene';
-// import { isGameOver } from '../../../pages/gameOverPage/[id]';
 import { useRouter } from 'next/router';
 
 import { update } from 'ramda';

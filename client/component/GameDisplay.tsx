@@ -55,17 +55,9 @@ const GameDisplay = () => {
     startPhaser();
   }, []);
 
-  // socket?.on('reduceLife', (life: number) => {
-  //   console.log('reduceLife');
-  //   if (life == 0) {
-  //     setOpen(true);
-  //   }
-  // });
-
   socket?.on('dead', () => {
     setOpen(true);
   });
-
 
   socket?.on(
     'playerLeave', 
@@ -76,7 +68,6 @@ const GameDisplay = () => {
       }
     }
   );
-
 
   const returnMyPage = () => {
     socket?.emit('leaveRoom');

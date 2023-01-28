@@ -37,16 +37,13 @@ const signIn = async () => {
       uid: res.user.uid,
       BestScore: 0,
       Scores: [],
-      Life: 3,
     }).catch((error) => {
       console.log(error.message);
     });
 
-    const displayName = res.user.displayName ? res.user.displayName : 'NoName';
-    console.log(displayName);
+    console.log(res.user.displayName);
     console.log(res.user.uid);
 
-    localStorage.setItem('userName', displayName);
     localStorage.setItem('userId', res.user.uid);
     localStorage.setItem('isAuth', 'true');
   });
