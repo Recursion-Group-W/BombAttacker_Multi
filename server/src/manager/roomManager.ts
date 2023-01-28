@@ -16,14 +16,30 @@ export default class RoomManager {
     socket.clientId = clientId;
     socket.emit('clientId', clientId);
   }
-  async startGame(socket: CustomSocket) {
-    if (!socket.clientId) return;
 
-    // 部屋が存在しなければ、新規作成する
-    // ホストidを後で実装
-    // socketを使ってユーザを入室させる
+  async startGame(arr: CustomSocket[]) {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i].roomId = this.chooseRoom();
+      // 部屋が存在しなければ、新規作成する
+      // ホストidを後で実装
+      if (!this.roomMap[arr[i].roomId!]) {
+        await this.createRoom(arr[i].roomId!);
+      }
+      arr[i].emit('join', arr[i].roomId);
+      console.log(`Room<roomId: ${arr[i].roomId}>を作成しました。`);
+      // socketを使ってユーザを入室させる
+      this.roomMap[arr[i].roomId!].playerCount += 1;
+      this.roomMap[arr[i].roomId!].allPlayerCount += 1;
 
-    console.log(`ユーザー<clientId: ${socket.clientId}>が入室しました。`);
+      this.addUser(arr[i]);
+
+      console.log(`ユーザー<clientId: ${arr[i].clientId}>が入室しました。`);
+
+      let stage = this.roomMap[arr[i].roomId!].gameManager!.game.stage;
+
+      // プレイヤーを作成
+      stage.createPlayer(arr[i], arr[i].userName!);
+    }
   }
 
   //入室
@@ -90,7 +106,7 @@ export default class RoomManager {
       users: {},
       gameManager: gameManager,
       playerCount: playerCount,
-      allPlayerCount: allPlayerCount
+      allPlayerCount: allPlayerCount,
     };
   }
 
@@ -140,12 +156,16 @@ export default class RoomManager {
 
     //Roomからクライアントを削除
     this.removeUser(socket.roomId, socket);
-    
+
     let stage = this.roomMap[socket.roomId].gameManager!.game.stage;
     //ステージからプレイヤーを削除
     stage.destroyPlayer(socket.clientId);
     this.roomMap[socket.roomId].playerCount -= 1;
-    socket.emit('playerLeave', this.roomMap[socket.roomId].playerCount, this.roomMap[socket.roomId].allPlayerCount);
+    socket.emit(
+      'playerLeave',
+      this.roomMap[socket.roomId].playerCount,
+      this.roomMap[socket.roomId].allPlayerCount
+    );
 
     //部屋に誰もいなくなった場合、部屋を削除
     let room = this.roomMap[socket.roomId];

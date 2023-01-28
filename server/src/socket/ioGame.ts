@@ -3,7 +3,6 @@ import { CustomSocket } from './interface/customSocket.interface';
 import RoomManager from '../manager/roomManager';
 import { Movement } from '../game/types/movement.type';
 import { stopCoverage } from 'v8';
-import { GameManager } from '../manager/gameManager';
 
 export default class IoGame {
   time: Date = new Date();
@@ -16,21 +15,27 @@ export default class IoGame {
       //clientIdを生成して送信する処理
       roomManager.generateClientId(socket);
 
-      socket.on('standby', (uid: string) => {
-        console.log('uid: ' + uid + ' さんが部屋を作成しました');
-        if (!this.standby[uid]) this.standby[uid] = [];
-        socket.userId = uid;
-        this.standby[uid].push(socket);
+      socket.on('standby', (req: { userName: string; userId: string }) => {
+        console.log('uid: ' + req.userId + ' さんが部屋を作成しました');
+        if (!this.standby[req.userId]) this.standby[req.userId] = [];
+        socket.userId = req.userId;
+        socket.userName = req.userName;
+        this.standby[req.userId].push(socket);
       });
 
-      socket.on('guestStandby', (uid: string) => {
-        if (this.standby[uid]) {
-          this.standby[uid].push(socket);
-          console.log(uid + 'さんの部屋に参加しました');
-        } else {
-          socket.emit('noRoom');
+      socket.on(
+        'guestStandby',
+        (req: { hostId: string; userName: string; userId: string }) => {
+          if (this.standby[req.hostId]) {
+            socket.userId = req.userId;
+            socket.userName = req.userName;
+            this.standby[req.userId].push(socket);
+            console.log(req.userId + 'さんの部屋に参加しました');
+          } else {
+            socket.emit('noRoom');
+          }
         }
-      });
+      );
 
       socket.on('makeOver', (uid: string) => {
         console.log(this.standby[uid]);
@@ -42,29 +47,12 @@ export default class IoGame {
 
       socket.on('startGame', async (uid: string) => {
         const arr = this.standby[uid];
-        const roomId = roomManager.chooseRoom();
-        for (let i = 0; i < arr.length; i++) {
-          arr[i].roomId = roomId;
-          arr[i].userId = arr[i].id;
-        }
-
-        if (!roomManager.roomMap[roomId]) {
-          await roomManager.createRoom(roomId);
-        }
-        console.log(`Room<roomId: ${roomId}>を作成しました。`);
-
-        for (let i = 0; i < arr.length; i++) {
-          arr[i].emit('join', roomId);
-          roomManager.addUser(arr[i]);
-          let stage = roomManager.roomMap[roomId].gameManager!.game.stage;
-          stage.createPlayer(arr[i], 'userName');
-        }
+        await roomManager.startGame(arr);
       });
 
       socket.on('cancelStandby', (uid: string) => {
         console.log('uid: ' + uid + ' さんが部屋を削除しました');
         delete this.standby[uid];
-        console.log(this.standby);
       });
 
       // 入室

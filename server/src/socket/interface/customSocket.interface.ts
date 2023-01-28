@@ -4,6 +4,7 @@ import { Socket } from 'socket.io';
 //SocketにclientIdなどを追加したCustomSocketの実装が必要
 export interface CustomSocket extends Socket {
   clientId?: string;
+  userName?: string;
   userId?: string;
   roomId?: string;
 }

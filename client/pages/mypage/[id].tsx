@@ -62,7 +62,7 @@ const Mypage = () => {
       return;
     }
     setOpen(true);
-    socket.emit('standby', userId);
+    socket.emit('standby', { userName: userName, userId: userId });
   };
   const closeDialog = () => {
     setOpen(false);

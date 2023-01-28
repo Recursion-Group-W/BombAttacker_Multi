@@ -78,6 +78,9 @@ const WaitGather = () => {
     alert('募集が終了しました。TOPに戻ります。');
     router.push(url);
   });
+  socket.on('join', (roomId: string) => {
+    router.push(`/room/${roomId}`);
+  });
 
   const readyToGo = () => {
     if (userName.length === 0) {
@@ -85,7 +88,14 @@ const WaitGather = () => {
       return;
     }
     setStandby(true);
-    socket.emit('guestStandby', id);
+    const userId = localStorage.getItem('userId')
+      ? localStorage.getItem('userId')
+      : socket.id;
+    socket.emit('guestStandby', {
+      hostId: id,
+      userName: userName,
+      userId: userId,
+    });
   };
   const makeOver = () => {
     socket.emit('makeOver', id);
