@@ -8,11 +8,8 @@ import Cursor from '../model/cursor';
 import { SyncUtil } from '../util/sync.util';
 import { CustomScene } from './parent/customScene';
 // import { isGameOver } from '../../../pages/gameOverPage/[id]';
-import  { collection, query, where, getDocs, getFirestore } from "firebase/firestore";
 import { useRouter } from 'next/router';
 
-// import { db } from '../../../../client/src/firebase';
-import { doc, updateDoc } from "firebase/firestore";
 import { update } from 'ramda';
 
 export class MainScene extends CustomScene { 

@@ -6,10 +6,11 @@ import {
   TwitterShareButton,
   TwitterIcon,
 } from 'react-share';
+import { NODE_URL } from '../env';
 
 const ShareButtons = () => {
   const title = 'BombAttackerでマルチ対戦の相手を探しています。';
-  const url = 'http://localhost:3000/wait/' + localStorage.getItem('userId');
+  const url = NODE_URL + localStorage.getItem('userId');
   return (
     <Grid container justifyContent='center'>
       <Grid item px={2}>

@@ -216,7 +216,7 @@ const WaitGather = () => {
                   {!standby ? (
                     <Grid container>
                       <Grid item xs={6}>
-                        <Button fullWidth>退室する</Button>
+                        <Button fullWidth href={NODE_URL}>退室する</Button>
                       </Grid>
                       <Grid item xs={6}>
                         <Button
