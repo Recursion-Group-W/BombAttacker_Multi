@@ -7,7 +7,6 @@ import { RoomMap } from './types/room.type';
 import { User } from './types/user.type';
 import { GameManager } from './gameManager';
 
-
 export default class RoomManager {
   roomMap: RoomMap = {};
   playerCount = 0;
@@ -20,11 +19,9 @@ export default class RoomManager {
     socket.emit('clientId', clientId);
   } 
 
-  standby(socket: CustomSocket, host: boolean, uid: string) {
-    
-  }
-  
-  async startGame(socket: CustomSocket, roomId: string, uid : string) {
+  standby(socket: CustomSocket, host: boolean, uid: string) {}
+
+  async startGame(socket: CustomSocket, roomId: string, uid: string) {
     socket.roomId = roomId;
     socket.userId = uid;
 
@@ -39,7 +36,11 @@ export default class RoomManager {
   }
 
   //入室
-  async joinRoom(socket: CustomSocket, userName: string, userId = localStorage.getItem("userId")!.toString()) {
+  async joinRoom(
+    socket: CustomSocket,
+    userName: string,
+    userId = localStorage.getItem('userId')!.toString()
+  ) {
     if (!socket.clientId) return;
 
     socket.userId = userId;
@@ -62,7 +63,6 @@ export default class RoomManager {
 
     // プレイヤーを作成
     stage.createPlayer(socket, userName);
-    
   }
 
   // socketを使ってユーザを入室させる
@@ -132,24 +132,41 @@ export default class RoomManager {
   //退室
   leaveRoom(socket: CustomSocket) {
     if (!(socket.roomId && socket.clientId)) return;
+
+    socket.emit('destroyScene');
+
+    if (!this.roomMap[socket.roomId].gameManager) {
+      console.log('gameManager is undefined');
+      return;
+    }
+
+    // let stage = this.roomMap[socket.roomId].gameManager!.game.stage;
+    // //ステージからプレイヤーを削除
+    // stage.destroyPlayer(socket.clientId);
+
     //Roomからクライアントを削除
     this.removeUser(socket.roomId, socket);
+    
     let stage = this.roomMap[socket.roomId].gameManager!.game.stage;
     //ステージからプレイヤーを削除
     stage.destroyPlayer(socket.clientId);
     this.playerCount -= 1;
     socket.emit('playerLeave', this.playerCount, this.allPlayerCount);
+
     //部屋に誰もいなくなった場合、部屋を削除
     let room = this.roomMap[socket.roomId];
     if (Object.keys(room.users).length <= 0) {
       this.removeRoom(socket.roomId);
     }
+
+    socket.emit('leaveRoomDone');
   }
 
   //roomとroomMapからクライアントを削除
   removeUser(roomId: string, socket: CustomSocket) {
     //roomからクライアントを退室させる
     // this.ioNspGame.sockets.get(socket.id)?.leave(roomId);
+    socket.leave(roomId);
 
     if (socket.clientId)
       if (this.userExist(roomId, socket.clientId)) {
