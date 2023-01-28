@@ -307,13 +307,13 @@ export class GenericStage {
         //プレイヤーリストから削除
         this.playerList.remove(iterator);
 
-        //削除したプレイヤーのクライアントに"dead"イベントを送信
-        this.roomManager.ioNspGame.to(iterator.data.socket.id).emit('dead');
-
         //clientIdのプレイヤーSpriteを破棄するようにクライアントに指示する
         this.roomManager.ioNspGame
           .in(this.roomId)
           .emit('destroyPlayer', { clientId: clientId });
+
+        //削除したプレイヤーのクライアントに"dead"イベントを送信
+        this.roomManager.ioNspGame.to(iterator.data.socket.id).emit('dead');
 
         break;
       }
@@ -493,7 +493,10 @@ export class GenericStage {
         //   .emit('destroyPlayer', { clientId: playerIterator.data.clientId });
 
         // 1月28日
-        this.roomManager.leaveRoom(playerIterator.data.socket);
+        // this.roomManager.leaveRoom(playerIterator.data.socket);
+
+        //プレイヤーを削除
+        this.destroyPlayer(playerIterator.data.clientId);
       }
       playerIterator = playerIterator.next;
     }

@@ -176,9 +176,9 @@ export class Player extends Character {
         console.log('爆風を受けました');
         //残機を減らす
         this.damage();
-        roomManager.ioNspGame
-        .to(explosion.data.player.socket.id)
-        .emit('reduceLife', this.life);
+        // roomManager.ioNspGame
+        // .to(explosion.data.player.socket.id)
+        // .emit('reduceLife', this.life);
         this.setNoDamageTime = deltaTime;
 
         //攻撃したプレイヤーのスコアを更新

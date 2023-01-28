@@ -9,13 +9,15 @@ import { GameManager } from './gameManager';
 
 export default class RoomManager {
   roomMap: RoomMap = {};
+  playerCount = 0;
+  allPlayerCount = 0;
+
   constructor(public ioNspGame: Namespace) {}
   generateClientId(socket: CustomSocket) {
     let clientId: string = uuidv4();
     socket.clientId = clientId;
     socket.emit('clientId', clientId);
   }
-
   async startGame(socket: CustomSocket) {
     if (!socket.clientId) return;
 
@@ -36,7 +38,8 @@ export default class RoomManager {
 
     socket.userId = userId;
     socket.roomId = this.chooseRoom();
-
+    this.playerCount += 1;
+    this.allPlayerCount += 1;
     // 部屋が存在しなければ、新規作成する
     // ホストidを後で実装
     if (!this.roomMap[socket.roomId]) {
@@ -121,23 +124,41 @@ export default class RoomManager {
   //退室
   leaveRoom(socket: CustomSocket) {
     if (!(socket.roomId && socket.clientId)) return;
+
+    socket.emit('destroyScene');
+
+    if (!this.roomMap[socket.roomId].gameManager) {
+      console.log('gameManager is undefined');
+      return;
+    }
+
+    // let stage = this.roomMap[socket.roomId].gameManager!.game.stage;
+    // //ステージからプレイヤーを削除
+    // stage.destroyPlayer(socket.clientId);
+
     //Roomからクライアントを削除
     this.removeUser(socket.roomId, socket);
+    
     let stage = this.roomMap[socket.roomId].gameManager!.game.stage;
     //ステージからプレイヤーを削除
     stage.destroyPlayer(socket.clientId);
+    this.playerCount -= 1;
+    socket.emit('playerLeave', this.playerCount, this.allPlayerCount);
 
     //部屋に誰もいなくなった場合、部屋を削除
     let room = this.roomMap[socket.roomId];
     if (Object.keys(room.users).length <= 0) {
       this.removeRoom(socket.roomId);
     }
+
+    socket.emit('leaveRoomDone');
   }
 
   //roomとroomMapからクライアントを削除
   removeUser(roomId: string, socket: CustomSocket) {
     //roomからクライアントを退室させる
     // this.ioNspGame.sockets.get(socket.id)?.leave(roomId);
+    socket.leave(roomId);
 
     if (socket.clientId)
       if (this.userExist(roomId, socket.clientId)) {

@@ -17,6 +17,7 @@ import {
   DialogTitle,
   Slide,
 } from '@mui/material';
+import { updateDoc } from 'firebase/firestore';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -30,6 +31,7 @@ const Transition = React.forwardRef(function Transition(
 const GameDisplay = () => {
   const [game, setGame] = useState<Phaser.Game>();
   const [open, setOpen] = React.useState(false);
+  const [timeUp, setTimeUp] = useState(false);
 
   const updateTimeState = useTimeStore((state) => state.updateTimeState);
 
@@ -53,18 +55,36 @@ const GameDisplay = () => {
     startPhaser();
   }, []);
 
-  socket?.on('reduceLife', (life: number) => {
-    console.log('reduceLife');
-    if (life == 0) {
-      setOpen(true);
-    }
+  socket?.on('dead', () => {
+    setOpen(true);
   });
 
+  socket?.on(
+    'playerLeave', 
+    (playerCount : number, allPlayerCount : number ) => {
+      console.log("playerLeave")
+      if (playerCount == 1 && allPlayerCount != playerCount) {
+        setOpen(true)
+      }
+    }
+  );
+
   const returnMyPage = () => {
-    router.push(`/mypage/${localStorage.getItem('userId')}`);
-    setOpen(false);
     socket?.emit('leaveRoom');
+    if (open) {
+      setOpen(false);
+    }
+    if (timeUp) {
+      setTimeUp(false);
+    }
   };
+  socket?.on('leaveRoomDone', () => {
+    router.push(`/mypage/${localStorage.getItem('userId')}`);
+  });
+
+  socket?.on('timeUp', () => {
+    setTimeUp(true);
+  });
   useEffect(() => {}, []);
   return (
     <>
@@ -87,14 +107,31 @@ const GameDisplay = () => {
           fullWidth
           aria-describedby='alert-dialog-slide-description'
         >
-          <DialogTitle>{'Waiting...'}</DialogTitle>
+          <DialogTitle>{'GAME OVER...'}</DialogTitle>
           <DialogContent>
             <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
             <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
             <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={returnMyPage}>Disconnected</Button>
+            <Button onClick={returnMyPage}>マイページへ戻る</Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={timeUp}
+          TransitionComponent={Transition}
+          keepMounted
+          fullWidth
+          aria-describedby='alert-dialog-slide-description'
+        >
+          <DialogTitle>{'TimeUP'}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
+            <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
+            <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={returnMyPage}>マイページへ戻る</Button>
           </DialogActions>
         </Dialog>
       </Box>

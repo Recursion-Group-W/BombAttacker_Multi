@@ -103,6 +103,12 @@ export class Npc extends Character {
           //プレイヤーの残機を減らす
           playerNode.data.damage();
 
+          // 残機減らしたことをクライアントに飛ばす
+          roomManager.ioNspGame
+          .to(playerNode.data.socket.id)
+          .emit('reduceLife', this.life);
+
+          this.setNoDamageTime = deltaTime;
           console.log(`残機: ${playerNode.data.getLife}`);
 
           playerNode.data.setNoDamageTime = deltaTime;
