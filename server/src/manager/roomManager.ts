@@ -7,15 +7,12 @@ import { RoomMap } from './types/room.type';
 import { User } from './types/user.type';
 import { GameManager } from './gameManager';
 
+
 export default class RoomManager {
   roomMap: RoomMap = {};
-
   constructor(public ioNspGame: Namespace) {}
-
-  //clientIdをuuidで作成
   generateClientId(socket: CustomSocket) {
     let clientId: string = uuidv4();
-
     socket.clientId = clientId;
     socket.emit('clientId', clientId);
   }
@@ -39,7 +36,7 @@ export default class RoomManager {
   }
 
   //入室
-  async joinRoom(socket: CustomSocket, userName: string, userId: string) {
+  async joinRoom(socket: CustomSocket, userName: string, userId = localStorage.getItem("userId")!.toString()) {
     if (!socket.clientId) return;
 
     socket.userId = userId;
@@ -136,12 +133,18 @@ export default class RoomManager {
     let stage = this.roomMap[socket.roomId].gameManager!.game.stage;
     //ステージからプレイヤーを削除
     stage.destroyPlayer(socket.clientId);
+
+    //部屋に誰もいなくなった場合、部屋を削除
+    let room = this.roomMap[socket.roomId];
+    if (Object.keys(room.users).length <= 0) {
+      this.removeRoom(socket.roomId);
+    }
   }
 
   //roomとroomMapからクライアントを削除
   removeUser(roomId: string, socket: CustomSocket) {
     //roomからクライアントを退室させる
-    this.ioNspGame.sockets.get(socket.id)?.leave(roomId);
+    // this.ioNspGame.sockets.get(socket.id)?.leave(roomId);
 
     if (socket.clientId)
       if (this.userExist(roomId, socket.clientId)) {
@@ -162,5 +165,12 @@ export default class RoomManager {
   //roomIdの対戦ルームが存在するかどうか
   roomExist(roomId: string) {
     return this.roomMap && this.roomMap[roomId];
+  }
+
+  //部屋を削除する
+  removeRoom(roomId: string) {
+    if (!this.roomExist(roomId)) return;
+
+    delete this.roomMap[roomId];
   }
 }

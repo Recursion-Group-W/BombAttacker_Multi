@@ -86,6 +86,8 @@ export default class IoGame {
       socket.on('disconnect', () => {
         console.log('クライアントと接続が切れました');
 
+        // console.log(socket.rooms);
+
         //退室する処理
         roomManager.leaveRoom(socket);
       });

@@ -24,6 +24,7 @@ export default function Home() {
       setIsAuth(false);
     });
   };
+  
   return (
     <Layout title='Title'>
       <Container maxWidth='lg'>
