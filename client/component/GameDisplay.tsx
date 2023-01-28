@@ -93,14 +93,14 @@ const GameDisplay = () => {
           fullWidth
           aria-describedby='alert-dialog-slide-description'
         >
-          <DialogTitle>{'Waiting...'}</DialogTitle>
+          <DialogTitle>{'GAME OVER...'}</DialogTitle>
           <DialogContent>
             <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
             <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
             <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={returnMyPage}>Disconnected</Button>
+            <Button onClick={returnMyPage}>マイページへ戻る</Button>
           </DialogActions>
         </Dialog>
       </Box>
