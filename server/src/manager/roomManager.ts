@@ -43,8 +43,6 @@ export default class RoomManager {
 
     socket.userId = userId;
     socket.roomId = this.chooseRoom();
-    this.roomMap[socket.roomId].playerCount += 1;
-    this.roomMap[socket.roomId].allPlayerCount += 1;
     // 部屋が存在しなければ、新規作成する
     // ホストidを後で実装
     if (!this.roomMap[socket.roomId]) {
@@ -53,6 +51,9 @@ export default class RoomManager {
     socket.emit('join', socket.roomId);
     console.log(`Room<roomId: ${socket.roomId}>を作成しました。`);
     // socketを使ってユーザを入室させる
+    this.roomMap[socket.roomId].playerCount += 1;
+    this.roomMap[socket.roomId].allPlayerCount += 1;
+
     this.addUser(socket);
 
     console.log(`ユーザー<clientId: ${socket.clientId}>が入室しました。`);
@@ -96,8 +97,8 @@ export default class RoomManager {
       // roomId: roomId,
       users: {},
       gameManager: gameManager,
-      playerCount: 0,
-      allPlayerCount: 0
+      playerCount: playerCount,
+      allPlayerCount: allPlayerCount
     };
   }
 

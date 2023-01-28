@@ -6,7 +6,7 @@ export type Room = {
     users: Users;
     gameManager: GameManager | null;
     playerCount: number;
-    allPlayerCount: number
+    allPlayerCount: number;
   };
   export type RoomMap = {
     [roomId: string]: Room;
