@@ -66,6 +66,18 @@ const GameDisplay = () => {
     setOpen(true);
   });
 
+
+  socket?.on(
+    'playerLeave', 
+    (playerCount : number, allPlayerCount : number ) => {
+      console.log("playerLeave")
+      if (playerCount == 1 && allPlayerCount != playerCount) {
+        setOpen(true)
+      }
+    }
+  );
+
+
   const returnMyPage = () => {
     socket?.emit('leaveRoom');
     if (open) {
