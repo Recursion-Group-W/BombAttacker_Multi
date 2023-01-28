@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 
 import { update } from 'ramda';
 
-export class MainScene extends CustomScene { 
+export class MainScene extends CustomScene {
   cursor: Cursor | null = null;
   constructor() {
     super({ key: 'MainScene' });
@@ -78,6 +78,11 @@ export class MainScene extends CustomScene {
         SyncUtil.updateObstacle(res.id, res.spriteKey, this);
       }
     );
+
+    this.socket.on('destroyScene', () => {
+      // this.game.destroy(true);
+      // this.game.scene.destroy();
+    });
   }
   update(): void {
     //syncのデータを基に、spriteの座標とアニメーションを更新
