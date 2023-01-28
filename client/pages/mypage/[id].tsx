@@ -51,63 +51,41 @@ const Transition = React.forwardRef(function Transition(
 const Mypage = () => {
   const router = useRouter();
   const { id } = router.query;
-
   const [userName, setUserName] = useState('NoName');
-  const [open, setOpen] = React.useState(false);
-  const [roomId, setRoomId] = useState('');
-  const [waitUsers, setWaitUsers] = useState<string[]>([]);
+  const [userId, setUserId] = useState('');
+  const [open, setOpen] = useState(false);
+  const [waiting, setWaiting] = useState(0);
 
-  const openDialog = async () => {
+  const openDialog = () => {
     if (userName.length === 0) {
       alert('名前を入力してください');
       return;
     }
     setOpen(true);
-    socket.emit('standby', true, localStorage.getItem('userId'));
+    socket.emit('standby', userId);
   };
-
   const closeDialog = () => {
     setOpen(false);
-    setWaitUsers([]);
-    // socket.emit('cancelStandby');
+    if (userId) socket.emit('cancelStandby', userId);
   };
-
   const handleClick = () => {
+    if (userId) {
+      updateDoc(doc(db, 'users', userId), {
+        name: userName != '' ? userName : 'NoName',
+      }).catch((error) => {
+        console.log(error.message);
+      });
+    }
     alert('変更しました');
-    const uid = localStorage.getItem('userId')!.toString();
-    updateDoc(doc(db, 'users', uid), {
-      name: userName != '' ? userName : 'NoName',
-    }).catch((error) => {
-      console.log(error.message);
-    });
   };
-
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
   };
-
-  const updateSocketState = useSocketStore((state) => state.updateSocketState);
-
-  const url = NODE_URL;
-  const socket: CustomSocket = io(`${url}/game`);
-  updateSocketState({ socket: socket });
-
-  socket.on('connect', () => {
-    console.log('サーバーとソケット接続しました。');
-  });
-  socket.on('clientId', (clientId: string) => {
-    console.log(`Your clientId is ${clientId}`);
-    socket.clientId = clientId;
-  });
-  socket.on('cancelGame', () => {
-    alert('ゲームがキャンセルされました');
-  });
-  socket.on('roomId', (roomId: string) => {
-    setRoomId(roomId);
-  });
-
+  const waitingUser = () => {
+    socket.emit('waitingUser', userId);
+  };
   const startGame = () => {
-    socket.emit('startGame', roomId, localStorage.getItem('userId'));
+    socket.emit('startGame', userId);
   };
   const joinGame = () => {
     socket.emit('joinRoom', {
@@ -115,12 +93,32 @@ const Mypage = () => {
       userId: localStorage.getItem('userId'),
     });
   };
+
+  const updateSocketState = useSocketStore((state) => state.updateSocketState);
+  const url = NODE_URL;
+  const socket: CustomSocket = io(`${url}/game`);
+  updateSocketState({ socket: socket });
+  socket.on('connect', () => {
+    console.log('サーバーとソケット接続しました。');
+  });
+  socket.on('clientId', (clientId: string) => {
+    console.log(`Your clientId is ${clientId}`);
+    socket.clientId = clientId;
+  });
+  socket.on('waitingUserArr', (waiting: number) => {
+    setWaiting(waiting - 1);
+  });
+  socket.on('cancelGame', () => {
+    alert('ゲームがキャンセルされました');
+  });
   socket.on('join', (roomId: string) => {
     router.push(`/room/${roomId}`);
   });
 
   useEffect(() => {
     const { id } = router.query;
+    let uid = localStorage.getItem('userId');
+    if (uid != null) setUserId(uid);
     console.log('userID: ', id);
   }, [router.query]);
 
@@ -213,7 +211,8 @@ const Mypage = () => {
                       表示名：{userName}
                     </DialogContentText>
                     <DialogContentText id='alert-dialog-slide-description'>
-                      接続人数：{waitUsers.length}
+                      接続人数：{waiting}
+                      <Button onClick={waitingUser}>更新する</Button>
                     </DialogContentText>
                     <ShareButtons />
                   </DialogContent>

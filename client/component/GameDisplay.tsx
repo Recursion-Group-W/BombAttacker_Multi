@@ -15,9 +15,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Slide
+  Slide,
 } from '@mui/material';
-
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -54,21 +53,18 @@ const GameDisplay = () => {
     startPhaser();
   }, []);
 
-  socket?.on(
-    'reduceLife',
-    (life : number ) => {
-      console.log("reduceLife")
-      if (life == 0) {
-        setOpen(true)
-      }
+  socket?.on('reduceLife', (life: number) => {
+    console.log('reduceLife');
+    if (life == 0) {
+      setOpen(true);
     }
-  );
+  });
 
-  const returnMyPage = () =>{
+  const returnMyPage = () => {
     router.push(`/mypage/${localStorage.getItem('userId')}`);
-    setOpen(false)
-    socket?.emit("leaveRoom")
-  }
+    setOpen(false);
+    socket?.emit('leaveRoom');
+  };
   useEffect(() => {}, []);
   return (
     <>
@@ -84,26 +80,23 @@ const GameDisplay = () => {
         <StateDisplay />
 
         <div id='phaser-game' className={styles.canvasBorder}></div>
-              <Dialog
-                open={open}
-                TransitionComponent={Transition}
-                keepMounted
-                fullWidth
-                aria-describedby='alert-dialog-slide-description'
-              >
-                <DialogTitle>{'Waiting...'}</DialogTitle>
-                <DialogContent>
-                  <DialogContentText id='alert-dialog-slide-description'>
-                  </DialogContentText>
-                  <DialogContentText id='alert-dialog-slide-description'>
-                  </DialogContentText>
-                  <DialogContentText id='alert-dialog-slide-description'>
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                <Button onClick={returnMyPage}>Disconnected</Button>
-                </DialogActions>
-              </Dialog>
+        <Dialog
+          open={open}
+          TransitionComponent={Transition}
+          keepMounted
+          fullWidth
+          aria-describedby='alert-dialog-slide-description'
+        >
+          <DialogTitle>{'Waiting...'}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
+            <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
+            <DialogContentText id='alert-dialog-slide-description'></DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={returnMyPage}>Disconnected</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </>
   );

@@ -2,9 +2,12 @@ import { Namespace } from 'socket.io';
 import { CustomSocket } from './interface/customSocket.interface';
 import RoomManager from '../manager/roomManager';
 import { Movement } from '../game/types/movement.type';
+import { stopCoverage } from 'v8';
+import { GameManager } from '../manager/gameManager';
 
 export default class IoGame {
   time: Date = new Date();
+  standby: { [hostId: string]: CustomSocket[] } = {};
 
   constructor(public ioNspGame: Namespace, public roomManager: RoomManager) {
     ioNspGame.on('connect', async (socket: CustomSocket) => {
@@ -13,16 +16,55 @@ export default class IoGame {
       //clientIdを生成して送信する処理
       roomManager.generateClientId(socket);
 
-      socket.on('connectUser', (uid: string) => {
-        socket.emit('updateUser', uid);
+      socket.on('standby', (uid: string) => {
+        console.log('uid: ' + uid + ' さんが部屋を作成しました');
+        if (!this.standby[uid]) this.standby[uid] = [];
+        socket.userId = uid;
+        this.standby[uid].push(socket);
       });
 
-      socket.on('startGame',async (roomId: string, uid: string) => {
-        await roomManager.startGame(socket, roomId, uid);
+      socket.on('guestStandby', (uid: string) => {
+        if (this.standby[uid]) {
+          this.standby[uid].push(socket);
+          console.log(uid + 'さんの部屋に参加しました');
+        } else {
+          socket.emit('noRoom');
+        }
       });
 
-      socket.on('cancelStandby', () => {
-        socket.emit('cancelGame');
+      socket.on('makeOver', (uid: string) => {
+        console.log(this.standby[uid]);
+      });
+
+      socket.on('waitingUser', (uid: string) => {
+        socket.emit('waitingUserArr', this.standby[uid].length);
+      });
+
+      socket.on('startGame', async (uid: string) => {
+        const arr = this.standby[uid];
+        const roomId = roomManager.chooseRoom();
+        for (let i = 0; i < arr.length; i++) {
+          arr[i].roomId = roomId;
+          arr[i].userId = arr[i].id;
+        }
+
+        if (!roomManager.roomMap[roomId]) {
+          await roomManager.createRoom(roomId);
+        }
+        console.log(`Room<roomId: ${roomId}>を作成しました。`);
+
+        for (let i = 0; i < arr.length; i++) {
+          arr[i].emit('join', roomId);
+          roomManager.addUser(arr[i]);
+          let stage = roomManager.roomMap[roomId].gameManager!.game.stage;
+          stage.createPlayer(arr[i], 'userName');
+        }
+      });
+
+      socket.on('cancelStandby', (uid: string) => {
+        console.log('uid: ' + uid + ' さんが部屋を削除しました');
+        delete this.standby[uid];
+        console.log(this.standby);
       });
 
       // 入室
@@ -52,11 +94,11 @@ export default class IoGame {
 
       socket.on('movePlayer', (movement: Movement) => {
         if (!socket.roomId || !socket.clientId) return;
-        
+
         const playerList =
-        this.roomManager.roomMap[socket.roomId].gameManager!.game.stage
-        .playerList;
-        
+          this.roomManager.roomMap[socket.roomId].gameManager!.game.stage
+            .playerList;
+
         let iterator = playerList.getHead();
         while (iterator !== null) {
           if (iterator.data.clientId === socket.clientId) {
@@ -66,7 +108,7 @@ export default class IoGame {
           iterator = iterator.next;
         }
         if (!iterator!.data) return;
-        
+
         this.roomManager.roomMap[
           socket.roomId
         ].gameManager!.game.stage.movePlayer(socket.clientId, movement);
@@ -87,14 +129,12 @@ export default class IoGame {
         console.log('クライアントと接続が切れました');
 
         // console.log(socket.rooms);
-
-  
       });
 
       //退室する処理
       socket.on('leaveRoom', () => {
         roomManager.leaveRoom(socket);
-      })
+      });
     });
   }
 }

@@ -7,8 +7,6 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import { dotGothicFont, theme } from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import './style.scss';
-// import { BrowserRouter, Route, Routes} from 'react-router-dom';
-import gameOverPage from './gameOverPage/[id]';
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 

@@ -37,7 +37,6 @@ const signIn = async () => {
       uid: res.user.uid,
       BestScore: 0,
       Scores: [],
-      Life: 3,
     }).catch((error) => {
       console.log(error.message);
     });

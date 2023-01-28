@@ -7,7 +7,6 @@ import { RoomMap } from './types/room.type';
 import { User } from './types/user.type';
 import { GameManager } from './gameManager';
 
-
 export default class RoomManager {
   roomMap: RoomMap = {};
   constructor(public ioNspGame: Namespace) {}
@@ -17,26 +16,22 @@ export default class RoomManager {
     socket.emit('clientId', clientId);
   }
 
-  standby(socket: CustomSocket, host: boolean, uid: string) {
-    
-  }
-  
-  async startGame(socket: CustomSocket, roomId: string, uid : string) {
-    socket.roomId = roomId;
-    socket.userId = uid;
+  async startGame(socket: CustomSocket) {
+    if (!socket.clientId) return;
 
-    const gameManager = new GameManager(roomId, this);
-    this.roomMap[roomId].gameManager = gameManager;
-    socket.emit('join', socket.roomId);
+    // 部屋が存在しなければ、新規作成する
+    // ホストidを後で実装
+    // socketを使ってユーザを入室させる
 
-    this.addUser(socket);
-    let stage = gameManager.game.stage;
-    // プレイヤーを作成
-    stage.createPlayer(socket, 'userName');
+    console.log(`ユーザー<clientId: ${socket.clientId}>が入室しました。`);
   }
 
   //入室
-  async joinRoom(socket: CustomSocket, userName: string, userId = localStorage.getItem("userId")!.toString()) {
+  async joinRoom(
+    socket: CustomSocket,
+    userName: string,
+    userId = localStorage.getItem('userId')!.toString()
+  ) {
     if (!socket.clientId) return;
 
     socket.userId = userId;
@@ -58,7 +53,6 @@ export default class RoomManager {
 
     // プレイヤーを作成
     stage.createPlayer(socket, userName);
-    
   }
 
   // socketを使ってユーザを入室させる
@@ -90,7 +84,6 @@ export default class RoomManager {
     let gameManager = new GameManager(roomId, this);
 
     this.roomMap[roomId] = {
-      // roomId: roomId,
       users: {},
       gameManager: gameManager,
     };

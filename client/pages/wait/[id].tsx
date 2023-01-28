@@ -23,7 +23,6 @@ import { useSocketStore } from '../../src/store/useSocketStore';
 // パス
 import { db, signIn } from '../../src/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
-import Mypage from '../mypage/[id]';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -40,25 +39,15 @@ const WaitGather = () => {
 
   const [isAuth, setIsAuth] = React.useState(false);
   const [userName, setUserName] = useState('NoName');
-  const [open, setOpen] = useState(true);
-  const [roomId, setRoomId] = useState('');
   const [standby, setStandby] = useState(false);
 
   const logIn = async () => {
     await signIn();
     setIsAuth(true);
-    const name = localStorage.getItem('userName');
-    if (name) {
-      setUserName(name);
-    }
   };
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
-  };
-
-  const openDialog = async () => {
-    setOpen(true);
   };
 
   const handleClick = () => {
@@ -71,7 +60,6 @@ const WaitGather = () => {
   };
 
   const updateSocketState = useSocketStore((state) => state.updateSocketState);
-
   const url = NODE_URL;
   const socket: CustomSocket = io(`${url}/game`);
   updateSocketState({ socket: socket });
@@ -83,16 +71,31 @@ const WaitGather = () => {
     console.log(`Your clientId is ${clientId}`);
     socket.clientId = clientId;
   });
-
-  const readyToGo = () => {
-    setStandby(true);
-  };
-  const makeOver = () => {
-    setStandby(false);
-  };
   socket.on('roomId', (roomId: string) => {
     router.push(`/room/${roomId}`);
   });
+  socket.on('noRoom', () => {
+    alert('募集が終了しました。TOPに戻ります。');
+    router.push(url);
+  });
+
+  const readyToGo = () => {
+    if (userName.length === 0) {
+      alert('名前を入力してください');
+      return;
+    }
+    setStandby(true);
+    socket.emit('guestStandby', id);
+  };
+  const makeOver = () => {
+    socket.emit('makeOver', id);
+    setStandby(false);
+  };
+  const leaveRoom = () => {
+    if (confirm('TOPページに戻ります。よろしいですか？')) {
+      router.push(url);
+    }
+  };
 
   useEffect(() => {
     const { id } = router.query;
@@ -101,9 +104,8 @@ const WaitGather = () => {
 
   return (
     <Layout title='WaitGather'>
-      <Mypage/>
       <Dialog
-        open={open}
+        open
         TransitionComponent={Transition}
         keepMounted
         fullWidth
@@ -137,6 +139,11 @@ const WaitGather = () => {
                 variant='filled'
                 value={userName}
                 disabled={standby}
+                error={userName!.length > 6}
+                required
+                fullWidth
+                onChange={handleChangeName}
+                helperText='6文字以下にしてください'
               />
             </Grid>
           </Grid>
@@ -149,7 +156,7 @@ const WaitGather = () => {
           {!standby ? (
             <Grid container>
               <Grid item xs={4}>
-                <Button fullWidth href={NODE_URL}>
+                <Button fullWidth onClick={() => leaveRoom()}>
                   退室する
                 </Button>
               </Grid>

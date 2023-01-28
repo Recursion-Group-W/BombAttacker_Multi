@@ -10,7 +10,7 @@ import { NODE_URL } from '../env';
 
 const ShareButtons = () => {
   const title = 'BombAttackerでマルチ対戦の相手を探しています。';
-  const url = NODE_URL + localStorage.getItem('userId');
+  const url = NODE_URL + '/' + localStorage.getItem('userId');
   return (
     <Grid container justifyContent='center'>
       <Grid item px={2}>
