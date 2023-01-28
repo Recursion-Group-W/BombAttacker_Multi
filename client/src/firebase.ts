@@ -42,11 +42,9 @@ const signIn = async () => {
       console.log(error.message);
     });
 
-    const displayName = res.user.displayName ? res.user.displayName : 'NoName';
-    console.log(displayName);
+    console.log(res.user.displayName);
     console.log(res.user.uid);
 
-    localStorage.setItem('userName', displayName);
     localStorage.setItem('userId', res.user.uid);
     localStorage.setItem('isAuth', 'true');
   });
