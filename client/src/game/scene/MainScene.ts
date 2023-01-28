@@ -14,33 +14,9 @@ import { useRouter } from 'next/router';
 // import { db } from '../../../../client/src/firebase';
 import { doc, updateDoc } from "firebase/firestore";
 import { update } from 'ramda';
-const db = getFirestore();
-const usersRef = collection(db, "users");
-let name = "";
-let score = 0;
-let pageURL = location.href
-// const router = useRouter();
-
-export default function GameOver () {
-  getDocs(query(usersRef, where("Life", "==", 0))).then(snapshot => {
-    const router = useRouter();
-      snapshot.forEach(Doc => {
-          name = Doc.data().name;
-          score = Doc.data().score;
-          console.log(`${Doc.id}: ${Doc.data().name}`);
-          // pageURL +=  '/gameOverPage';
-          router.push('/gameOverPage')
-          window.location.href = '/gameOverPage';  
-          updateDoc(doc(db, "users", Doc.data().uid), {
-            Life: -1
-          }) 
-      })
-    })
-  }
 
 export class MainScene extends CustomScene { 
   cursor: Cursor | null = null;
-
   constructor() {
     super({ key: 'MainScene' });
   }
@@ -112,7 +88,7 @@ export class MainScene extends CustomScene {
     SyncUtil.updateNpc(this);
     SyncUtil.updateBomb(this);
     SyncUtil.updateExplosion(this);
-    GameOver()
+    // this.GameOver()
     this.cursor?.update();
   }
 }

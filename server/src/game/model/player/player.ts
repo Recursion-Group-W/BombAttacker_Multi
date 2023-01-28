@@ -184,6 +184,9 @@ export class Player extends Character {
         updateDoc(doc(db, "users", this.userId), {
           Life: this.life
         })
+        roomManager.ioNspGame
+        .to(explosion.data.player.socket.id)
+        .emit('reduceLife', this.life);
         this.setNoDamageTime = deltaTime;
 
         //攻撃したプレイヤーのスコアを更新
