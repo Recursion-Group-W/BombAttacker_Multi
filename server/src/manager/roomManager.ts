@@ -9,8 +9,6 @@ import { GameManager } from './gameManager';
 
 export default class RoomManager {
   roomMap: RoomMap = {};
-  playerCount = 0;
-  allPlayerCount = 0;
 
   constructor(public ioNspGame: Namespace) {}
   generateClientId(socket: CustomSocket) {
@@ -38,8 +36,6 @@ export default class RoomManager {
 
     socket.userId = userId;
     socket.roomId = this.chooseRoom();
-    this.playerCount += 1;
-    this.allPlayerCount += 1;
     // 部屋が存在しなければ、新規作成する
     // ホストidを後で実装
     if (!this.roomMap[socket.roomId]) {
@@ -48,6 +44,9 @@ export default class RoomManager {
     socket.emit('join', socket.roomId);
     console.log(`Room<roomId: ${socket.roomId}>を作成しました。`);
     // socketを使ってユーザを入室させる
+    this.roomMap[socket.roomId].playerCount += 1;
+    this.roomMap[socket.roomId].allPlayerCount += 1;
+
     this.addUser(socket);
 
     console.log(`ユーザー<clientId: ${socket.clientId}>が入室しました。`);
@@ -85,10 +84,13 @@ export default class RoomManager {
 
     //ゲームを作成し、gameManagerにゲームを登録
     let gameManager = new GameManager(roomId, this);
-
+    let playerCount = 0;
+    let allPlayerCount = 0;
     this.roomMap[roomId] = {
       users: {},
       gameManager: gameManager,
+      playerCount: playerCount,
+      allPlayerCount: allPlayerCount
     };
   }
 
@@ -142,8 +144,8 @@ export default class RoomManager {
     let stage = this.roomMap[socket.roomId].gameManager!.game.stage;
     //ステージからプレイヤーを削除
     stage.destroyPlayer(socket.clientId);
-    this.playerCount -= 1;
-    socket.emit('playerLeave', this.playerCount, this.allPlayerCount);
+    this.roomMap[socket.roomId].playerCount -= 1;
+    socket.emit('playerLeave', this.roomMap[socket.roomId].playerCount, this.roomMap[socket.roomId].allPlayerCount);
 
     //部屋に誰もいなくなった場合、部屋を削除
     let room = this.roomMap[socket.roomId];
