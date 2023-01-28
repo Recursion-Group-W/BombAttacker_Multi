@@ -492,6 +492,7 @@ export class GenericStage {
         //   .in(this.roomId)
         //   .emit('destroyPlayer', { clientId: playerIterator.data.clientId });
 
+        // 1月28日
         this.roomManager.leaveRoom(playerIterator.data.socket);
       }
       playerIterator = playerIterator.next;
