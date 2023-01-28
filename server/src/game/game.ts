@@ -47,7 +47,7 @@ export class Game {
         itemArr: this.stage.itemList.toArray(),
       });
 
-      if (time >= 15) {
+      if (time >= 180) {
         clearInterval(timerId);
         this.roomManager.ioNspGame.in(this.roomId).emit('timeUp');
       }
