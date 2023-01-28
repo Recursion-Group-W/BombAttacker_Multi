@@ -64,6 +64,16 @@ const GameDisplay = () => {
     }
   );
 
+  socket?.on(
+    'playerLeave', 
+    (playerCount : number, allPlayerCount : number ) => {
+      console.log("playerLeave")
+      if (playerCount == 1 && allPlayerCount != playerCount) {
+        setOpen(true)
+      }
+    }
+  );
+
   const returnMyPage = () =>{
     router.push(`/mypage/${localStorage.getItem('userId')}`);
     setOpen(false)
